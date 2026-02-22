@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Download core dirt-samples for offline rendering
+# Download core dirt-samples for offline rendering (idempotent)
+# Usage: download-samples.sh [--force]
 SAMPLES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/samples"
-if [ -d "$SAMPLES_DIR" ] && [ "$(find "$SAMPLES_DIR" -name '*.wav' | wc -l)" -gt 0 ]; then
-  echo "Samples already present at $SAMPLES_DIR ($(find "$SAMPLES_DIR" -name '*.wav' | wc -l) files)"
+FORCE="${1:-}"
+if [ "$FORCE" != "--force" ] && [ -d "$SAMPLES_DIR" ] && [ "$(find "$SAMPLES_DIR" -name '*.wav' 2>/dev/null | wc -l)" -gt 50 ]; then
+  COUNT=$(find "$SAMPLES_DIR" -name '*.wav' | wc -l)
+  echo "✅ Samples present ($COUNT files). Use --force to re-download."
   exit 0
 fi
 echo "Downloading dirt-samples..."

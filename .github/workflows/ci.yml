@@ -129,26 +129,31 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Extract version from SKILL.md
+      - name: Extract version
         id: version
         run: |
-          VERSION=$(python3 -c "
-          import yaml
-          with open('SKILL.md') as f:
-              parts = f.read().split('---', 2)
-          data = yaml.safe_load(parts[1])
-          print(data.get('version', ''))
-          ")
-          if [ -z "$VERSION" ]; then
-            # Use git tag or commit-based version
-            VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0-dev")
+          # Use git tags for semver, fall back to 0.x.0-dev+sha
+          VERSION=$(git describe --tags --match 'v*' --always 2>/dev/null || echo "")
+          if [[ "$VERSION" =~ ^v ]]; then
+            VERSION="${VERSION#v}"
+          else
+            # No tag — use commit count as patch version
+            COUNT=$(git rev-list --count HEAD)
+            SHA=$(git rev-parse --short HEAD)
+            VERSION="0.${COUNT}.0-dev+${SHA}"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Detected version: $VERSION"
+          echo "Publishing version: $VERSION"
+
+      - name: Configure ClaHub auth
+        env:
+          CLAWHUB_CLI_TOKEN: ${{ secrets.CLAWHUB_CLI_TOKEN }}
+        run: |
+          mkdir -p ~/.config/clawhub
+          echo "{\"registry\":\"https://clawhub.ai\",\"token\":\"${CLAWHUB_CLI_TOKEN}\"}" \
+            > ~/.config/clawhub/config.json
 
       - name: Publish to ClaHub
-        env:
-          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_CLI_TOKEN }}
         run: |
           npx clawhub publish \
             --slug strudel-music \

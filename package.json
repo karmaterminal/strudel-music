@@ -10,6 +10,8 @@
     "@strudel/core": "1.1.0",
     "@strudel/mini": "1.1.0",
     "@strudel/tonal": "^1.1.0",
-    "@strudel/webaudio": "1.1.0"
+    "@strudel/webaudio": "1.1.0",
+    "node-web-audio-api": "^1.0.8",
+    "puppeteer": "^24.37.5"
   }
 }

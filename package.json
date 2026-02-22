@@ -1,0 +1,14 @@
+{
+  "name": "strudel-music",
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "render": "node src/runtime/render.mjs",
+    "test": "node src/runtime/smoke-test.mjs"
+  },
+  "dependencies": {
+    "@strudel/core": "^1.2.0",
+    "@strudel/mini": "^1.2.0",
+    "@strudel/webaudio": "^1.2.0"
+  }
+}

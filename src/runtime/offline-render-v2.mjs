@@ -275,6 +275,14 @@ compressor.knee.setValueAtTime(30, 0);
 compressor.ratio.setValueAtTime(12, 0);
 compressor.connect(offCtx.destination);
 
+// Oscillator type map (outside loop for performance)
+const waveMap = {
+  sine: 'sine', triangle: 'triangle', square: 'square',
+  sawtooth: 'sawtooth', saw: 'sawtooth', tri: 'triangle',
+  piano: 'triangle', bass: 'sawtooth', pluck: 'triangle',
+  supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
+};
+
 let scheduled = 0;
 for (const hap of haps) {
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
@@ -301,18 +309,14 @@ for (const hap of haps) {
   const sampleKey = `${sound}:${nVal}`;
   const sampleBuf = sampleBuffers.get(sampleKey) || sampleBuffers.get(sound);
   
-  const waveMap = {
-    sine: 'sine', triangle: 'triangle', square: 'square',
-    sawtooth: 'sawtooth', saw: 'sawtooth', tri: 'triangle',
-    piano: 'triangle', bass: 'sawtooth', pluck: 'triangle',
-    supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
-  };
   const isSynthSound = waveMap[sound] !== undefined;
 
   // Resolve note → frequency (for synth sounds)
   let freq = null;
   if (v.freq) freq = v.freq;
   else if (v.note) freq = noteToFreq(v.note);
+  // TODO: resolve scale degree to freq using tonal's Scale.get() + degree mapping
+  // Currently falls through to 440Hz for unresolved scale degrees
   else if (v.n !== undefined && isSynthSound) freq = 440;
 
   // Skip if neither sample nor synth

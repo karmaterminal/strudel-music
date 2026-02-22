@@ -104,10 +104,18 @@ jobs:
       - name: Scan for hardcoded secrets
         run: |
           set -euo pipefail
+          # Match actual secret values, not env var references (process.env.X, $X, ${X})
           if grep -rn --include="*.js" --include="*.sh" --include="*.mjs" \
-            -E "(DISCORD_TOKEN|BOT_TOKEN|sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|clh_)" \
+            -E "(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|clh_[a-zA-Z0-9]{20,})" \
             . 2>/dev/null | grep -v node_modules | grep -v '.git'; then
             echo "❌ Potential secrets detected!"
+            exit 1
+          fi
+          # Check for actual token assignments (not env reads)
+          if grep -rn --include="*.js" --include="*.sh" --include="*.mjs" \
+            -E "(DISCORD_TOKEN|BOT_TOKEN)\s*=\s*['\"][a-zA-Z0-9]" \
+            . 2>/dev/null | grep -v node_modules | grep -v '.git' | grep -v 'process\.env' | grep -v '\$\{'; then
+            echo "❌ Hardcoded token values detected!"
             exit 1
           fi
           echo "✅ No secrets"

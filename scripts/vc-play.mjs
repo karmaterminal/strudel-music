@@ -71,6 +71,7 @@ client.once('ready', async () => {
       channelId: channel.id,
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
+      selfDeaf: true,  // Music streamer — output only, no listening
     });
 
     await entersState(connection, VoiceConnectionStatus.Ready, 15_000);

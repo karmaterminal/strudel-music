@@ -13,7 +13,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 COMP_DIR="$ROOT_DIR/assets/compositions"
-TMP_DIR="${STRUDEL_TMP:-/tmp/strudel-render}"
+TMP_DIR="${STRUDEL_TMP:-${OPENCLAW_WORKSPACE:-${HOME}/.openclaw/workspace}/strudel-renders}"
 
 mkdir -p "$TMP_DIR"
 

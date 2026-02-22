@@ -1,0 +1,9 @@
+node_modules/
+*.wav
+*.opus
+*.mp3
+*.pcm
+dist/
+tmp/
+.env
+*.local

@@ -7,3 +7,5 @@ dist/
 tmp/
 .env
 *.local
+node_modules/
+samples/

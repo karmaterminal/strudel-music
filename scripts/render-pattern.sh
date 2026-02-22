@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# render-pattern.sh — Render a Strudel pattern to WAV via headless browser
+# render-pattern.sh — Render a Strudel pattern to WAV (local by default)
 #
-# Usage: ./render-pattern.sh <input.js> [output.wav] [cycles] [bpm]
+# Usage: ./render-pattern.sh [--local|--browser] <input.js> [output.wav] [cycles] [bpm]
 #
-# Requires: node (v18+), puppeteer (npm install -g puppeteer)
+# Default mode:
+#   --local   Uses node src/runtime/render.mjs (default)
+#   --browser Uses headless browser rendering via Puppeteer
+#
+# Requires:
+#   Local: node (v22+ recommended for OfflineAudioContext)
+#   Browser: node (v18+), puppeteer (npm install -g puppeteer)
 # Optional: ffmpeg (for format conversion)
 #
 # Environment variables:
@@ -27,23 +33,42 @@
 
 set -euo pipefail
 
-INPUT="${1:?Usage: render-pattern.sh <input.js> [output.wav] [cycles] [bpm]}"
+MODE="local"
+if [[ "${1:-}" == "--local" ]]; then
+  MODE="local"
+  shift
+elif [[ "${1:-}" == "--browser" ]]; then
+  MODE="browser"
+  shift
+fi
+
+INPUT="${1:?Usage: render-pattern.sh [--local|--browser] <input.js> [output.wav] [cycles] [bpm]}"
 OUTPUT="${2:-$(basename "$INPUT" .js).wav}"
 CYCLES="${3:-8}"
 BPM="${4:-120}"
-STRUDEL_URL="${STRUDEL_URL:-https://strudel.cc}"
 
 if [[ ! -f "$INPUT" ]]; then
   echo "Error: input file not found: $INPUT" >&2
   exit 1
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [[ "$MODE" == "local" ]]; then
+  echo "Rendering locally: $INPUT -> $OUTPUT"
+  node "$ROOT_DIR/src/runtime/render.mjs" "$INPUT" "$OUTPUT" "$CYCLES" "$BPM"
+  echo "Render complete: $OUTPUT"
+  exit 0
+fi
+
+STRUDEL_URL="${STRUDEL_URL:-https://strudel.cc}"
 PATTERN_CODE=$(cat "$INPUT")
 CPS=$(echo "scale=4; $BPM / 60 / 4" | bc)
 SAMPLE_RATE=44100
 DOWNLOAD_DIR=$(mktemp -d)
 
-echo "Rendering: $INPUT → $OUTPUT"
+echo "Rendering in browser: $INPUT → $OUTPUT"
 echo "  Cycles: $CYCLES, BPM: $BPM, CPS: $CPS"
 
 # Generate the Puppeteer render script

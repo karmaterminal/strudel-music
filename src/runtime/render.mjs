@@ -1,104 +1,28 @@
 #!/usr/bin/env node
 
+// render.mjs — Render a Strudel pattern to WAV using local synthesis.
+// No browser, no OfflineAudioContext, no remote dependencies.
+// Uses @strudel/core + @strudel/mini for pattern evaluation,
+// then a local software synth to produce PCM audio.
+
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import vm from "node:vm";
 import * as core from "@strudel/core";
 import * as mini from "@strudel/mini";
-import * as webaudio from "@strudel/webaudio";
+import * as tonal from "@strudel/tonal";
+import { queryPattern, renderHapsToAudio, noteToFreq } from "./synth.mjs";
 
 const SAMPLE_RATE = 44100;
-const CHANNELS = 2;
 
 function usage() {
   console.error("Usage: node src/runtime/render.mjs <input.js> [output.wav] [cycles] [bpm]");
 }
 
-async function getOfflineAudioContextCtor() {
-  if (typeof globalThis.OfflineAudioContext === "function") {
-    return globalThis.OfflineAudioContext;
-  }
-
-  try {
-    const webAudioApi = await import("web-audio-api");
-    if (typeof webAudioApi.OfflineAudioContext === "function") {
-      return webAudioApi.OfflineAudioContext;
-    }
-    if (typeof webAudioApi.default?.OfflineAudioContext === "function") {
-      return webAudioApi.default.OfflineAudioContext;
-    }
-  } catch {
-    // Optional package fallback.
-  }
-
-  return null;
-}
-
-function createOfflineContext(OfflineAudioContextCtor, length, sampleRate) {
-  try {
-    return new OfflineAudioContextCtor(CHANNELS, length, sampleRate);
-  } catch {
-    return new OfflineAudioContextCtor({
-      numberOfChannels: CHANNELS,
-      length,
-      sampleRate,
-    });
-  }
-}
-
-function normalizeChannels(channelData, length) {
-  if (!Array.isArray(channelData) || channelData.length === 0) {
-    return [
-      new Float32Array(length),
-      new Float32Array(length),
-    ];
-  }
-
-  if (channelData.length === 1) {
-    const mono = channelData[0];
-    return [mono, new Float32Array(mono)];
-  }
-
-  return [channelData[0], channelData[1]];
-}
-
-function channelsFromRenderResult(result, fallbackLength) {
-  if (!result) {
-    return null;
-  }
-
-  if (typeof result.getChannelData === "function") {
-    const left = new Float32Array(result.getChannelData(0));
-    if (result.numberOfChannels > 1) {
-      return [left, new Float32Array(result.getChannelData(1))];
-    }
-    return [left, new Float32Array(left)];
-  }
-
-  if (Array.isArray(result) && result.length > 0 && result[0] instanceof Float32Array) {
-    return normalizeChannels(result, result[0].length);
-  }
-
-  if (result?.channelData && Array.isArray(result.channelData)) {
-    return normalizeChannels(result.channelData, result.channelData[0]?.length ?? fallbackLength);
-  }
-
-  if (result?.left instanceof Float32Array && result?.right instanceof Float32Array) {
-    return [result.left, result.right];
-  }
-
-  if (result?.audioBuffer && typeof result.audioBuffer.getChannelData === "function") {
-    const left = new Float32Array(result.audioBuffer.getChannelData(0));
-    if (result.audioBuffer.numberOfChannels > 1) {
-      return [left, new Float32Array(result.audioBuffer.getChannelData(1))];
-    }
-    return [left, new Float32Array(left)];
-  }
-
-  return null;
-}
-
+/**
+ * Write stereo PCM data as a WAV file.
+ */
 function writeWav(outputPath, channels, sampleRate = SAMPLE_RATE) {
   const numChannels = channels.length;
   const numSamples = channels[0]?.length ?? 0;
@@ -137,10 +61,19 @@ function writeWav(outputPath, channels, sampleRate = SAMPLE_RATE) {
   writeFileSync(outputPath, buffer);
 }
 
+/**
+ * Evaluate a Strudel pattern source file in a sandboxed context.
+ * Returns the last expression value (should be a Pattern).
+ */
 function evaluatePattern(source, filename) {
+  // Strudel REPL state — patterns call setcpm() to set tempo
+  let _cpm = null;
+
+  // Provide Strudel globals so patterns can use s(), note(), stack(), setcpm(), etc.
   const globals = {
     ...core,
     ...mini,
+    ...tonal,
     console,
     Math,
     Date,
@@ -148,23 +81,32 @@ function evaluatePattern(source, filename) {
     clearTimeout,
     setInterval,
     clearInterval,
+    // REPL helpers that patterns expect
+    setcpm: (cpm) => { _cpm = cpm; },
+    setcps: (cps) => { _cpm = cps * 60 * 4; },
+    hush: () => {},
+    // Strudel samples — stub for headless (no audio samples available)
+    samples: () => {},
   };
   globals.globalThis = globals;
 
-  return vm.runInNewContext(source, globals, { filename });
-}
-
-async function renderPattern(pattern, cps, cycles, sampleRate) {
-  const renderFn =
-    webaudio.renderPatternAudio
-    || webaudio.renderPattern
-    || webaudio.render;
-
-  if (typeof renderFn !== "function") {
-    throw new Error("No render function found in @strudel/webaudio");
+  // Monkey-patch Pattern prototype to stub browser-only visualization methods.
+  // These are no-ops in headless mode — they just return the pattern unchanged.
+  const Proto = core.Pattern?.prototype;
+  if (Proto) {
+    for (const method of ['_pianoroll', '_spiral', '_scope', '_draw', '_highlight']) {
+      if (!Proto[method]) {
+        Proto[method] = function () { return this; };
+      }
+    }
   }
 
-  return renderFn(pattern, cps, 0, cycles, sampleRate, 64, false, "render-output");
+  const result = vm.runInNewContext(source, globals, { filename });
+  // Attach extracted CPM so caller can use it
+  if (result && _cpm !== null) {
+    result._extractedBpm = _cpm;
+  }
+  return result;
 }
 
 async function main() {
@@ -186,51 +128,43 @@ async function main() {
     throw new Error(`Invalid bpm: ${bpmArg}`);
   }
 
+  const durationSec = (cycles * 4 * 60) / bpm;
+  console.error(`Rendering: ${inputPath} → ${outputPath}`);
+  console.error(`  Cycles: ${cycles}, BPM: ${bpm}, CPS: ${cps.toFixed(4)}, Duration: ${durationSec.toFixed(2)}s`);
+
+  // Step 1: Evaluate the pattern
   const source = readFileSync(inputPath, "utf8");
   const pattern = evaluatePattern(source, inputPath);
-  if (!pattern) {
-    throw new Error("Pattern evaluation returned no result. Ensure the final expression is your pattern.");
-  }
-
-  const durationSeconds = (cycles * 4 * 60) / bpm;
-  const frameLength = Math.max(1, Math.ceil(durationSeconds * SAMPLE_RATE));
-
-  const OfflineAudioContextCtor = await getOfflineAudioContextCtor();
-  if (!OfflineAudioContextCtor) {
+  if (!pattern || typeof pattern.queryArc !== "function") {
     throw new Error(
-      "OfflineAudioContext is unavailable in this Node runtime. Use Node 22+ with WebAudio support, or install a polyfill providing OfflineAudioContext."
+      "Pattern evaluation did not return a valid Strudel Pattern. " +
+      "Ensure the file's last expression is a pattern (e.g., stack(...) or note(...))."
     );
   }
 
-  if (typeof globalThis.window === "undefined") {
-    globalThis.window = globalThis;
-  }
-  if (typeof globalThis.self === "undefined") {
-    globalThis.self = globalThis;
-  }
-  if (typeof globalThis.OfflineAudioContext !== "function") {
-    globalThis.OfflineAudioContext = OfflineAudioContextCtor;
+  // Step 2: Query the pattern for haps (events)
+  const haps = queryPattern(pattern, 0, cycles);
+  console.error(`  Haps queried: ${haps.length} events`);
+
+  if (haps.length === 0) {
+    console.error("  Warning: No haps found. Output will be silence.");
   }
 
-  createOfflineContext(OfflineAudioContextCtor, frameLength, SAMPLE_RATE);
-
-  let rendered;
-  try {
-    rendered = await renderPattern(pattern, cps, cycles, SAMPLE_RATE);
-  } catch (error) {
-    console.error(`Strudel render failed, writing silence: ${error?.message ?? error}`);
+  // Step 3: Annotate haps with render timestamps (cycle time → seconds)
+  const secPerCycle = durationSec / cycles;
+  for (const hap of haps) {
+    if (hap?.whole) {
+      hap._renderStart = Number(hap.whole.begin) * secPerCycle;
+      hap._renderEnd = Number(hap.whole.end) * secPerCycle;
+    }
   }
 
-  let channels = channelsFromRenderResult(rendered, frameLength);
-  if (!channels) {
-    channels = [
-      new Float32Array(frameLength),
-      new Float32Array(frameLength),
-    ];
-  }
+  // Step 4: Render haps to audio via software synth
+  const [left, right] = renderHapsToAudio(haps, durationSec, SAMPLE_RATE);
 
-  writeWav(outputPath, channels, SAMPLE_RATE);
-  console.log(`Rendered ${inputPath} -> ${outputPath} (${cycles} cycles @ ${bpm} BPM)`);
+  // Step 5: Write WAV
+  writeWav(outputPath, [left, right], SAMPLE_RATE);
+  console.error(`  Output: ${outputPath} (${(left.length / SAMPLE_RATE).toFixed(2)}s, ${SAMPLE_RATE}Hz, stereo)`);
 }
 
 main().catch((error) => {

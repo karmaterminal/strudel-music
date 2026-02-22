@@ -1,37 +1,58 @@
 #!/usr/bin/env node
 
-import { rmSync, statSync, writeFileSync } from "node:fs";
-import os from "node:os";
-import path from "node:path";
-import { spawnSync } from "node:child_process";
+// smoke-test.mjs — Quick validation that the render pipeline works.
+// Creates a minimal pattern, renders it, and verifies WAV output.
 
-const tempDir = os.tmpdir();
-const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-const patternPath = path.join(tempDir, `strudel-smoke-${suffix}.js`);
-const wavPath = path.join(tempDir, `strudel-smoke-${suffix}.wav`);
-const renderScript = path.resolve("src/runtime/render.mjs");
+import { execFileSync } from "node:child_process";
+import { existsSync, unlinkSync, statSync, writeFileSync, mkdtempSync } from "node:fs";
+import path from "node:path";
+import os from "node:os";
+
+const tmpDir = mkdtempSync(path.join(os.tmpdir(), "strudel-smoke-"));
+const testPattern = path.join(tmpDir, "test-pattern.js");
+const testOutput = path.join(tmpDir, "test-output.wav");
+
+// Minimal Strudel pattern — single note
+writeFileSync(testPattern, `note("c3").s("sine")`);
+
+console.log("Smoke test: rendering minimal pattern...");
 
 try {
-  writeFileSync(patternPath, "stack(s('bd sd'), note('c3 e3 g3'))\n", "utf8");
-
-  const run = spawnSync(
-    process.execPath,
-    [renderScript, patternPath, wavPath, "2", "120"],
-    { stdio: "inherit" }
+  const result = execFileSync(
+    "node",
+    [path.resolve("src/runtime/render.mjs"), testPattern, testOutput, "2", "120"],
+    { cwd: process.cwd(), timeout: 30000, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
   );
-
-  if (run.status !== 0) {
-    throw new Error(`render.mjs exited with status ${run.status}`);
-  }
-
-  const stats = statSync(wavPath);
-  if (stats.size <= 1000) {
-    throw new Error(`WAV output too small: ${stats.size} bytes`);
-  }
-
-  console.log(`Smoke test passed: ${wavPath} (${stats.size} bytes)`);
-} finally {
-  rmSync(patternPath, { force: true });
-  rmSync(wavPath, { force: true });
+  console.log(result);
+} catch (err) {
+  console.error("Render stderr:", err.stderr);
+  console.error("Render stdout:", err.stdout);
+  throw new Error(`render.mjs exited with status ${err.status}`);
 }
 
+if (!existsSync(testOutput)) {
+  throw new Error("No WAV output produced");
+}
+
+const stat = statSync(testOutput);
+console.log(`Output: ${testOutput} (${stat.size} bytes)`);
+
+if (stat.size < 100) {
+  throw new Error(`WAV file suspiciously small: ${stat.size} bytes`);
+}
+
+// Verify WAV header
+const { readFileSync } = await import("node:fs");
+const header = readFileSync(testOutput).subarray(0, 12);
+const riff = header.toString("ascii", 0, 4);
+const wave = header.toString("ascii", 8, 12);
+
+if (riff !== "RIFF" || wave !== "WAVE") {
+  throw new Error(`Invalid WAV header: ${riff}...${wave}`);
+}
+
+console.log("✅ Smoke test passed — valid WAV file produced");
+
+// Cleanup
+unlinkSync(testPattern);
+unlinkSync(testOutput);

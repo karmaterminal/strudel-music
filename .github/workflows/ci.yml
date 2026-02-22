@@ -146,13 +146,11 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(git describe --tags --match 'v*' --always 2>/dev/null || echo "")
-          if [[ "$VERSION" =~ ^v ]]; then
-            VERSION="${VERSION#v}"
-          else
-            COUNT=$(git rev-list --count HEAD)
-            SHA=$(git rev-parse --short HEAD)
-            VERSION="0.${COUNT}.0-dev+${SHA}"
+          # Use package.json as the single source of truth for version
+          VERSION=$(node -p "require('./package.json').version")
+          if [ -z "$VERSION" ] || [ "$VERSION" = "undefined" ]; then
+            echo "❌ No version in package.json"
+            exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing version: $VERSION"

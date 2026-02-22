@@ -20,23 +20,50 @@ _add_from_url() {
   local TMP FILENAME
   TMP=$(mktemp -d)
   FILENAME=$(basename "$URL")
+  # Sanitize filename — strip path traversal chars
+  FILENAME="${FILENAME//\.\./}"
+  FILENAME="${FILENAME//\//}"
+  if [ -z "$FILENAME" ]; then
+    echo "❌ Invalid URL filename"
+    rm -rf "$TMP"
+    return 1
+  fi
   echo "Downloading $URL..."
   curl -fsSL "$URL" -o "$TMP/$FILENAME"
 
   case "$FILENAME" in
     *.zip)
       echo "Extracting ZIP..."
+      # Zip slip protection: extract to temp, then validate all paths
       unzip -q "$TMP/$FILENAME" -d "$TMP/extracted"
+      # Check for path traversal in extracted files
+      while IFS= read -r entry; do
+        RESOLVED=$(realpath -m "$TMP/extracted/$entry" 2>/dev/null)
+        if [[ "$RESOLVED" != "$TMP/extracted"* ]]; then
+          echo "❌ ZIP SLIP DETECTED: $entry escapes extraction directory. Aborting."
+          rm -rf "$TMP"
+          return 1
+        fi
+      done < <(unzip -l "$TMP/$FILENAME" 2>/dev/null | awk 'NR>3{print $NF}' | grep -v '^$' | head -1000)
       ;;
     *.tar.gz|*.tgz)
       echo "Extracting tar.gz..."
       mkdir -p "$TMP/extracted"
-      tar xzf "$TMP/$FILENAME" -C "$TMP/extracted"
+      # Tar automatically strips leading ../ but verify anyway
+      tar xzf "$TMP/$FILENAME" -C "$TMP/extracted" --no-same-owner 2>&1 | grep -i "refused\|absolute\|\.\./" && {
+        echo "❌ Archive contains suspicious paths. Aborting."
+        rm -rf "$TMP"
+        return 1
+      } || true
       ;;
     *.tar)
       echo "Extracting tar..."
       mkdir -p "$TMP/extracted"
-      tar xf "$TMP/$FILENAME" -C "$TMP/extracted"
+      tar xf "$TMP/$FILENAME" -C "$TMP/extracted" --no-same-owner 2>&1 | grep -i "refused\|absolute\|\.\./" && {
+        echo "❌ Archive contains suspicious paths. Aborting."
+        rm -rf "$TMP"
+        return 1
+      } || true
       ;;
     *.wav|*.WAV)
       local NAME="${FILENAME%.*}"
@@ -140,9 +167,21 @@ case "${1:-help}" in
       echo "Usage: $0 remove <pack-name>"
       exit 1
     fi
-    if [ -d "$SAMPLES_DIR/$NAME" ]; then
-      COUNT=$(find "$SAMPLES_DIR/$NAME" -name "*.wav" -o -name "*.WAV" | wc -l)
-      rm -rf "$SAMPLES_DIR/${NAME:?}"
+    # Path traversal protection — reject names with slashes, dots, or special chars
+    if [[ "$NAME" == */* ]] || [[ "$NAME" == ..* ]] || [[ "$NAME" == .* ]]; then
+      echo "❌ Invalid pack name: $NAME (no paths, dots, or slashes allowed)"
+      exit 1
+    fi
+    SAFE_PATH="$SAMPLES_DIR/$NAME"
+    # Verify resolved path is still under SAMPLES_DIR
+    RESOLVED=$(cd "$SAMPLES_DIR" 2>/dev/null && realpath -m "$NAME" 2>/dev/null)
+    if [[ "$RESOLVED" != "$SAMPLES_DIR/"* ]]; then
+      echo "❌ Path traversal detected: $NAME"
+      exit 1
+    fi
+    if [ -d "$SAFE_PATH" ]; then
+      COUNT=$(find "$SAFE_PATH" -name "*.wav" -o -name "*.WAV" | wc -l)
+      rm -rf "${SAFE_PATH:?}"
       echo "✅ Removed $NAME ($COUNT samples)"
     else
       echo "❌ Pack not found: $NAME"

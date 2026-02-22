@@ -160,6 +160,26 @@ let patternCode = readFileSync(input, 'utf8')
 // Strip visualization methods using balanced-paren scanner (fixes #4)
 patternCode = stripVizMethods(patternCode);
 
+// ── Security hardening: scrub sensitive globals before pattern eval ──
+// Patterns are JS evaluated via new Function() in the current process.
+// Remove access to environment variables and child_process to limit
+// damage from malicious patterns. This is NOT a sandbox — patterns can
+// still access fs, network, etc. For untrusted patterns, use a container.
+const _savedEnv = process.env;
+const _savedExec = process.execPath;
+process.env = Object.freeze({ NODE_ENV: 'production' });
+// Prevent require('child_process') by poisoning the module cache
+const _savedCpModule = await import('module').then(m => {
+  const orig = m.default._resolveFilename;
+  m.default._resolveFilename = function(request, ...args) {
+    if (request === 'child_process' || request === 'node:child_process') {
+      throw new Error('child_process is blocked during pattern evaluation');
+    }
+    return orig.call(this, request, ...args);
+  };
+  return orig;
+}).catch(() => null);
+
 let pattern;
 try {
   // Strudel patterns are typically: setcpm(...); stack(...).stuff()
@@ -204,7 +224,15 @@ try {
   }
 } catch (e) {
   console.error('  ❌ Pattern eval failed:', e.message);
+  process.env = _savedEnv;  // Restore before exit
   process.exit(1);
+} finally {
+  // Restore environment after pattern evaluation
+  process.env = _savedEnv;
+  // Restore module resolution
+  if (_savedCpModule) {
+    import('module').then(m => { m.default._resolveFilename = _savedCpModule; }).catch(() => {});
+  }
 }
 
 if (!pattern || typeof pattern.queryArc !== 'function') {

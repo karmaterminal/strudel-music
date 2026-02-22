@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Manage sample packs for strudel-music
+# Usage:
+#   samples-manage.sh list              — show installed packs
+#   samples-manage.sh download          — download/refresh dirt-samples (idempotent)
+#   samples-manage.sh add <url>         — download sample pack from URL
+#   samples-manage.sh add <path>        — copy/link local directory
+#   samples-manage.sh remove <name>     — remove a sample pack
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SAMPLES_DIR="$ROOT_DIR/samples"
+
+mkdir -p "$SAMPLES_DIR"
+
+_add_from_url() {
+  local URL="$1"
+  local TMP FILENAME
+  TMP=$(mktemp -d)
+  FILENAME=$(basename "$URL")
+  echo "Downloading $URL..."
+  curl -fsSL "$URL" -o "$TMP/$FILENAME"
+
+  case "$FILENAME" in
+    *.zip)
+      echo "Extracting ZIP..."
+      unzip -q "$TMP/$FILENAME" -d "$TMP/extracted"
+      ;;
+    *.tar.gz|*.tgz)
+      echo "Extracting tar.gz..."
+      mkdir -p "$TMP/extracted"
+      tar xzf "$TMP/$FILENAME" -C "$TMP/extracted"
+      ;;
+    *.tar)
+      echo "Extracting tar..."
+      mkdir -p "$TMP/extracted"
+      tar xf "$TMP/$FILENAME" -C "$TMP/extracted"
+      ;;
+    *.wav|*.WAV)
+      local NAME="${FILENAME%.*}"
+      mkdir -p "$SAMPLES_DIR/$NAME"
+      cp "$TMP/$FILENAME" "$SAMPLES_DIR/$NAME/"
+      echo "✅ Added single sample: $NAME (1 file)"
+      rm -rf "$TMP"
+      return 0
+      ;;
+    *)
+      echo "❌ Unsupported format: $FILENAME (expected .zip, .tar.gz, .tar, or .wav)"
+      rm -rf "$TMP"
+      return 1
+      ;;
+  esac
+
+  local FOUND=0
+  while IFS= read -r wav; do
+    local DIR NAME COUNT
+    DIR=$(dirname "$wav")
+    NAME=$(basename "$DIR")
+    if [ "$NAME" != "extracted" ]; then
+      mkdir -p "$SAMPLES_DIR/$NAME"
+      cp "$DIR"/*.wav "$DIR"/*.WAV "$SAMPLES_DIR/$NAME/" 2>/dev/null || true
+      COUNT=$(find "$SAMPLES_DIR/$NAME" -name "*.wav" -o -name "*.WAV" | wc -l)
+      echo "  ✅ $NAME: $COUNT samples"
+      FOUND=$((FOUND + 1))
+    fi
+  done < <(find "$TMP/extracted" -name "*.wav" -o -name "*.WAV" | head -500)
+
+  if [ "$FOUND" -eq 0 ]; then
+    local NAME="${FILENAME%.*}"
+    NAME="${NAME%.tar}"
+    mkdir -p "$SAMPLES_DIR/$NAME"
+    find "$TMP/extracted" \( -name "*.wav" -o -name "*.WAV" \) -exec cp {} "$SAMPLES_DIR/$NAME/" \;
+    local COUNT
+    COUNT=$(find "$SAMPLES_DIR/$NAME" -name "*.wav" -o -name "*.WAV" | wc -l)
+    if [ "$COUNT" -gt 0 ]; then
+      echo "✅ Added pack: $NAME ($COUNT samples)"
+    else
+      echo "❌ No WAV files found in download"
+    fi
+  fi
+
+  rm -rf "$TMP"
+}
+
+case "${1:-help}" in
+  list)
+    echo "=== Installed Sample Packs ==="
+    total=0
+    for d in "$SAMPLES_DIR"/*/; do
+      [ -d "$d" ] || continue
+      name=$(basename "$d")
+      count=$(find "$d" -maxdepth 1 -name "*.wav" -o -name "*.WAV" | wc -l)
+      echo "  $name: $count samples"
+      total=$((total + count))
+    done
+    echo ""
+    echo "Total: $total samples in $(ls -d "$SAMPLES_DIR"/*/ 2>/dev/null | wc -l) packs"
+    echo "Location: $SAMPLES_DIR"
+    ;;
+
+  download)
+    exec bash "$SCRIPT_DIR/download-samples.sh"
+    ;;
+
+  add)
+    SOURCE="${2:-}"
+    if [ -z "$SOURCE" ]; then
+      echo "Usage: $0 add <url-or-path>"
+      echo ""
+      echo "  URL:  Downloads and extracts (ZIP/tar.gz) into samples/"
+      echo "  Path: Copies directory into samples/"
+      exit 1
+    fi
+
+    if [[ "$SOURCE" == http* ]]; then
+      _add_from_url "$SOURCE"
+    elif [ -d "$SOURCE" ]; then
+      NAME=$(basename "$SOURCE")
+      echo "Copying $SOURCE → samples/$NAME/"
+      cp -r "$SOURCE" "$SAMPLES_DIR/$NAME"
+      COUNT=$(find "$SAMPLES_DIR/$NAME" -name "*.wav" -o -name "*.WAV" | wc -l)
+      echo "✅ Added $NAME: $COUNT samples"
+    elif [ -f "$SOURCE" ]; then
+      NAME="${SOURCE%.*}"
+      NAME=$(basename "$NAME")
+      mkdir -p "$SAMPLES_DIR/$NAME"
+      cp "$SOURCE" "$SAMPLES_DIR/$NAME/"
+      echo "✅ Added single sample: $NAME"
+    else
+      echo "❌ Not found: $SOURCE"
+      exit 1
+    fi
+    ;;
+
+  remove)
+    NAME="${2:-}"
+    if [ -z "$NAME" ]; then
+      echo "Usage: $0 remove <pack-name>"
+      exit 1
+    fi
+    if [ -d "$SAMPLES_DIR/$NAME" ]; then
+      COUNT=$(find "$SAMPLES_DIR/$NAME" -name "*.wav" -o -name "*.WAV" | wc -l)
+      rm -rf "$SAMPLES_DIR/${NAME:?}"
+      echo "✅ Removed $NAME ($COUNT samples)"
+    else
+      echo "❌ Pack not found: $NAME"
+      exit 1
+    fi
+    ;;
+
+  help|*)
+    echo "strudel-music sample manager"
+    echo ""
+    echo "Usage: $0 <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  list              Show installed sample packs"
+    echo "  download          Download/refresh default dirt-samples (idempotent)"
+    echo "  add <url>         Download and extract sample pack from URL (.zip/.tar.gz/.wav)"
+    echo "  add <path>        Copy local directory or file into samples/"
+    echo "  remove <name>     Remove a sample pack"
+    echo ""
+    echo "Sample packs are directories of WAV files in: $SAMPLES_DIR"
+    echo "Use them in patterns: s(\"<dir-name>\").n(0)"
+    ;;
+esac

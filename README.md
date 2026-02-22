@@ -77,7 +77,7 @@ Ships with 10 compositions across mood categories:
 | `tavern-respite` | peace | 72 | Warm and inviting, acoustic feel |
 | `discovery-xenos` | mystery | 78 | Whole-tone strangeness |
 | `underhive-dread` | tension | 65 | Industrial dread, sub-bass pressure |
-| `visual-warp-storm` | chaos | 130 | Audiovisual chaos pattern |
+| `agent-parameterized` | varies | varies | Template for agent-generated compositions |
 
 Render any of them:
 ```bash

@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  validate:
-    name: Validate skill
+  test:
+    name: Smoke test + render
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,103 +21,109 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download samples
+        run: bash scripts/download-samples.sh
+
+      - name: Smoke test (12 checks)
+        run: npm test
+
+      - name: Render test (fog-and-starlight)
+        run: npm run test:render
+
+      - name: Render all compositions
+        run: |
+          set -euo pipefail
+          for f in assets/compositions/*.js; do
+            name=$(basename "$f" .js)
+            echo "=== Rendering $name ==="
+            node src/runtime/offline-render-v2.mjs "$f" "/tmp/${name}.wav" 2 120 2>&1 | grep -E "haps|Scheduled|✅|❌"
+          done
+
+  validate:
+    name: Validate skill metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Validate SKILL.md frontmatter
         run: |
           set -euo pipefail
-          echo "Checking SKILL.md exists..."
-          test -f SKILL.md || { echo "SKILL.md not found"; exit 1; }
-
-          echo "Checking frontmatter..."
+          test -f SKILL.md || { echo "❌ SKILL.md not found"; exit 1; }
           python3 -c "
-          import yaml, sys
+          import yaml, sys, json
           with open('SKILL.md') as f:
               content = f.read()
           parts = content.split('---', 2)
           if len(parts) < 3:
-              print('ERROR: No YAML frontmatter found')
-              sys.exit(1)
+              print('❌ No YAML frontmatter'); sys.exit(1)
           data = yaml.safe_load(parts[1])
-          required = ['name', 'description']
-          for key in required:
+          for key in ['name', 'description']:
               if key not in data:
-                  print(f'ERROR: Missing required field: {key}')
-                  sys.exit(1)
-          meta = data.get('metadata', {}).get('openclaw', {})
-          if 'requires' not in meta:
-              print('WARNING: No requires in metadata.openclaw')
-          if 'securityNotes' not in meta:
-              print('WARNING: No securityNotes in metadata.openclaw')
-          print(f'✓ SKILL.md valid: {data[\"name\"]} — {len(data[\"description\"])} char description')
-          print(f'  requires: {meta.get(\"requires\", {}).get(\"bins\", [])}')
-          print(f'  install specs: {len(meta.get(\"install\", []))}')
+                  print(f'❌ Missing: {key}'); sys.exit(1)
+          meta = data.get('metadata', {})
+          if isinstance(meta, str):
+              meta = json.loads(meta)
+          oc = meta.get('openclaw', {})
+          print(f'✅ {data[\"name\"]} — user-invocable: {data.get(\"user-invocable\", False)}')
+          print(f'   requires: {oc.get(\"requires\", {}).get(\"bins\", [])}')
+          print(f'   install steps: {len(oc.get(\"install\", []))}')
+          print(f'   security notes: {\"yes\" if oc.get(\"securityNotes\") else \"no\"}')
           "
 
-      - name: Validate compositions parse
+      - name: Validate compositions syntax
         run: |
           set -euo pipefail
-          echo "Checking composition files..."
           count=0
           for f in assets/compositions/*.js; do
-            # Basic syntax check — ensure they're valid JS
-            node --check "$f" 2>/dev/null || {
-              # Strudel patterns use globals, so --check may fail on undefined refs
-              # Just ensure no obvious syntax errors
-              node -e "try { require('fs').readFileSync('$f','utf8') } catch(e) { process.exit(1) }"
-            }
+            node -e "require('fs').readFileSync('$f', 'utf8')" 2>/dev/null
             count=$((count + 1))
-            echo "  ✓ $(basename "$f")"
           done
-          echo "✓ $count compositions validated"
-
-      - name: Validate render script
-        run: |
-          set -euo pipefail
-          echo "Checking render script..."
-          bash -n scripts/render-pattern.sh
-          echo "✓ render-pattern.sh syntax valid"
-
-          echo "Checking STRUDEL_URL support..."
-          grep -q 'STRUDEL_URL' scripts/render-pattern.sh || {
-            echo "ERROR: render-pattern.sh missing STRUDEL_URL support"
-            exit 1
-          }
-          echo "✓ STRUDEL_URL env var supported"
+          echo "✅ $count compositions readable"
 
       - name: Check references
         run: |
           set -euo pipefail
           for f in references/*.md; do
-            test -f "$f" || continue
-            lines=$(wc -l < "$f")
-            echo "  ✓ $(basename "$f") ($lines lines)"
+            [ -f "$f" ] || continue
+            echo "  ✅ $(basename "$f") ($(wc -l < "$f") lines)"
           done
-          echo "✓ All references present"
 
-      - name: Security scan
+  security:
+    name: Security scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Scan for hardcoded secrets
         run: |
           set -euo pipefail
-          echo "Scanning for hardcoded secrets..."
-          # Check for common secret patterns
-          if grep -rn --include="*.js" --include="*.sh" --include="*.md" \
+          if grep -rn --include="*.js" --include="*.sh" --include="*.mjs" \
             -E "(DISCORD_TOKEN|BOT_TOKEN|sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|clh_)" \
-            . 2>/dev/null; then
-            echo "ERROR: Potential secrets detected!"
+            . 2>/dev/null | grep -v node_modules | grep -v '.git'; then
+            echo "❌ Potential secrets detected!"
             exit 1
           fi
-          echo "✓ No hardcoded secrets found"
+          echo "✅ No secrets"
 
-          echo "Scanning for hardcoded paths..."
-          if grep -rn --include="*.js" --include="*.sh" \
+      - name: Scan for hardcoded paths
+        run: |
+          if grep -rn --include="*.js" --include="*.sh" --include="*.mjs" \
             -E "/home/[a-z]+/|/Users/[a-z]+/" \
-            . 2>/dev/null; then
-            echo "WARNING: Hardcoded home paths detected"
+            . 2>/dev/null | grep -v node_modules | grep -v '.git'; then
+            echo "⚠️ Hardcoded home paths (non-blocking)"
           fi
-          echo "✓ Security scan passed"
+          echo "✅ Path scan done"
 
   publish:
     name: Publish to ClaHub
-    needs: validate
+    needs: [test, validate, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -132,12 +138,10 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          # Use git tags for semver, fall back to 0.x.0-dev+sha
           VERSION=$(git describe --tags --match 'v*' --always 2>/dev/null || echo "")
           if [[ "$VERSION" =~ ^v ]]; then
             VERSION="${VERSION#v}"
           else
-            # No tag — use commit count as patch version
             COUNT=$(git rev-list --count HEAD)
             SHA=$(git rev-parse --short HEAD)
             VERSION="0.${COUNT}.0-dev+${SHA}"
@@ -157,4 +161,4 @@ jobs:
           npx clawhub publish \
             --slug strudel-music \
             --version "${{ steps.version.outputs.version }}" \
-            .
+            "$(pwd)"

@@ -101,8 +101,53 @@ globalThis.setcps = (v) => { cpmValue = v * 60; };
 globalThis.samples = () => {};
 globalThis.hush = () => {};
 
-// Strip browser-only methods
-const vizStubs = ['_pianoroll', '_spiral', '_scope', '_draw'];
+// Browser-only methods to strip from patterns before headless evaluation
+const vizMethods = ['pianoroll', '_pianoroll', 'spiral', '_spiral', 'scope', '_scope', 'draw', '_draw'];
+
+/**
+ * Strip browser-only visualization methods using balanced-parenthesis scanning.
+ * Handles nested parens, multi-line args, and string literals correctly.
+ * e.g. `.pianoroll({ fold: 1, labels: true })` → removed
+ *
+ * Approach: find `.methodName(` then count balanced parens to find the close.
+ * This is more reliable than regex for nested/multi-line args (fixes #4).
+ */
+function stripVizMethods(code) {
+  for (const method of vizMethods) {
+    // Match .method( or ._method( — we need to find each occurrence and remove it
+    const pattern = new RegExp(`\\.(${method})\\s*\\(`, 'g');
+    let match;
+    while ((match = pattern.exec(code)) !== null) {
+      const dotStart = match.index; // position of the '.'
+      const parenStart = code.indexOf('(', dotStart + method.length + 1);
+      if (parenStart === -1) continue;
+
+      // Scan for balanced close paren, respecting strings
+      let depth = 1;
+      let i = parenStart + 1;
+      let inStr = null; // null, "'", '"', '`'
+      while (i < code.length && depth > 0) {
+        const ch = code[i];
+        if (inStr) {
+          if (ch === '\\') { i += 2; continue; } // skip escaped chars
+          if (ch === inStr) inStr = null;
+        } else {
+          if (ch === "'" || ch === '"' || ch === '`') inStr = ch;
+          else if (ch === '(') depth++;
+          else if (ch === ')') depth--;
+        }
+        i++;
+      }
+      if (depth === 0) {
+        // Remove from dot to closing paren (inclusive)
+        code = code.slice(0, dotStart) + code.slice(i);
+        // Reset regex since string changed
+        pattern.lastIndex = dotStart;
+      }
+    }
+  }
+  return code;
+}
 
 console.log('  ✅ Strudel loaded');
 
@@ -112,20 +157,8 @@ let patternCode = readFileSync(input, 'utf8')
   .replace(/^\/\/ @\w+.*/gm, '')
   .trim();
 
-// Strip visualization methods that don't exist in headless
-// These can span multiple lines with complex args
-for (const viz of vizStubs) {
-  // Remove ._pianoroll({...}) including multi-line
-  const re = new RegExp(`\\._?${viz.replace('_', '')}\\s*\\([\\s\\S]*?\\)`, 'g');
-  patternCode = patternCode.replace(re, '');
-}
-// Also strip the specific pattern: )._pianoroll({...multiline...})
-patternCode = patternCode.replace(/\)\s*\._pianoroll\s*\(\{[\s\S]*?\}\)/g, ')');
-patternCode = patternCode.replace(/\)\s*\._spiral\s*\(\{[\s\S]*?\}\)/g, ')');
-patternCode = patternCode.replace(/\)\s*\._scope\s*\(\{[\s\S]*?\}\)/g, ')');
-patternCode = patternCode.replace(/\._pianoroll\s*\(\{[\s\S]*?\}\)/g, '');
-patternCode = patternCode.replace(/\._spiral\s*\(\{[\s\S]*?\}\)/g, '');
-patternCode = patternCode.replace(/\._scope\s*\(\{[\s\S]*?\}\)/g, '');
+// Strip visualization methods using balanced-paren scanner (fixes #4)
+patternCode = stripVizMethods(patternCode);
 
 let pattern;
 try {

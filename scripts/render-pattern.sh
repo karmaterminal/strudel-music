@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# render-pattern.sh — Render a Strudel pattern to WAV (local by default)
+# render-pattern.sh — Render a Strudel pattern to WAV
 #
 # Usage: ./render-pattern.sh [--local|--browser] <input.js> [output.wav] [cycles] [bpm]
 #
 # Default mode:
-#   --local   Uses node src/runtime/render.mjs (default)
-#   --browser Uses headless browser rendering via Puppeteer
+#   --local   Uses node src/runtime/offline-render-v2.mjs (default, RECOMMENDED)
+#   --browser DEPRECATED — headless browser rendering via Puppeteer (not used in production)
 #
 # Requires:
 #   Local: node (v22+ recommended for OfflineAudioContext)
-#   Browser: node (v18+), puppeteer (npm install -g puppeteer)
+#   Browser (deprecated): node (v18+), puppeteer (npm install -g puppeteer)
 # Optional: ffmpeg (for format conversion)
 #
 # Environment variables:

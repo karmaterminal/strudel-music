@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * Capture audio from strudel.cc by intercepting Web Audio output.
+ * DEPRECATED: Legacy browser-based renderer. Not used in production.
+ * Use offline-render-v2.mjs instead (node-web-audio-api, no browser needed).
+ *
+ * Original: Capture audio from strudel.cc by intercepting Web Audio output.
  * 
  * Approach: Monkey-patch AudioContext.destination to capture PCM,
  * then evaluate the pattern and record for N seconds.

@@ -8,8 +8,9 @@
  * Usage: node src/runtime/offline-render-v2.mjs <input.js> [output.wav] [cycles] [bpm]
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
 import { createRequire } from 'module';
+import path from 'path';
 
 const require = createRequire(import.meta.url);
 
@@ -192,6 +193,77 @@ if (haps.length === 0) {
   console.error('  ⚠️ No haps. Output will be silence.');
 }
 
+// ── Load samples ──
+const SAMPLES_DIR = path.resolve(
+  import.meta.dirname || path.dirname(new URL(import.meta.url).pathname),
+  '../../samples'
+);
+const sampleBuffers = new Map(); // "bd:0" → AudioBuffer
+
+function loadWavToBuffer(filePath, ctx) {
+  const raw = readFileSync(filePath);
+  // Parse WAV header
+  const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+  if (raw.toString('ascii', 0, 4) !== 'RIFF') return null;
+  
+  const channels = view.getUint16(22, true);
+  const sr = view.getUint32(24, true);
+  const bitsPerSample = view.getUint16(34, true);
+  
+  // Find data chunk
+  let dataOffset = 12;
+  while (dataOffset < raw.length - 8) {
+    const chunkId = raw.toString('ascii', dataOffset, dataOffset + 4);
+    const chunkSize = view.getUint32(dataOffset + 4, true);
+    if (chunkId === 'data') {
+      dataOffset += 8;
+      const numSamples = chunkSize / (bitsPerSample / 8) / channels;
+      const audioBuffer = ctx.createBuffer(channels, numSamples, sr);
+      
+      for (let ch = 0; ch < channels; ch++) {
+        const channelData = audioBuffer.getChannelData(ch);
+        for (let i = 0; i < numSamples; i++) {
+          const byteIndex = dataOffset + (i * channels + ch) * (bitsPerSample / 8);
+          if (bitsPerSample === 16) {
+            channelData[i] = view.getInt16(byteIndex, true) / 32768;
+          } else if (bitsPerSample === 24) {
+            const s = (view.getUint8(byteIndex) | (view.getUint8(byteIndex+1) << 8) | (view.getInt8(byteIndex+2) << 16));
+            channelData[i] = s / 8388608;
+          }
+        }
+      }
+      return audioBuffer;
+    }
+    dataOffset += 8 + chunkSize;
+  }
+  return null;
+}
+
+if (existsSync(SAMPLES_DIR)) {
+  console.log('Loading samples...');
+  let sampleCount = 0;
+  // Preload a temporary OfflineAudioContext for buffer creation
+  const tmpCtx = new nwa.OfflineAudioContext(2, 1, sampleRate);
+  
+  for (const dir of readdirSync(SAMPLES_DIR)) {
+    const dirPath = path.join(SAMPLES_DIR, dir);
+    try {
+      const files = readdirSync(dirPath).filter(f => f.endsWith('.wav') || f.endsWith('.WAV')).sort();
+      for (let i = 0; i < files.length; i++) {
+        const buf = loadWavToBuffer(path.join(dirPath, files[i]), tmpCtx);
+        if (buf) {
+          sampleBuffers.set(`${dir}:${i}`, buf);
+          if (i === 0) sampleBuffers.set(dir, buf); // default (index 0)
+          sampleCount++;
+        }
+      }
+    } catch { /* not a directory */ }
+  }
+  console.log(`  ✅ ${sampleCount} samples loaded from ${sampleBuffers.size} entries`);
+} else {
+  console.log('  ⚠️ No samples directory found. Sample-based sounds will be silent.');
+}
+
 // ── Render to OfflineAudioContext ──
 console.log('Rendering...');
 const offCtx = new nwa.OfflineAudioContext(2, actualSamples, sampleRate);
@@ -215,74 +287,111 @@ for (const hap of haps) {
   const v = hap.value;
   if (typeof v !== 'object' || v === null) continue;
 
-  // Resolve note → frequency
-  let freq = null;
-  if (v.freq) freq = v.freq;
-  else if (v.note) freq = noteToFreq(v.note);
-  else if (v.n !== undefined) freq = 440; // fallback for scale degrees
-
-  // Skip sample-only sounds with no freq
-  const sampleNames = new Set(['bd','sd','hh','oh','cp','cb','mt','lt','ht','cr','ride','rim','tom','tabla','metal']);
-  if (!freq && sampleNames.has(v.s)) continue;
-  if (!freq) freq = 440;
-
   const gain = Math.min(v.gain ?? 0.3, 1.0);
-  const wave = v.s || 'triangle';
+  const sound = v.s || '';
+  const nVal = v.n !== undefined ? parseInt(v.n) : 0;
   const lpf = v.lpf ?? v.cutoff ?? 6000;
   const attack = v.attack ?? 0.005;
   const decay = v.decay ?? 0.1;
   const sustain = v.sustain ?? 0.7;
   const release = v.release ?? 0.3;
   const pan = v.pan ?? 0.5;
-  const room = v.room ?? 0;
 
+  // Check if this is a sample-based sound
+  const sampleKey = `${sound}:${nVal}`;
+  const sampleBuf = sampleBuffers.get(sampleKey) || sampleBuffers.get(sound);
+  
   const waveMap = {
     sine: 'sine', triangle: 'triangle', square: 'square',
     sawtooth: 'sawtooth', saw: 'sawtooth', tri: 'triangle',
     piano: 'triangle', bass: 'sawtooth', pluck: 'triangle',
     supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
   };
-  const oscType = waveMap[wave] || 'triangle';
+  const isSynthSound = waveMap[sound] !== undefined;
+
+  // Resolve note → frequency (for synth sounds)
+  let freq = null;
+  if (v.freq) freq = v.freq;
+  else if (v.note) freq = noteToFreq(v.note);
+  else if (v.n !== undefined && isSynthSound) freq = 440;
+
+  // Skip if neither sample nor synth
+  if (!sampleBuf && !freq && !isSynthSound) {
+    if (!freq) freq = 440; // last resort fallback
+  }
 
   try {
-    const osc = offCtx.createOscillator();
-    osc.type = oscType;
-    osc.frequency.setValueAtTime(freq, hapStart);
-
-    // Slight detune for richness on saw/square
-    if (oscType === 'sawtooth' || oscType === 'square') {
-      osc.detune.setValueAtTime(Math.random() * 10 - 5, hapStart);
-    }
-
-    // ADSR
-    const gn = offCtx.createGain();
     const endTime = hapStart + hapDur;
-    gn.gain.setValueAtTime(0, hapStart);
-    gn.gain.linearRampToValueAtTime(gain, Math.min(hapStart + attack, endTime));
-    gn.gain.linearRampToValueAtTime(gain * sustain, Math.min(hapStart + attack + decay, endTime));
-    if (endTime - release > hapStart + attack + decay) {
-      gn.gain.setValueAtTime(gain * sustain, endTime - release);
-    }
-    gn.gain.linearRampToValueAtTime(0, endTime + 0.01);
-
+    
+    // Gain node
+    const gn = offCtx.createGain();
+    
     // Filter
     const flt = offCtx.createBiquadFilter();
     flt.type = 'lowpass';
     flt.frequency.setValueAtTime(Math.min(lpf, sampleRate / 2 - 100), hapStart);
     flt.Q.setValueAtTime(1.5, hapStart);
-
+    
     // Panner
     const pnr = offCtx.createStereoPanner();
     pnr.pan.setValueAtTime((pan - 0.5) * 2, hapStart);
 
-    // Chain
-    osc.connect(flt);
-    flt.connect(gn);
-    gn.connect(pnr);
-    pnr.connect(compressor);
+    if (sampleBuf) {
+      // ── Sample playback ──
+      const src = offCtx.createBufferSource();
+      src.buffer = sampleBuf;
+      
+      // Apply gain with short fade
+      gn.gain.setValueAtTime(gain, hapStart);
+      gn.gain.setValueAtTime(gain, Math.min(endTime, hapStart + sampleBuf.duration));
+      gn.gain.linearRampToValueAtTime(0, Math.min(endTime + 0.02, hapStart + sampleBuf.duration + 0.02));
+      
+      // Apply playback rate if note specified (pitch shifting)
+      if (v.note) {
+        const semitones = noteToSemitones(v.note);
+        if (semitones !== 0) src.playbackRate.setValueAtTime(Math.pow(2, semitones / 12), hapStart);
+      }
+      if (v.speed) src.playbackRate.setValueAtTime(Math.abs(v.speed), hapStart);
+      
+      src.connect(flt);
+      flt.connect(gn);
+      gn.connect(pnr);
+      pnr.connect(compressor);
+      
+      src.start(hapStart);
+      src.stop(endTime + 0.05);
+    } else {
+      // ── Oscillator synth ──
+      if (!freq) freq = 440;
+      const oscType = waveMap[sound] || 'triangle';
+      
+      const osc = offCtx.createOscillator();
+      osc.type = oscType;
+      osc.frequency.setValueAtTime(freq, hapStart);
 
-    osc.start(hapStart);
-    osc.stop(endTime + 0.05);
+      // Slight detune for richness on saw/square
+      if (oscType === 'sawtooth' || oscType === 'square') {
+        osc.detune.setValueAtTime(Math.random() * 10 - 5, hapStart);
+      }
+
+      // ADSR envelope
+      gn.gain.setValueAtTime(0, hapStart);
+      gn.gain.linearRampToValueAtTime(gain, Math.min(hapStart + attack, endTime));
+      gn.gain.linearRampToValueAtTime(gain * sustain, Math.min(hapStart + attack + decay, endTime));
+      if (endTime - release > hapStart + attack + decay) {
+        gn.gain.setValueAtTime(gain * sustain, endTime - release);
+      }
+      gn.gain.linearRampToValueAtTime(0, endTime + 0.01);
+
+      osc.connect(flt);
+      flt.connect(gn);
+      gn.connect(pnr);
+      pnr.connect(compressor);
+
+      osc.start(hapStart);
+      osc.stop(endTime + 0.05);
+    }
+    
     scheduled++;
   } catch (e) {
     // Skip problematic haps
@@ -315,6 +424,19 @@ console.log(`✅ ${output} (${(wav.length / 1024 / 1024).toFixed(1)}MB)`);
 process.exit(0);
 
 // ── Helpers ──
+function noteToSemitones(note) {
+  // Returns semitone offset from C4 (for sample pitch shifting)
+  if (typeof note === 'number') return note - 60; // MIDI
+  const m = String(note).match(/^([a-gA-G])(#|b|s)?(\d+)?$/);
+  if (!m) return 0;
+  const map = { c:0, d:2, e:4, f:5, g:7, a:9, b:11 };
+  let semi = map[m[1].toLowerCase()] ?? 0;
+  if (m[2] === '#' || m[2] === 's') semi++;
+  if (m[2] === 'b') semi--;
+  const oct = parseInt(m[3] ?? '4');
+  return semi + (oct * 12) - 60; // offset from C4
+}
+
 function noteToFreq(note) {
   if (typeof note === 'number') return note;
   const m = String(note).match(/^([a-gA-G])(#|b|s)?(\d+)?$/);

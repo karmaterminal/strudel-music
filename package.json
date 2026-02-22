@@ -5,13 +5,16 @@
   "scripts": {
     "setup": "npm install && bash scripts/download-samples.sh",
     "render": "node src/runtime/offline-render-v2.mjs",
-    "play": "node scripts/vc-play.mjs",
+    "play": "bash scripts/dispatch.sh play",
     "test": "node src/runtime/smoke-test.mjs",
-    "test:render": "node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js /tmp/strudel-test.wav 2 72 && echo \u2705 Render OK",
+    "test:render": "node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js /tmp/strudel-test.wav 2 72 && echo ✅ Render OK",
     "download-samples": "bash scripts/download-samples.sh",
     "samples": "bash scripts/samples-manage.sh",
     "samples:list": "bash scripts/samples-manage.sh list",
-    "samples:add": "bash scripts/samples-manage.sh add"
+    "samples:add": "bash scripts/samples-manage.sh add",
+    "dispatch": "bash scripts/dispatch.sh",
+    "list": "bash scripts/dispatch.sh list",
+    "concert": "bash scripts/dispatch.sh concert"
   },
   "dependencies": {
     "@discordjs/voice": "^0.19.0",

@@ -91,6 +91,8 @@ _concert() {
     echo "▶ Now playing: $name"
     _play "$name"
     echo "✅ Finished: $name"
+    # Brief pause between tracks for VC settling
+    sleep 2
   done
   echo ""
   echo "🎵 Concert complete!"

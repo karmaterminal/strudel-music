@@ -149,6 +149,9 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing version: $VERSION"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Authenticate with ClaHub
         env:
           CLAWHUB_CLI_TOKEN: ${{ secrets.CLAWHUB_CLI_TOKEN }}

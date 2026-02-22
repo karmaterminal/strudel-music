@@ -316,6 +316,7 @@ const waveMap = {
   supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
 };
 
+const warnedSounds = new Set(); // track warned sound names to avoid spam
 let scheduled = 0;
 for (const hap of haps) {
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
@@ -330,7 +331,7 @@ for (const hap of haps) {
 
   const gain = Math.min(v.gain ?? 0.3, 1.0);
   const sound = v.s || '';
-  const nVal = v.n !== undefined ? parseInt(v.n) : 0;
+  const nVal = v.n !== undefined ? Math.round(Number(v.n)) : 0;
   const lpf = v.lpf ?? v.cutoff ?? 6000;
   const attack = v.attack ?? 0.005;
   const decay = v.decay ?? 0.1;
@@ -352,8 +353,14 @@ for (const hap of haps) {
   // Currently falls through to 440Hz for unresolved scale degrees
   else if (v.n !== undefined && isSynthSound) freq = 440;
 
-  // Skip if neither sample nor synth
-  if (!sampleBuf && !freq && !isSynthSound) {
+  // Skip if neither sample nor synth — warn on unrecognized sounds
+  if (!sampleBuf && !isSynthSound && sound) {
+    if (!warnedSounds.has(sound)) {
+      console.warn(`  ⚠️ Unrecognized sound "${sound}" — falling back to 440Hz synth`);
+      warnedSounds.add(sound);
+    }
+    if (!freq) freq = 440;
+  } else if (!sampleBuf && !freq && !isSynthSound) {
     if (!freq) freq = 440; // last resort fallback
   }
 

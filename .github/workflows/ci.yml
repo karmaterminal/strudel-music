@@ -145,13 +145,12 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing version: $VERSION"
 
-      - name: Configure ClaHub auth
+      - name: Authenticate with ClaHub
         env:
           CLAWHUB_CLI_TOKEN: ${{ secrets.CLAWHUB_CLI_TOKEN }}
         run: |
-          mkdir -p ~/.config/clawhub
-          echo "{\"registry\":\"https://clawhub.ai\",\"token\":\"${CLAWHUB_CLI_TOKEN}\"}" \
-            > ~/.config/clawhub/config.json
+          npx clawhub login --token "$CLAWHUB_CLI_TOKEN" --no-browser
+          npx clawhub whoami
 
       - name: Publish to ClaHub
         run: |

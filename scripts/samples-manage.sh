@@ -13,11 +13,65 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SAMPLES_DIR="$ROOT_DIR/samples"
 
+# Configurable download limits
+STRUDEL_MAX_DOWNLOAD_MB="${STRUDEL_MAX_DOWNLOAD_MB:-10240}"  # 10GB default
+STRUDEL_ALLOWED_HOSTS="${STRUDEL_ALLOWED_HOSTS:-}"           # empty = allow all
+
 mkdir -p "$SAMPLES_DIR"
+
+_check_allowed_host() {
+  local URL="$1"
+  [ -z "$STRUDEL_ALLOWED_HOSTS" ] && return 0  # no allowlist = allow all
+  local HOST
+  HOST=$(echo "$URL" | sed -E 's|^https?://([^/:]+).*|\1|')
+  IFS=',' read -ra HOSTS <<< "$STRUDEL_ALLOWED_HOSTS"
+  for allowed in "${HOSTS[@]}"; do
+    allowed=$(echo "$allowed" | xargs)  # trim whitespace
+    [ "$HOST" = "$allowed" ] && return 0
+  done
+  echo "❌ Host '$HOST' not in STRUDEL_ALLOWED_HOSTS ($STRUDEL_ALLOWED_HOSTS)"
+  return 1
+}
+
+_check_download_size() {
+  local URL="$1"
+  local MAX_BYTES=$(( STRUDEL_MAX_DOWNLOAD_MB * 1024 * 1024 ))
+  local CONTENT_LENGTH
+  CONTENT_LENGTH=$(curl -fsSLI "$URL" 2>/dev/null | grep -i '^content-length:' | tail -1 | tr -d '[:space:]' | cut -d: -f2)
+  if [ -n "$CONTENT_LENGTH" ] && [ "$CONTENT_LENGTH" -gt "$MAX_BYTES" ] 2>/dev/null; then
+    echo "❌ Download too large: $(( CONTENT_LENGTH / 1024 / 1024 ))MB exceeds ${STRUDEL_MAX_DOWNLOAD_MB}MB limit"
+    echo "   Set STRUDEL_MAX_DOWNLOAD_MB to increase (current: ${STRUDEL_MAX_DOWNLOAD_MB})"
+    return 1
+  fi
+  return 0
+}
+
+_validate_archive_mime() {
+  local FILE="$1"
+  local MIME
+  MIME=$(file --mime-type -b "$FILE" 2>/dev/null || echo "unknown")
+  case "$MIME" in
+    application/zip|application/x-tar|application/gzip|application/x-gzip|audio/x-wav|audio/wav)
+      return 0 ;;
+    application/octet-stream)
+      # Fallback: check extension for common false positives
+      return 0 ;;
+    *)
+      echo "❌ Unexpected MIME type: $MIME (expected archive or audio)"
+      return 1 ;;
+  esac
+}
 
 _add_from_url() {
   local URL="$1"
   local TMP FILENAME
+
+  # Host allowlist check
+  _check_allowed_host "$URL" || return 1
+
+  # Pre-flight size check
+  _check_download_size "$URL" || return 1
+
   TMP=$(mktemp -d)
   FILENAME=$(basename "$URL")
   # Sanitize filename — strip path traversal chars
@@ -28,8 +82,19 @@ _add_from_url() {
     rm -rf "$TMP"
     return 1
   fi
-  echo "Downloading $URL..."
-  curl -fsSL "$URL" -o "$TMP/$FILENAME"
+  local MAX_BYTES=$(( STRUDEL_MAX_DOWNLOAD_MB * 1024 * 1024 ))
+  echo "Downloading $URL (limit: ${STRUDEL_MAX_DOWNLOAD_MB}MB)..."
+  curl -fsSL --max-filesize "$MAX_BYTES" "$URL" -o "$TMP/$FILENAME" || {
+    echo "❌ Download failed or exceeded ${STRUDEL_MAX_DOWNLOAD_MB}MB size limit"
+    rm -rf "$TMP"
+    return 1
+  }
+
+  # MIME type validation
+  _validate_archive_mime "$TMP/$FILENAME" || {
+    rm -rf "$TMP"
+    return 1
+  }
 
   case "$FILENAME" in
     *.zip)

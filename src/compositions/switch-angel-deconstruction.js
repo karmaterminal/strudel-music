@@ -12,30 +12,18 @@ stack(
     .s("sawtooth")
     .lpf(600)
     .gain(0.35)
-    .room(0.3),
+    .decay(0.4)
+    .sustain(0.3)
+    .release(0.15),
 
-  // Kick drum — oscillator synth (sub-200Hz band onsets)
-  // Using sine wave pitch drop to simulate kick
-  note("<~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [g1,g1] ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [g1,g1] ~ ~ ~ ~ ~ ~ ~ g1 ~ ~ ~ ~ ~ ~ ~ ~ g1 ~ ~ ~ ~ g1 g1 ~>")
-    .s("sine")
-    .lpf(200)
-    .gain(0.5)
-    .decay(0.15),
+  // Drums — real samples from spectral band split extraction
+  // kick (sub-200Hz), snare (200-6kHz), hat (6kHz+)
+  s("<~ [sd,hh] hh hh ~ [sd,hh] hh ~ hh [sd,hh] [sd,hh] [sd,hh] [sd,hh] hh ~ ~ ~ ~ ~ ~ hh ~ ~ ~ ~ ~ ~ [sd,hh] hh hh ~ hh ~ ~ [sd,hh] ~ ~ [sd,hh] hh hh [sd,hh] ~ [sd,hh] ~ hh ~ ~ [sd,hh] ~ ~ ~ hh ~ ~ ~ hh ~ ~ sd ~ ~ ~ hh hh>")
+    .gain(0.5),
 
-  // Snare — noise-like short burst via high-freq triangle
-  note("<~ d5 ~ ~ ~ d5 ~ ~ ~ [d5,d5] d5 d5 [d5,d5] ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ d5 ~ ~ ~ ~ ~ ~ d5 ~ ~ d5 ~ ~ [d5,d5] ~ [d5,d5] ~ ~ ~ ~ [d5,d5] ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~>")
-    .s("triangle")
-    .lpf(8000)
-    .hpf(2000)
-    .gain(0.15)
-    .decay(0.08),
-
-  // Hi-hat — high freq sine bursts
-  note("<~ d6 d6 d6 ~ d6 d6 ~ d6 d6 d6 d6 d6 d6 ~ ~ ~ ~ ~ ~ d6 ~ ~ ~ ~ ~ ~ d6 d6 d6 ~ d6 ~ ~ d6 ~ ~ d6 d6 d6 d6 ~ d6 ~ d6 ~ ~ d6 ~ ~ ~ d6 ~ ~ ~ d6 ~ ~ ~ ~ ~ d6 d6>")
-    .s("triangle")
-    .hpf(6000)
-    .gain(0.08)
-    .decay(0.03),
+  // Kick pattern — extracted sub-200Hz onsets
+  s("<~ ~ ~ ~ ~ ~ ~ ~ ~ ~ bd ~ bd ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ bd ~ bd ~ ~ ~ ~ bd ~ ~ bd ~ ~ bd ~ bd ~ ~ ~ ~ bd ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~>")
+    .gain(0.6),
 
   // Chord scaffold — from chromagram analysis of synth stem
   // Gm → Bb → Eb → F (i → III → VI → VII in G natural minor)
@@ -43,13 +31,16 @@ stack(
     .s("triangle")
     .lpf(1800)
     .gain(0.15)
-    .room(0.5)
-    .delay(0.2),
+    .decay(0.8)
+    .sustain(0.4)
+    .release(0.3),
 
   // Synth leads — extracted via pYIN from "other" stem
   note("<as3 as3 ~ ~ ~ ~ d4 ~ ~ ~ ~ ~ ~ d4 ~ ~ ~ ~ ~ ~ d3 ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ d3 ~ ~ ~ d3 d3 ~ ~ ~ g2 ~ ~ d3 ~ ~ ~ ~ g2 g2 ~ g2 d2 ~ ~ ~ ~ b1 ~ ~ b1 b1 b1 ~>")
     .s("triangle")
     .lpf(2000)
     .gain(0.2)
-    .room(0.4)
+    .decay(0.5)
+    .sustain(0.3)
+    .release(0.2)
 )

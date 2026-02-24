@@ -12,7 +12,13 @@ import vm from "node:vm";
 import * as core from "@strudel/core";
 import * as mini from "@strudel/mini";
 import * as tonal from "@strudel/tonal";
-import { queryPattern, renderHapsToAudio, noteToFreq } from "./synth.mjs";
+import { queryPattern, renderHapsToAudio, noteToFreq, loadSamples } from "./synth.mjs";
+
+// Critical: register mini notation as the string parser so s("bd sd hh")
+// produces separate haps instead of one hap with the literal string.
+if (mini.mini && core.setStringParser) {
+  core.setStringParser(mini.mini);
+}
 
 const SAMPLE_RATE = 44100;
 
@@ -131,6 +137,13 @@ async function main() {
   const durationSec = (cycles * 4 * 60) / bpm;
   console.error(`Rendering: ${inputPath} → ${outputPath}`);
   console.error(`  Cycles: ${cycles}, BPM: ${bpm}, CPS: ${cps.toFixed(4)}, Duration: ${durationSec.toFixed(2)}s`);
+
+  // Step 0: Load samples from the samples/ directory
+  // Try: relative to script (for compositions in src/compositions/), then relative to cwd
+  const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+  const rootDir = path.resolve(scriptDir, '..', '..');
+  const samplesDir = path.resolve(rootDir, 'samples');
+  loadSamples(samplesDir);
 
   // Step 1: Evaluate the pattern
   const source = readFileSync(inputPath, "utf8");

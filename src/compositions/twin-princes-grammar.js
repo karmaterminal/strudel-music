@@ -1,5 +1,5 @@
-// New Track — Grammar-extracted composition v2
-// DNA: 77 BPM, G major, density-driven architecture
+// Twin Princes (Dark Souls 3 OST) — Grammar-extracted composition
+// DNA: 77 BPM, G major, density-driven architecture (Motoi Sakuraba)
 // Two chords (G/C), accumulating layers, bass+vocals escalate
 // Through-composed: 0% bar repetition
 

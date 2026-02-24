@@ -16,17 +16,15 @@ Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired
 
 ### Audio Deconstruction
 
-```
-/strudel deconstruct <audio file>
-```
-
-→ Splits any track into stems (vocals, drums, bass, synths) → extracts MIDI → analyzes the generative grammar (scale, density, rhythm probability, melodic motion) → outputs a Strudel program that produces **similar but new** music from the same statistical DNA.
+Given any audio file, the deconstruction pipeline splits it into stems, extracts MIDI, analyzes the generative grammar (scale, density, rhythm probability, melodic motion), and outputs a Strudel program that produces **similar but new** music from the same statistical DNA.
 
 ```
 MP3 → Demucs (stem separation) → librosa (MIDI extraction) → grammar analysis → Strudel composition
 ```
 
 This isn't transcription — it's **pattern extraction**. The output is a generative program, not a note sequence. Feed it a 4-minute track and get a Strudel program that creates music with the same character forever.
+
+> **Note:** The deconstruction pipeline currently requires manual setup (Python with Demucs + librosa). A `/strudel deconstruct` command is planned.
 
 ## Quick Start
 
@@ -123,6 +121,7 @@ Ships with 15 original compositions and 4 audio deconstructions:
 | `switch-angel-full` | Switch Angel (4:19) | 157 | Hand-assembled from MIDI extraction |
 | `switch-angel-grammar` | Switch Angel (4:19) | 157 | Grammar extraction (generative) |
 | `switch-angel-remix` | Switch Angel (4:19) | 140 | Remix — inverted DNA (kick-forward, descending bass) |
+| `switch-angel-clone` | Switch Angel (4:19) | 157 | Clone — grammar-extracted faithful reproduction |
 
 Render any of them:
 ```bash

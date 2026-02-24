@@ -122,6 +122,11 @@ Ships with 15 original compositions and 4 audio deconstructions:
 | `switch-angel-grammar` | Switch Angel (4:19) | 157 | Grammar extraction (generative) |
 | `switch-angel-remix` | Switch Angel (4:19) | 140 | Remix — inverted DNA (kick-forward, descending bass) |
 | `switch-angel-clone` | Switch Angel (4:19) | 157 | Clone — grammar-extracted faithful reproduction |
+| `suo-gan` | Suo Gân (Welsh lullaby) | 65 | Oscillator composition from MIDI extraction |
+| `suo-gan-vocal` | Suo Gân (Welsh lullaby) | 65 | Vocal sample playback — Demucs-isolated phrases |
+| `twin-princes-grammar` | Twin Princes (Dark Souls 3) | 77 | Grammar extraction — density-driven, two-chord field |
+| `greensleeves` | Greensleeves (lute arr.) | 53 | Hybrid — known melody + extracted dynamics (10.4 LU) |
+| `greensleeves-lute` | Greensleeves (lute arr.) | 80 | Sample-based — 71 two-bar lute slices (17.7 LU) |
 
 Render any of them:
 ```bash

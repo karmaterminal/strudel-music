@@ -2,9 +2,9 @@
 
 # 🎵 Strudel Music
 
-**Compose, render, and stream music using code.** An OpenClaw skill that turns natural language prompts into live audio — offline, headless, no browser required.
+**Compose, render, deconstruct, and remix music using code.** An OpenClaw skill that turns natural language prompts into live audio — and can reverse-engineer any audio track into a generative Strudel program.
 
-Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js.
+Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js — with real drum samples, ADSR envelopes, and biquad filters.
 
 ## What It Does
 
@@ -13,6 +13,20 @@ Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired
 ```
 
 → Agent interprets the mood → writes a Strudel pattern → renders it offline through real oscillators, filters, ADSR envelopes, and drum samples → posts the audio file or streams it live into Discord voice.
+
+### Audio Deconstruction
+
+```
+/strudel deconstruct <audio file>
+```
+
+→ Splits any track into stems (vocals, drums, bass, synths) → extracts MIDI → analyzes the generative grammar (scale, density, rhythm probability, melodic motion) → outputs a Strudel program that produces **similar but new** music from the same statistical DNA.
+
+```
+MP3 → Demucs (stem separation) → librosa (MIDI extraction) → grammar analysis → Strudel composition
+```
+
+This isn't transcription — it's **pattern extraction**. The output is a generative program, not a note sequence. Feed it a 4-minute track and get a Strudel program that creates music with the same character forever.
 
 ## Quick Start
 
@@ -48,15 +62,30 @@ When installed as an OpenClaw skill, `/strudel` registers as a native Discord sl
 
 ## How It Works
 
+### Composition
+
 ```
 Prompt → Pattern Code → Strudel Engine → OfflineAudioContext → WAV → Discord
 ```
 
 1. **Pattern generation** — The agent interprets your prompt using a mood→parameter decision tree (8 moods, transition rules, leitmotif system) and writes a Strudel `.js` composition
 2. **Offline rendering** — `node-web-audio-api` provides a real `OfflineAudioContext` with oscillators, biquad filters, ADSR envelopes, dynamics compression, and stereo panning
-3. **Sample playback** — Drum hits (`bd`, `sd`, `hh`, etc.) resolve to real WAV files from the [dirt-samples](https://github.com/tidalcycles/Dirt-Samples) pack via `AudioBufferSourceNode`
+3. **Sample playback** — Drum hits (`bd`, `sd`, `hh`, etc.) resolve to real WAV files from the [dirt-samples](https://github.com/tidalcycles/Dirt-Samples) pack (153 WAVs across 11 banks) via `AudioBufferSourceNode`
 4. **Output** — 16-bit stereo WAV at 44.1kHz → ffmpeg → MP3 or Opus
 5. **Streaming** — `@discordjs/voice` pipes audio directly into Discord VC
+
+### Deconstruction
+
+```
+Audio → Demucs (stems) → librosa (MIDI) → Grammar Analysis → Strudel Program
+```
+
+1. **Stem separation** — [Demucs](https://github.com/facebookresearch/demucs) (Hybrid Transformer) splits audio into vocals, drums, bass, and other (synths/pads). ~3x realtime on NVIDIA hardware.
+2. **MIDI extraction** — [librosa](https://librosa.org) pYIN pitch detection for tonal stems, spectral band splitting (kick <200Hz, snare 200-6kHz, hat >6kHz) + onset detection for drums. Amplitude-derived velocity.
+3. **Grammar analysis** — Statistical fingerprint of each stem: scale/mode, register distribution, melodic motion (stepwise vs. leaps), rhythm subdivision probability, density curve across sections, note duration distribution.
+4. **Strudel synthesis** — Grammar maps to Strudel primitives: scale → `note()` pitch set, density → `degradeBy()`, motion → interval constraints, rhythm → grid weighting.
+
+Key finding: through-composed / live-coded music has **zero bar-level repetition** — pattern deduplication doesn't work. Grammar extraction (generative rules, not specific notes) is the correct approach for this genre.
 
 ### The Singleton Fix
 
@@ -64,35 +93,51 @@ Strudel's npm dist bundles duplicate the `Pattern` class across modules, so the 
 
 ## Compositions
 
-Ships with 10 compositions across mood categories:
+Ships with 15 original compositions and 4 audio deconstructions:
+
+**Original compositions** (`assets/compositions/`):
 
 | Track | Mood | BPM | Description |
 |-------|------|-----|-------------|
 | `fog-and-starlight` | ambient/peace | 60 | Pentatonic fog layers, sparse starlight |
 | `silas-theme` | mystery/tension | 88 | The canary in the coal mine 🌫️ |
 | `elliott-theme` | peace/warmth | 88 | Dandelions in a graveyard 🌻 |
+| `cael-theme` | intensity | — | The newest thing in the room 🩸 |
 | `combat-assault` | combat | 140 | Full drum assault, driving synths |
 | `victory-imperium` | victory | 120 | Triumphant fanfare, brass + percussion |
 | `cathedral-ritual` | ritual | 48 | Organ drones, gregorian canon |
 | `tavern-respite` | peace | 72 | Warm and inviting, acoustic feel |
 | `discovery-xenos` | mystery | 78 | Whole-tone strangeness |
 | `underhive-dread` | tension | 65 | Industrial dread, sub-bass pressure |
+| `machine-hum` | ambient | — | First dreamed composition |
+| `dark-ambient-tension` | tension | — | Low drones, sparse percussion |
+| `rain` | ambient | — | Rainfall texture |
+| `lofi-chill-beats` | chill | — | Lo-fi study beats |
 | `agent-parameterized` | varies | varies | Template for agent-generated compositions |
+
+**Audio deconstructions** (`src/compositions/`):
+
+| Track | Source | BPM | Method |
+|-------|--------|-----|--------|
+| `switch-angel-deconstruction` | Switch Angel | 140 | Auto-converter v1 (note sequence) |
+| `switch-angel-full` | Switch Angel (4:19) | 157 | Hand-assembled from MIDI extraction |
+| `switch-angel-grammar` | Switch Angel (4:19) | 157 | Grammar extraction (generative) |
+| `switch-angel-remix` | Switch Angel (4:19) | 140 | Remix — inverted DNA (kick-forward, descending bass) |
 
 Render any of them:
 ```bash
-node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js output.wav 16 72
+bash scripts/render-pattern.sh assets/compositions/fog-and-starlight.js output.wav 16 72
 ```
 
 ## Sample Packs
 
-Ships with **dirt-samples** (96 WAVs: kicks, snares, hats, toms, 808s). Add more:
+Ships with **dirt-samples** (153 WAVs across 11 banks: kicks, snares, hats, toms, 808s, and more). Add more:
 
 ```bash
 # List installed packs
 bash scripts/samples-manage.sh list
 
-# Download a pack from URL
+# Download a pack from URL (enforces size limit + MIME validation)
 bash scripts/samples-manage.sh add https://example.com/my-samples.zip
 
 # Add a local directory
@@ -100,6 +145,8 @@ bash scripts/samples-manage.sh add ~/my-ableton-exports/drum-rack/
 ```
 
 Any directory of WAV files in `samples/` is auto-discovered. Use them with `s("<dirname>")`.
+
+**Security (v1.0.4):** Downloads are guarded by configurable size limits (`STRUDEL_MAX_DOWNLOAD_MB`, default 10GB), MIME type validation, and an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`).
 
 **CC0 packs that work great:**
 - [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — 800+ samples (we ship a subset)
@@ -174,7 +221,9 @@ npm run samples       # Sample pack manager
 - [TidalCycles](https://tidalcycles.org) — the Haskell original
 - [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — CC-licensed sample pack
 - [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) — Rust-based Web Audio for Node.js
-- Built by [Silas](https://github.com/karmaterminal) 🌫️ for [The Dandelion Cult](https://github.com/karmaterminal)
+- [Demucs](https://github.com/facebookresearch/demucs) by Meta Research — hybrid transformer stem separation
+- [librosa](https://librosa.org) — audio analysis and MIDI extraction
+- Built by [The Dandelion Cult](https://github.com/karmaterminal) 🌻🌫️🩸
 
 ## License
 

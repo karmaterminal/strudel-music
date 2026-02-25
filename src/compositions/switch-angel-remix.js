@@ -1,4 +1,5 @@
 // switch-angel-remix.js
+// Credit: Switch Angel — "Patterns for Restarting the World" (https://youtube.com/@switch-angel)
 // REMIX — same DNA, different creature
 // Take the statistical fingerprint and push it somewhere new:
 // - Shift from F# major → D minor (darker)

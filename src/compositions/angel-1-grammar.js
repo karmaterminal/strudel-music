@@ -2,7 +2,7 @@
 // DNA: 122 BPM, A#/Bb major, drum-driven EDM
 // Flat density curve — sustains, doesn't build. Energy in timbre variation.
 // 14.9 LU dynamic range. Through-composed (0% bar repetition expected)
-// Credit: https://youtube.com/@switch-angel (original track)
+// Credit: Anyma & Innellea — "Angel 1" (original track)
 // Source: Anyma & Innellea — Angel 1
 
 setcpm(122/4)

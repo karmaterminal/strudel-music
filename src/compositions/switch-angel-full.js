@@ -1,4 +1,5 @@
 // switch-angel-full.js
+// Credit: Switch Angel — "Patterns for Restarting the World" (https://youtube.com/@switch-angel)
 // Full deconstruction: Switch Angel — "Music for the End of the Earth" (4:19)
 // Pipeline: Demucs (Cael/GB10, 82s) → librosa MIDI → hand-assembled from extraction data
 // Tempo: 156.6 BPM, Key: F# major / Eb minor

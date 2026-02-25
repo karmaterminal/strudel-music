@@ -1,4 +1,5 @@
 // switch-angel-clone.js
+// Credit: Switch Angel — "Patterns for Restarting the World" (https://youtube.com/@switch-angel)
 // CLONE — faithful reproduction of Switch Angel's statistical DNA
 // Same scale, same rhythm density, same stepwise motion, same hat dominance
 // The closest we can get to "playing back" the original's feel

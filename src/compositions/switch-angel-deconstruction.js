@@ -1,4 +1,5 @@
 // switch-angel-deconstruction.js
+// Credit: Switch Angel — "Patterns for Restarting the World" (https://youtube.com/@switch-angel)
 // First audio deconstruction: Switch Angel — "Music for the End of the Earth"
 // Pipeline: Demucs (Cael/GB10, 51s) → librosa MIDI → midi-to-strudel-v1
 // Tempo: 139.7 BPM (beat-tracked), Key: G minor (Gm → Bb → Eb → F)

@@ -1,4 +1,5 @@
 // switch-angel-grammar.js
+// Credit: Switch Angel — "Patterns for Restarting the World" (https://youtube.com/@switch-angel)
 // Grammar-extracted composition from Switch Angel "Music for the End of the Earth"
 // NOT a note sequence — a generative pattern derived from statistical analysis
 // Tempo: 157 BPM, Key: F# major / pentatonic-adjacent

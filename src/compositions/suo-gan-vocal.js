@@ -3,15 +3,22 @@
 // Demucs-isolated voice → sliced at note/phrase boundaries → played back
 // The real boy soprano and choir, not oscillator approximations
 // dandelion cult 🌫️🩸🌻 — 2026-02-24
+//
+// Fix (#22): skip phrase_00 (Demucs ghost at -84dB), start from index 1
+// Fix (#22): .clip(1) so samples play full duration instead of grid-chopped
+// Fix (#22): humanization — subtle timing nudge + gain variation
 
 setcpm(65/4)
 
 stack(
   // Solo vocal phrases — the actual singing, phrase-length slices
   // Each phrase is a natural melodic unit with legato intact
-  s("suophr suophr suophr suophr suophr suophr suophr suophr")
-    .n("0 1 2 3 4 5 6 7")
-    .gain(0.7),
+  // Indices start at 1: phrase_00 is a Demucs ghost sample at -84dB (#22)
+  s("suophr suophr suophr suophr suophr suophr suophr")
+    .n("1 2 3 4 5 6 7")
+    .clip(1)
+    .nudge(sine.range(-0.01, 0.01).slow(8))
+    .gain(sine.range(0.55, 0.7).slow(3)),
 
   // Choir stems — the actual choir harmonization from Demucs
   s("~ ~ ~ ~ suochr ~ ~ ~ ~ ~ ~ ~ suochr ~ ~ ~")

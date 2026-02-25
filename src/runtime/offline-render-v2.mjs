@@ -330,10 +330,11 @@ console.log('Rendering...');
 const offCtx = new nwa.OfflineAudioContext(2, actualSamples, sampleRate);
 
 // Master compressor for clean output
+// Gentler settings to avoid pumping artifacts on vocal material (#22)
 const compressor = offCtx.createDynamicsCompressor();
-compressor.threshold.setValueAtTime(-24, 0);
-compressor.knee.setValueAtTime(30, 0);
-compressor.ratio.setValueAtTime(12, 0);
+compressor.threshold.setValueAtTime(-12, 0);
+compressor.knee.setValueAtTime(10, 0);
+compressor.ratio.setValueAtTime(4, 0);
 compressor.connect(offCtx.destination);
 
 // Oscillator type map (outside loop for performance)
@@ -413,10 +414,15 @@ for (const hap of haps) {
       const src = offCtx.createBufferSource();
       src.buffer = sampleBuf;
       
-      // Apply gain with short fade
-      gn.gain.setValueAtTime(gain, hapStart);
-      gn.gain.setValueAtTime(gain, Math.min(endTime, hapStart + sampleBuf.duration));
-      gn.gain.linearRampToValueAtTime(0, Math.min(endTime + 0.02, hapStart + sampleBuf.duration + 0.02));
+      // Crossfade envelope: 30ms fade-in, 50ms fade-out (#22)
+      // Replaces instant-on + 20ms fade-out which caused hard splice clicks
+      const fadeIn = 0.03;   // 30ms
+      const fadeOut = 0.05;  // 50ms
+      const sampleEnd = Math.min(endTime, hapStart + sampleBuf.duration);
+      gn.gain.setValueAtTime(0, hapStart);
+      gn.gain.linearRampToValueAtTime(gain, hapStart + fadeIn);
+      gn.gain.setValueAtTime(gain, Math.max(hapStart + fadeIn, sampleEnd - fadeOut));
+      gn.gain.linearRampToValueAtTime(0, sampleEnd);
       
       // Apply playback rate if note specified (pitch shifting)
       if (v.note) {

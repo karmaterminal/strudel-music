@@ -414,11 +414,18 @@ for (const hap of haps) {
       const src = offCtx.createBufferSource();
       src.buffer = sampleBuf;
       
+      // When clip=1, let the sample play its full natural duration
+      // instead of cutting at the cycle/hap boundary (#22, dev#1)
+      const clipVal = v.clip !== undefined ? Number(v.clip) : 0;
+      const effectiveEnd = clipVal >= 1
+        ? hapStart + sampleBuf.duration
+        : Math.min(endTime, hapStart + sampleBuf.duration);
+      
       // Crossfade envelope: 30ms fade-in, 50ms fade-out (#22)
       // Replaces instant-on + 20ms fade-out which caused hard splice clicks
       const fadeIn = 0.03;   // 30ms
       const fadeOut = 0.05;  // 50ms
-      const sampleEnd = Math.min(endTime, hapStart + sampleBuf.duration);
+      const sampleEnd = effectiveEnd;
       gn.gain.setValueAtTime(0, hapStart);
       gn.gain.linearRampToValueAtTime(gain, hapStart + fadeIn);
       gn.gain.setValueAtTime(gain, Math.max(hapStart + fadeIn, sampleEnd - fadeOut));
@@ -437,7 +444,7 @@ for (const hap of haps) {
       pnr.connect(compressor);
       
       src.start(hapStart);
-      src.stop(endTime + 0.05);
+      src.stop(sampleEnd + 0.05);
     } else {
       // ── Oscillator synth ──
       if (!freq) freq = 440;

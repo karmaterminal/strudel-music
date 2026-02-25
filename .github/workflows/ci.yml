@@ -137,28 +137,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22.x
 
-      - name: Extract version
+      - name: Check if version changed
         id: version
         run: |
-          # Use package.json as the single source of truth for version
           VERSION=$(node -p "require('./package.json').version")
           if [ -z "$VERSION" ] || [ "$VERSION" = "undefined" ]; then
             echo "❌ No version in package.json"
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Publishing version: $VERSION"
+
+          # Compare with previous commit's version
+          PREV=$(git show HEAD~1:package.json 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version" 2>/dev/null || echo "")
+          if [ "$VERSION" = "$PREV" ]; then
+            echo "⏭️ Version $VERSION unchanged — skipping publish"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "📦 Version changed: $PREV → $VERSION"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install dependencies
+        if: steps.version.outputs.changed == 'true'
         run: npm ci
 
       - name: Authenticate with ClaHub
+        if: steps.version.outputs.changed == 'true'
         env:
           CLAWHUB_CLI_TOKEN: ${{ secrets.CLAWHUB_CLI_TOKEN }}
         run: |
@@ -166,6 +178,7 @@ jobs:
           npx clawhub whoami
 
       - name: Publish to ClaHub
+        if: steps.version.outputs.changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           MAX_RETRIES=3

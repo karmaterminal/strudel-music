@@ -16,15 +16,25 @@ Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired
 
 ### Audio Deconstruction
 
-Given any audio file, the deconstruction pipeline splits it into stems, extracts MIDI, analyzes the generative grammar (scale, density, rhythm probability, melodic motion), and outputs a Strudel program that produces **similar but new** music from the same statistical DNA.
+Given any audio file, the deconstruction pipeline separates stems, extracts structure, and produces both **generative programs** (grammar extraction) and **sample-based reproductions** (stem slicing).
 
 ```
-MP3 → Demucs (stem separation) → librosa (MIDI extraction) → grammar analysis → Strudel composition
+MP3 → Demucs (stem separation) → hallucination detection → two paths:
+
+Path A — Grammar extraction (through-composed music, <50% bar repetition):
+  → librosa (MIDI extraction) → grammar analysis → Strudel generative program
+
+Path B — Sample-based (stanzaic/folk music, >50% bar repetition):
+  → stem slicing (phrase-level) → sample bank → Strudel playback composition
 ```
 
-This isn't transcription — it's **pattern extraction**. The output is a generative program, not a note sequence. Feed it a 4-minute track and get a Strudel program that creates music with the same character forever.
+**Grammar extraction** produces generative programs — statistical DNA (scale, density, rhythm probability, melodic motion) that creates *similar but new* music from the same character. Feed it a 4-minute track and get a Strudel program that creates music with the same character forever.
 
-> **Note:** The deconstruction pipeline currently requires manual setup (Python with Demucs + librosa). A `/strudel deconstruct` command is planned.
+**Sample-based rendering** preserves the actual audio — Demucs-isolated stems sliced at musical boundaries, played back through Strudel's sample engine. The original timbre, dynamics, and expression are preserved because the audio *is* the sample.
+
+**Hallucination detection** automatically discards phantom stems when Demucs tries to find instruments that don't exist (e.g., "drums" from a voice-only source). Uses a 20dB-below-loudest threshold.
+
+> **Status:** The deconstruction pipeline currently requires manual setup (Python with Demucs + librosa). A `/strudel deconstruct` command is planned. Clone/remix quality is in active development — oscillator-based grammar compositions capture structural DNA but not source timbre; sample-based reproductions are closer to source but lack arrangement flexibility. Neither achieves production quality yet.
 
 ## Quick Start
 

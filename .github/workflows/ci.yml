@@ -167,29 +167,27 @@ jobs:
 
       - name: Publish to ClaHub
         run: |
-          # Retry with backoff for ClaHub rate limits
+          VERSION="${{ steps.version.outputs.version }}"
           MAX_RETRIES=3
           for i in $(seq 1 $MAX_RETRIES); do
-            if npx clawhub publish \
+            OUTPUT=$(npx clawhub publish \
               --slug strudel-music \
-              --version "${{ steps.version.outputs.version }}" \
-              "$(pwd)" 2>&1; then
-              echo "✅ Published"
+              --version "$VERSION" \
+              "$(pwd)" 2>&1) && {
+              echo "✅ Published $VERSION"
+              exit 0
+            }
+            echo "$OUTPUT"
+            # "Version already exists" means it was already published — success
+            if echo "$OUTPUT" | grep -qi "Version already exists"; then
+              echo "✅ Version $VERSION already published (idempotent)"
               exit 0
             fi
             if [ $i -lt $MAX_RETRIES ]; then
-              WAIT=$((60 * i))
-              echo "⏳ Rate limited, retry $i/$MAX_RETRIES in ${WAIT}s..."
+              WAIT=$((90 * i))
+              echo "⏳ Publish failed (attempt $i/$MAX_RETRIES), retrying in ${WAIT}s..."
               sleep $WAIT
             fi
           done
-          # If "version already exists" that's success (idempotent)
-          npx clawhub publish \
-            --slug strudel-music \
-            --version "${{ steps.version.outputs.version }}" \
-            "$(pwd)" 2>&1 | grep -q "Version already exists" && {
-              echo "✅ Version already published (idempotent)"
-              exit 0
-            }
           echo "❌ ClaHub publish failed after $MAX_RETRIES retries"
           exit 1

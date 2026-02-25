@@ -500,6 +500,21 @@ if (scheduled === 0) {
 const buf = await offCtx.startRendering();
 console.log(`  ✅ Rendered: ${buf.length} samples (${(buf.length / sampleRate).toFixed(1)}s)`);
 
+// ── Master fade-out ──
+// Apply 2-second linear fade-out to the end of the rendered buffer.
+// Prevents the hard cliff exit heard in v7 (#22).
+const fadeOutSeconds = 2;
+const fadeOutSamples = Math.min(Math.ceil(fadeOutSeconds * sampleRate), buf.length);
+const fadeOutStart = buf.length - fadeOutSamples;
+for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+  const channelData = buf.getChannelData(ch);
+  for (let i = 0; i < fadeOutSamples; i++) {
+    const gain = 1 - (i / fadeOutSamples); // linear ramp from 1 → 0
+    channelData[fadeOutStart + i] *= gain;
+  }
+}
+console.log(`  ✅ Applied ${fadeOutSeconds}s master fade-out (${fadeOutSamples} samples)`);
+
 // ── Write WAV ──
 const left = buf.getChannelData(0);
 const right = buf.numberOfChannels > 1 ? buf.getChannelData(1) : left;

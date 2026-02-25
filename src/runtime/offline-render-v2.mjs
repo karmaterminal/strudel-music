@@ -347,6 +347,13 @@ const waveMap = {
 const warnedSounds = new Set(); // track warned sound names to avoid spam
 let scheduled = 0;
 for (const hap of haps) {
+  // Skip continuation fragments — only schedule onset haps.
+  // Strudel's queryArc splits long events at integer cycle boundaries,
+  // producing multiple haps with the same whole arc but different part arcs.
+  // hasOnset() is true only for the first fragment (part.begin === whole.begin).
+  // Without this filter, samples get stacked N times at the same start time.
+  if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
+
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
   const endCycle = hap.whole?.end ?? hap.part?.end ?? startCycle + 0.25;
   const hapStart = startCycle / actualCps;

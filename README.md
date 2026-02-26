@@ -6,6 +6,10 @@
 
 Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js — with real drum samples, ADSR envelopes, and biquad filters.
 
+## ⚠️ Legal Notice
+
+This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material. Extracted samples are for personal/educational use unless you have explicit permission from rights holders.
+
 ## What It Does
 
 ```

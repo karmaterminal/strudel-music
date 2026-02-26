@@ -64,5 +64,109 @@
   },
   "other_003": {
     "0": "other_003/other_003.wav"
+  },
+
+  "_comment_bloom": "Bloom — Cosmic Gate & Pretty Pink (D minor, 126 BPM)",
+
+  "bloom_kick": {
+    "0": "bloom_kick/bloom_kick.wav"
+  },
+  "bloom_snare": {
+    "0": "bloom_snare/bloom_snare.wav"
+  },
+  "bloom_mid_perc": {
+    "0": "bloom_mid_perc/bloom_mid_perc.wav"
+  },
+  "bloom_mid_perc1": {
+    "0": "bloom_mid_perc1/bloom_mid_perc1.wav"
+  },
+  "bloom_mid_perc2": {
+    "0": "bloom_mid_perc2/bloom_mid_perc2.wav"
+  },
+
+  "bloom_bass_D1": {
+    "d1": "bloom_bass_D1/bloom_bass_D1.wav"
+  },
+  "bloom_bass_D2": {
+    "d2": "bloom_bass_D2/bloom_bass_D2.wav"
+  },
+  "bloom_bass_As1": {
+    "as1": "bloom_bass_As1/bloom_bass_As1.wav"
+  },
+  "bloom_bass_C1": {
+    "c1": "bloom_bass_C1/bloom_bass_C1.wav"
+  },
+  "bloom_bass_G1": {
+    "g1": "bloom_bass_G1/bloom_bass_G1.wav"
+  },
+  "bloom_bass_Ds1": {
+    "ds1": "bloom_bass_Ds1/bloom_bass_Ds1.wav"
+  },
+  "bloom_bass_E2": {
+    "e2": "bloom_bass_E2/bloom_bass_E2.wav"
+  },
+  "bloom_bass_Cs2": {
+    "cs2": "bloom_bass_Cs2/bloom_bass_Cs2.wav"
+  },
+
+  "bloom_lead_D3": {
+    "d3": "bloom_lead_D3/bloom_lead_D3.wav"
+  },
+  "bloom_lead_A2": {
+    "a2": "bloom_lead_A2/bloom_lead_A2.wav"
+  },
+  "bloom_lead_As2": {
+    "as2": "bloom_lead_As2/bloom_lead_As2.wav"
+  },
+  "bloom_lead_C3": {
+    "c3": "bloom_lead_C3/bloom_lead_C3.wav"
+  },
+  "bloom_lead_E3": {
+    "e3": "bloom_lead_E3/bloom_lead_E3.wav"
+  },
+  "bloom_lead_F3": {
+    "f3": "bloom_lead_F3/bloom_lead_F3.wav"
+  },
+  "bloom_lead_G2": {
+    "g2": "bloom_lead_G2/bloom_lead_G2.wav"
+  },
+
+  "bloom_bass_As2": {
+    "as2": "bloom_bass_As2/bloom_bass_As2.wav"
+  },
+  "bloom_bass_B0": {
+    "b0": "bloom_bass_B0/bloom_bass_B0.wav"
+  },
+  "bloom_bass_B1": {
+    "b1": "bloom_bass_B1/bloom_bass_B1.wav"
+  },
+  "bloom_bass_Cs1": {
+    "cs1": "bloom_bass_Cs1/bloom_bass_Cs1.wav"
+  },
+  "bloom_bass_Ds2": {
+    "ds2": "bloom_bass_Ds2/bloom_bass_Ds2.wav"
+  },
+  "bloom_bass_Fs2": {
+    "fs2": "bloom_bass_Fs2/bloom_bass_Fs2.wav"
+  },
+  "bloom_bass_Gs1": {
+    "gs1": "bloom_bass_Gs1/bloom_bass_Gs1.wav"
+  },
+
+  "bloom_mid_perc3": {
+    "0": "bloom_mid_perc3/bloom_mid_perc3.wav"
+  },
+
+  "bloom_lead_B2": {
+    "b2": "bloom_lead_B2/bloom_lead_B2.wav"
+  },
+  "bloom_lead_Cs3": {
+    "cs3": "bloom_lead_Cs3/bloom_lead_Cs3.wav"
+  },
+  "bloom_lead_Ds3": {
+    "ds3": "bloom_lead_Ds3/bloom_lead_Ds3.wav"
+  },
+  "bloom_lead_Gs2": {
+    "gs2": "bloom_lead_Gs2/bloom_lead_Gs2.wav"
   }
 }

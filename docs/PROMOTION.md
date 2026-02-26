@@ -1,6 +1,6 @@
 # Fork → Public Promotion Workflow
 
-How to promote work from the private fork (`strudel-music-dev`) to the public repo (`strudel-music`) and publish to ClaHub.
+How to promote work from the private fork (`strudel-music-dev`) to the public repo (`strudel-music`) and publish to ClawHub.
 
 ---
 
@@ -87,7 +87,7 @@ git push origin main --tags
 
 ---
 
-## 4. ClaHub Publish Checklist
+## 4. ClawHub Publish Checklist
 
 ### Pre-publish
 
@@ -135,7 +135,7 @@ clawhub publish
 | v0.1.x  | Suo Gân — initial pipeline proof |
 | v0.2.x  | Frisson — multi-track, loudness fixes |
 | v0.3.x  | Bloom — full decomposition, cross-platform |
-| v1.0.0  | Public release — ClaHub-published, docs complete |
+| v1.0.0  | Public release — ClawHub-published, docs complete |
 
 ---
 
@@ -152,6 +152,6 @@ Public repo (strudel-music)
   └── merge → tag → clawhub publish
         │
         ▼
-ClaHub (clawhub.com)
+ClawHub (clawhub.com)
   └── published skill, installable by anyone
 ```

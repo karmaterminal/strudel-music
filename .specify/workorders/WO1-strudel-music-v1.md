@@ -23,7 +23,7 @@ All 8 issues filed by Elliott on karmaterminal/strudel-music (#2–#9).
 - [ ] `npm run test:render` passes
 - [ ] CI green on push
 - [ ] PR opened and merged to main
-- [ ] ClaHub skill version bumped and published
+- [ ] ClawHub skill version bumped and published
 
 ## Branch
 `feat/local-runtime-and-streaming` (existing, will continue here then PR to main)

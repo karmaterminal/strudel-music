@@ -17,7 +17,7 @@ This directory follows the [SpecKit](https://github.com/karmaterminal/openclaw-b
 
 | ID | Title | Status |
 |----|-------|--------|
-| WO1 | Initial skill + ClaHub publish | ✅ Complete |
+| WO1 | Initial skill + ClawHub publish | ✅ Complete |
 | WO2 | Security scan remediation | ✅ Complete |
 | WO3 | Discord VC streaming pipeline | 🔄 In Progress |
 | WO4 | CI/CD + repo professionalization | 🔄 In Progress |

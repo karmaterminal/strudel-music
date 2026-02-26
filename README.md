@@ -103,6 +103,16 @@ Key finding: through-composed / live-coded music has **zero bar-level repetition
 
 Strudel's npm dist bundles duplicate the `Pattern` class across modules, so the mini notation parser registers on a different copy than the one used by controls like `note()` and `s()`. The renderer explicitly calls `setStringParser(mini.mini)` after import to bridge this gap. Same class of bug as [openclaw#22790](https://github.com/openclaw/openclaw/issues/22790).
 
+## Pipeline
+
+The audio deconstruction pipeline is a multi-stage process that takes any audio file and produces a playable Strudel composition from its stems. The full pipeline — from Demucs stem separation through analysis, slicing, composition, and rendering — takes **10–15 minutes** for a typical track.
+
+> ⚠️ **The pipeline MUST be run via `sessions_spawn` (sub-agent), not in the main session or Discord message handler.** OpenClaw's 30-second EventQueue timeout will stun the gateway if the pipeline blocks the main thread. This is not optional.
+
+**[→ Full Pipeline Guide](docs/pipeline-guide.md)** — stage-by-stage description, expected timings, hardware requirements, and platform notes.
+
+**[→ Pre-Release Testing Checklist](docs/testing-checklist.md)** — RC to public repo testing strategy.
+
 ## Compositions
 
 Ships with 15 original compositions and 4 audio deconstructions:
@@ -250,6 +260,10 @@ npm run samples       # Sample pack manager
 **Learning from scratch?** [`docs/ONBOARDING.md`](docs/ONBOARDING.md) is a ground-up guide written for a fresh OpenClaw instance that has never heard of Strudel. It covers: what Strudel is, the vocabulary (samples = words, patterns = grammar), setup, your first composition, your first render, the full deconstruction pipeline, and known pitfalls.
 
 > ⚠️ **Session safety:** The offline renderer blocks the Node.js event loop. If you run it inline in an OpenClaw main session, it will kill the gateway after ~30 seconds. Always render in a sub-agent or background exec. This is documented prominently in both SKILL.md and ONBOARDING.md.
+
+## ⚖️ Legal
+
+This tool decomposes and recomposes audio. Source material rights are your responsibility. We do not host, distribute, or claim ownership of any extracted samples or rendered compositions. See [SKILL.md](SKILL.md) for the full notice.
 
 ## Credits
 

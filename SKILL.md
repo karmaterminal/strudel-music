@@ -450,3 +450,32 @@ Uses **node-web-audio-api** (Rust-based Web Audio for Node.js). No browser, no P
 The renderer calls `setStringParser(mini.mini)` after import because Strudel's npm dist bundles duplicate the `Pattern` class across modules — the mini notation parser registers on a different copy than the one used by `note()` and `s()`.
 
 All synthesis is local and offline via `OfflineAudioContext`: oscillators, biquad filters, ADSR envelopes, `AudioBufferSourceNode` for samples, dynamics compression, stereo panning. Output: 16-bit stereo WAV at 44.1kHz.
+
+---
+
+## Known Platform Issues
+
+| Platform | Issue | Workaround |
+|---|---|---|
+| ARM64 (all) | PyTorch CPU-only, no CUDA | Expected — Demucs runs ~0.25× realtime |
+| ARM64 (all) | `torchaudio.save()` fails | Patch `demucs/audio.py` to use `soundfile.write()` (see First-Time Setup) |
+| ARM64 (all) | `torchcodec` build fails | Not needed — skip it, Demucs works without it |
+| WSL2 | Discord VC silent (NAT blocks UDP) | Enable mirrored networking in `.wslconfig` |
+| All | Strudel `mini` parser not registered | Renderer calls `setStringParser(mini.mini)` — already handled |
+
+---
+
+## Security
+
+Strudel compositions are **evaluated JavaScript**. They can access the filesystem, environment, and network. Only run compositions you trust. For untrusted patterns, use an OpenClaw sandbox with no credentials mounted.
+
+---
+
+## Concurrency
+
+Only one render should be active per session at a time. If a user requests `/strudel clone` while a previous render is in progress:
+1. Check for active sub-agents using `subagents(action=list)`
+2. If a strudel render is running, respond: "🎵 A render is already in progress. Please wait for it to complete."
+3. Do not dispatch a second render — disk and memory contention can cause artifacts or failures.
+
+**Why:** Concurrent renders with default output paths both write to `output.wav`, causing the second to overwrite the first. Even with explicit paths, two simultaneous `OfflineAudioContext` processes double memory usage. Sample loading is per-process (no shared cache), so there's no corruption risk — but disk I/O contention on the output write is real.

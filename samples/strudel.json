@@ -1,0 +1,82 @@
+{
+  "_comment": "Frisson instrument rack — pitched sample map for Strudel",
+  "_source": "Tim French & Mallinder — Frisson [Hooj / Solarstone PTR-477]",
+  "_generated": "2026-02-25 / dandelion cult — cael🩸",
+
+  "frisson_kick": {
+    "_type": "percussion",
+    "0": "frisson_kick/0.wav"
+  },
+  "frisson_hat": {
+    "_type": "percussion",
+    "0": "frisson_hat/0.wav"
+  },
+  "frisson_clap": {
+    "_type": "percussion",
+    "0": "frisson_clap/0.wav"
+  },
+  "frisson_ghost": {
+    "_type": "percussion",
+    "0": "frisson_ghost/0.wav"
+  },
+
+  "frisson_bass": {
+    "_type": "pitched",
+    "_root": "cs1",
+    "_note_map": "0=C#1 1=D1 2=D#1 3=E1 4=F1 5=F#1 6=G1 7=G#1 8=A1 9=A#1",
+    "cs1": "frisson_bass/0.wav",
+    "d1":  "frisson_bass/1.wav",
+    "ds1": "frisson_bass/2.wav",
+    "e1":  "frisson_bass/3.wav",
+    "f1":  "frisson_bass/4.wav",
+    "fs1": "frisson_bass/5.wav",
+    "g1":  "frisson_bass/6.wav",
+    "gs1": "frisson_bass/7.wav",
+    "a1":  "frisson_bass/8.wav",
+    "as1": "frisson_bass/9.wav"
+  },
+
+  "synth_lead": {
+    "_type": "tonal",
+    "_root": "~A#2-E3",
+    "_desc": "7.4s extracted melody phrase — D#3→D3→E3→C3→C#3→A#2→B2→A#2→C#3",
+    "0": "synth_lead/0.wav"
+  },
+  "synth_lead_2": {
+    "_type": "tonal",
+    "_root": "cs4",
+    "_desc": "Repeating C#4 motif phrase",
+    "0": "synth_lead_2/0.wav"
+  },
+  "synth_texture": {
+    "_type": "tonal",
+    "_desc": "Additional synth texture sample",
+    "0": "synth_texture/0.wav"
+  },
+
+  "frissother": {
+    "_type": "sliced",
+    "_desc": "21 x 8-bar slices of 'other' stem (pads/atmosphere), ~14.86s each @ 129.2 BPM",
+    "0":  "frissother/00.wav",
+    "1":  "frissother/01.wav",
+    "2":  "frissother/02.wav",
+    "3":  "frissother/03.wav",
+    "4":  "frissother/04.wav",
+    "5":  "frissother/05.wav",
+    "6":  "frissother/06.wav",
+    "7":  "frissother/07.wav",
+    "8":  "frissother/08.wav",
+    "9":  "frissother/09.wav",
+    "10": "frissother/10.wav",
+    "11": "frissother/11.wav",
+    "12": "frissother/12.wav",
+    "13": "frissother/13.wav",
+    "14": "frissother/14.wav",
+    "15": "frissother/15.wav",
+    "16": "frissother/16.wav",
+    "17": "frissother/17.wav",
+    "18": "frissother/18.wav",
+    "19": "frissother/19.wav",
+    "20": "frissother/20.wav"
+  }
+}

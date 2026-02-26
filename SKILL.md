@@ -30,6 +30,20 @@ Compose, render, and stream music using Strudel live-coding patterns — entirel
 
 ---
 
+## ⚖️ Legal Notice
+
+This tool processes audio you provide. **You are responsible for ensuring you have the rights to use any source material.** The dandelion cult:
+- Makes no claims about fair use, copyright, or derivative works
+- Does not host, distribute, or claim ownership of extracted samples
+- Cannot assess whether your use of copyrighted material constitutes fair use
+
+Extracted samples are stored locally on your machine only. Do not publish or distribute compositions derived from copyrighted material without obtaining appropriate rights.
+
+When processing a user's first `/strudel clone` request in a session, include this notice in your response:
+> ⚖️ *Processing your audio. Reminder: you're responsible for ensuring you have rights to use this source material. Extracted samples are stored locally only.*
+
+---
+
 ## Prerequisites
 
 Run these checks. If any fail, see [First-Time Setup](#first-time-setup).
@@ -335,3 +349,14 @@ Both use `OfflineAudioContext` via `node-web-audio-api` (Rust-based, no browser)
 ## Security
 
 Strudel compositions are **evaluated JavaScript**. They can access the filesystem, environment, and network. Only run compositions you trust. For untrusted patterns, use an OpenClaw sandbox with no credentials mounted.
+
+---
+
+## Concurrency
+
+Only one render should be active per session at a time. If a user requests `/strudel clone` while a previous render is in progress:
+1. Check for active sub-agents using `subagents(action=list)`
+2. If a strudel render is running, respond: "🎵 A render is already in progress. Please wait for it to complete."
+3. Do not dispatch a second render — disk and memory contention can cause artifacts or failures.
+
+**Why:** Concurrent renders with default output paths both write to `output.wav`, causing the second to overwrite the first (confirmed via testing). Even with explicit paths, two simultaneous `OfflineAudioContext` processes double memory usage. On the DGX Spark (128GB) this is survivable for simple patterns (~15MB heap each), but dense compositions or stem-heavy sample-based renders on smaller machines will OOM. Sample loading is per-process (no shared cache), so there's no corruption risk there — but disk I/O contention on the output write is real.

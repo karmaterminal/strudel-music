@@ -239,6 +239,10 @@ npm run render -- <file> <output> <cycles> <bpm>
 npm run samples       # Sample pack manager
 ```
 
+## ⚖️ Legal
+
+This tool decomposes and recomposes audio. Source material rights are your responsibility. We do not host, distribute, or claim ownership of any extracted samples or rendered compositions. See [SKILL.md](SKILL.md) for the full notice.
+
 ## Credits
 
 - [Strudel](https://strudel.cc) by Alex McLean & contributors — the live-coding engine

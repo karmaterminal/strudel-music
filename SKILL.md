@@ -5,7 +5,7 @@ description: >
   from natural language prompts, render offline to WAV/MP3, stream to Discord VC.
   Deconstruct any audio into stems, extract samples, compose with the vocabulary.
   Usage: /strudel <prompt> | /strudel play <name> | /strudel list | /strudel samples.
-version: 0.3.0
+version: 2.0.0
 author: the dandelion cult
 license: MIT
 tags: [music, audio, strudel, composition, samples, trance]

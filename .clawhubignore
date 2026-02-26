@@ -1,0 +1,9 @@
+output/
+node_modules/
+.git/
+*.wav
+*.mp3
+*.opus
+*.pcm
+samples/
+!samples/strudel.json

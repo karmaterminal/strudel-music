@@ -1,22 +1,10 @@
 ---
 name: strudel-music
-description: >
-  Audio deconstruction and composition via Strudel live-coding. Compose music
-  from natural language prompts, render offline to WAV/MP3, stream to Discord VC.
-  Deconstruct any audio into stems, extract samples, compose with the vocabulary.
-  Usage: /strudel <prompt> | /strudel play <name> | /strudel list | /strudel samples.
-version: 0.3.0
+description: "Audio deconstruction and composition via Strudel live-coding. Decompose any audio into stems, extract samples, compose with the vocabulary, render offline to WAV/MP3."
+version: 0.3.1
 author: the dandelion cult
 license: MIT
 tags: [music, audio, strudel, composition, samples, trance]
-user-invocable: true
-requires:
-  - node >= 20
-  - ffmpeg
-optional:
-  - python3 + demucs (for stem separation)
-  - python3 + librosa (for pitch/onset analysis)
-envVars: []  # No additional env vars needed — uses OpenClaw's built-in Discord channel
 metadata:
   openclaw:
     emoji: "🎵"
@@ -24,6 +12,7 @@ metadata:
       bins: [node]
       anyBins: [ffmpeg]
       node: ">=20"
+    envVars: []
     install:
       - id: setup
         kind: script
@@ -34,18 +23,25 @@ metadata:
         package: ffmpeg
         bins: [ffmpeg]
         label: "Install ffmpeg (audio format conversion)"
-    securityNotes: |
-      - Compositions are JavaScript executed by Node.js — they CAN access filesystem, env vars, and network
-      - Discord streaming uses OpenClaw's built-in voice channel support — no separate BOT_TOKEN required
-      - Run only trusted compositions or sandbox in a container/VM with no sensitive credentials
-      - The skill does NOT require or manage any Discord credentials directly
+    securityNotes: >
+      Compositions are JavaScript files evaluated by Node.js. They CAN access
+      the filesystem, environment variables, and network. Only run compositions
+      you trust or have reviewed. For untrusted compositions, run in a container
+      or VM with no credentials in the environment.
+
+      Discord integration (VC streaming, message posting) uses the OpenClaw
+      gateway's existing authenticated connection — this skill does NOT require
+      its own bot token or Discord credentials. No separate authentication is needed.
+
+      The optional Python pipeline (Demucs, librosa) downloads ML models on first
+      run (~1.5GB for htdemucs). These come from official PyTorch/Facebook sources.
 ---
 
 > ⚠️ **Legal Notice:** This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material.
 
 # Strudel Music 🎵
 
-Compose, render, deconstruct, and remix music using code. Takes natural language prompts → writes Strudel patterns → renders offline through real Web Audio synthesis → posts audio or streams to Discord VC. Can also reverse-engineer any audio track into stems, samples, and generative programs.
+Compose, render, deconstruct, and remix music using code. Takes natural language prompts → writes Strudel patterns → renders offline through real Web Audio synthesis → posts audio or streams to Discord VC (via the OpenClaw gateway — no separate credentials needed). Can also reverse-engineer any audio track into stems, samples, and generative programs.
 
 > **New here?** Read [docs/ONBOARDING.md](docs/ONBOARDING.md) for a ground-up introduction.
 

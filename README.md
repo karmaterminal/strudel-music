@@ -220,6 +220,14 @@ references/                — Mood decision tree, production techniques, archit
   workorders/              — SpecKit work tracking
 ```
 
+## Pipeline
+
+The full audio deconstruction pipeline runs through six stages: Demucs stem separation → audio analysis → sample slicing → composition → rendering → MP3 conversion. End-to-end, expect **4–8 minutes for a 4-minute track** on CPU. Composition + rendering (the JS-only path) takes 2–3 minutes with no Python required. See **[docs/pipeline.md](docs/pipeline.md)** for stage-by-stage breakdown, timings, resource requirements, and the critical session safety warning — this pipeline **must not** be run in a primary OpenClaw session or Discord interaction (it will timeout and appear broken).
+
+## Testing
+
+The publish path is: private fork RC → cross-platform validation (x86_64 + ARM64) → public repo merge → ClaHub publish. Each stage gates the next. See **[docs/TESTING.md](docs/TESTING.md)** for the full test matrix, quality gates, and naive install procedure.
+
 ## Development
 
 ```bash

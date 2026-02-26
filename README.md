@@ -229,6 +229,16 @@ npm run render -- <file> <output> <cycles> <bpm>
 npm run samples       # Sample pack manager
 ```
 
+## Onboarding
+
+**For humans:** You're reading it. This README covers what the project does and how to use it.
+
+**For machines (OpenClaw agents):** Read [`SKILL.md`](SKILL.md) — that's the entry point OpenClaw loads when the skill is invoked. It has the frontmatter, commands, safety warnings, and everything an agent needs.
+
+**Learning from scratch?** [`docs/ONBOARDING.md`](docs/ONBOARDING.md) is a ground-up guide written for a fresh OpenClaw instance that has never heard of Strudel. It covers: what Strudel is, the vocabulary (samples = words, patterns = grammar), setup, your first composition, your first render, the full deconstruction pipeline, and known pitfalls.
+
+> ⚠️ **Session safety:** The offline renderer blocks the Node.js event loop. If you run it inline in an OpenClaw main session, it will kill the gateway after ~30 seconds. Always render in a sub-agent or background exec. This is documented prominently in both SKILL.md and ONBOARDING.md.
+
 ## Credits
 
 - [Strudel](https://strudel.cc) by Alex McLean & contributors — the live-coding engine

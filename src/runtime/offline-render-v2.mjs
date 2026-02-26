@@ -330,10 +330,11 @@ console.log('Rendering...');
 const offCtx = new nwa.OfflineAudioContext(2, actualSamples, sampleRate);
 
 // Master compressor for clean output
+// Gentler settings to avoid pumping artifacts on vocal material (#22)
 const compressor = offCtx.createDynamicsCompressor();
-compressor.threshold.setValueAtTime(-24, 0);
-compressor.knee.setValueAtTime(30, 0);
-compressor.ratio.setValueAtTime(12, 0);
+compressor.threshold.setValueAtTime(-12, 0);
+compressor.knee.setValueAtTime(10, 0);
+compressor.ratio.setValueAtTime(4, 0);
 compressor.connect(offCtx.destination);
 
 // Oscillator type map (outside loop for performance)
@@ -347,6 +348,13 @@ const waveMap = {
 const warnedSounds = new Set(); // track warned sound names to avoid spam
 let scheduled = 0;
 for (const hap of haps) {
+  // Skip continuation fragments — only schedule onset haps.
+  // Strudel's queryArc splits long events at integer cycle boundaries,
+  // producing multiple haps with the same whole arc but different part arcs.
+  // hasOnset() is true only for the first fragment (part.begin === whole.begin).
+  // Without this filter, samples get stacked N times at the same start time (#22 v7).
+  if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
+
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
   const endCycle = hap.whole?.end ?? hap.part?.end ?? startCycle + 0.25;
   const hapStart = startCycle / actualCps;
@@ -358,6 +366,7 @@ for (const hap of haps) {
   if (typeof v !== 'object' || v === null) continue;
 
   const gain = Math.min(v.gain ?? 0.3, 1.0);
+  if (gain <= 0.001) continue; // Skip silent haps (saves memory on masked layers)
   const sound = v.s || '';
   const nVal = v.n !== undefined ? Math.round(Number(v.n)) : 0;
   const lpf = v.lpf ?? v.cutoff ?? 6000;
@@ -413,10 +422,22 @@ for (const hap of haps) {
       const src = offCtx.createBufferSource();
       src.buffer = sampleBuf;
       
-      // Apply gain with short fade
-      gn.gain.setValueAtTime(gain, hapStart);
-      gn.gain.setValueAtTime(gain, Math.min(endTime, hapStart + sampleBuf.duration));
-      gn.gain.linearRampToValueAtTime(0, Math.min(endTime + 0.02, hapStart + sampleBuf.duration + 0.02));
+      // When clip=1, let the sample play its full natural duration
+      // instead of cutting at the cycle/hap boundary (#22, dev#1)
+      const clipVal = v.clip !== undefined ? Number(v.clip) : 0;
+      const effectiveEnd = clipVal >= 1
+        ? hapStart + sampleBuf.duration
+        : Math.min(endTime, hapStart + sampleBuf.duration);
+      
+      // Crossfade envelope: 30ms fade-in, 50ms fade-out (#22)
+      // Replaces instant-on + 20ms fade-out which caused hard splice clicks
+      const fadeIn = 0.03;   // 30ms
+      const fadeOut = 0.05;  // 50ms
+      const sampleEnd = effectiveEnd;
+      gn.gain.setValueAtTime(0, hapStart);
+      gn.gain.linearRampToValueAtTime(gain, hapStart + fadeIn);
+      gn.gain.setValueAtTime(gain, Math.max(hapStart + fadeIn, sampleEnd - fadeOut));
+      gn.gain.linearRampToValueAtTime(0, sampleEnd);
       
       // Apply playback rate if note specified (pitch shifting)
       if (v.note) {
@@ -431,7 +452,7 @@ for (const hap of haps) {
       pnr.connect(compressor);
       
       src.start(hapStart);
-      src.stop(endTime + 0.05);
+      src.stop(sampleEnd + 0.05);
     } else {
       // ── Oscillator synth ──
       if (!freq) freq = 440;
@@ -479,6 +500,21 @@ if (scheduled === 0) {
 
 const buf = await offCtx.startRendering();
 console.log(`  ✅ Rendered: ${buf.length} samples (${(buf.length / sampleRate).toFixed(1)}s)`);
+
+// ── Master fade-out ──
+// Apply 2-second linear fade-out to the end of the rendered buffer.
+// Prevents the hard cliff exit heard in v7 (#22).
+const fadeOutSeconds = 2;
+const fadeOutSamples = Math.min(Math.ceil(fadeOutSeconds * sampleRate), buf.length);
+const fadeOutStart = buf.length - fadeOutSamples;
+for (let ch = 0; ch < buf.numberOfChannels; ch++) {
+  const channelData = buf.getChannelData(ch);
+  for (let i = 0; i < fadeOutSamples; i++) {
+    const gain = 1 - (i / fadeOutSamples); // linear ramp from 1 → 0
+    channelData[fadeOutStart + i] *= gain;
+  }
+}
+console.log(`  ✅ Applied ${fadeOutSeconds}s master fade-out (${fadeOutSamples} samples)`);
 
 // ── Write WAV ──
 const left = buf.getChannelData(0);

@@ -220,6 +220,127 @@ exec({ command: "bash scripts/dispatch.sh render ..." })
 
 ---
 
+## Clone Pipeline
+
+**One-shot MP3→composition.** User drops an audio file, says "clone this", agent runs the full deconstruction → extraction → composition → render pipeline and posts the result.
+
+### Trigger Detection
+
+Activate the clone pipeline when **both** conditions are met:
+
+1. **Trigger text:** Message contains any of: `clone`, `decompose`, `extract`, or `/strudel clone`
+2. **Audio attachment:** An audio file is present (look for `media/inbound/*.mp3`, `media/inbound/*.wav`, or a URL to an audio file in the message context)
+
+**Edge cases:**
+- Trigger text but **no attachment** → respond: `"Please attach an MP3 or WAV file to clone."`
+- Attachment but **no trigger text** → do nothing (user might just be sharing audio)
+- Both present → proceed with the clone pipeline
+
+### Pipeline Dispatch
+
+> ⚠️ **The clone pipeline takes 5–15 minutes. NEVER run it inline.**
+>
+> Always use `sessions_spawn`. The main session will timeout after 30 seconds — the pipeline will die silently with no output.
+
+Spawn a sub-agent with:
+
+```javascript
+sessions_spawn({
+  task: `Clone the attached audio file using the strudel-music pipeline.
+
+Source file: <path to the MP3/WAV from media/inbound/>
+Working dir: /home/figs/.openclaw-data/workspace/strudel-music
+
+Steps:
+1. Run the clone pipeline script:
+   bash scripts/clone-pipeline.sh "<source-file>" /tmp/strudel-clone-<timestamp>
+
+2. The script handles everything:
+   - Activates the Python venv at $STRUDEL_VENV_PATH (or ~/.openclaw-data/audio-pipeline-venv)
+   - Demucs 4-stem separation (drums, bass, vocals, other)
+   - BPM/key analysis via librosa
+   - Drum extraction (onset detection + spectral band splitting → kick/snare/hat)
+   - Bass extraction (pYIN pitch tracking + per-note slicing)
+   - Lead extraction (pYIN on "other" stem + per-note slicing)
+   - Auto-generates strudel.json sample map
+   - Auto-composes a JS arrangement using extracted material
+   - Renders via chunked-render.mjs
+   - Loudness check via ffmpeg loudnorm
+   - Converts to MP3 at 192kbps
+
+3. Read /tmp/strudel-clone-<timestamp>/summary.json for results
+
+4. Report back with: BPM, key, sample counts, bar count, duration, loudness, true peak
+
+5. The output MP3 is at: /tmp/strudel-clone-<timestamp>/clone-<trackname>.mp3`,
+  mode: "run",
+  runTimeoutSeconds: 900  // 15 minutes — generous for full pipeline
+})
+```
+
+**Tell the user immediately:** `"🎵 Cloning in progress — extracting stems and building composition. This takes 5–15 minutes. I'll post the result when it's ready."`
+
+### Response Format
+
+After the sub-agent completes, read its result and post:
+
+```
+🎵 Clone complete!
+
+Track: <detected BPM> BPM, <detected key> <scale>
+Instruments extracted: <total> samples (kick:<n> snare:<n> hat:<n> bass:<n> leads:<n>)
+Composition: <bar count> bars, <duration>s
+Loudness: <LUFS> LUFS, <dBTP> dBTP
+
+[attached: clone-<trackname>.mp3]
+```
+
+Attach the MP3 from `/tmp/strudel-clone-<timestamp>/clone-<trackname>.mp3` using the `message` tool's `filePath` parameter.
+
+### Scripts Reference
+
+| Script | Purpose | Input | Output |
+|--------|---------|-------|--------|
+| `scripts/clone-pipeline.sh` | Full end-to-end wrapper | `<input.mp3> [output-dir]` | `summary.json`, `clone-<name>.mp3` |
+| `scripts/analyze-bpm-key.py` | BPM + Krumhansl-Schmuckler key detection | `<audio> [output-dir]` | `analysis.json` |
+| `scripts/extract-drums.py` | Onset detection + spectral band classification | `<drums.wav> [output-dir]` | `kick/`, `snare/`, `hat/` WAVs + `drums-metadata.json` |
+| `scripts/extract-bass.py` | pYIN pitch tracking + note slicing | `<bass.wav> [output-dir]` | `bass/` WAVs + `bass-metadata.json` |
+| `scripts/extract-leads.py` | pYIN pitch tracking + note slicing | `<other.wav> [output-dir]` | `leads/` WAVs + `leads-metadata.json` |
+
+All Python scripts require the audio-pipeline venv (`~/.openclaw-data/audio-pipeline-venv`). The bash wrapper handles venv activation automatically.
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `STRUDEL_VENV_PATH` | `~/.openclaw-data/audio-pipeline-venv` | Path to Python venv with demucs/librosa |
+| `STRUDEL_BARS` | `16` | Number of bars to render in the composition |
+
+### Error Handling
+
+- If Demucs fails (missing venv, OOM) → pipeline exits with code 2
+- If extraction scripts fail → pipeline continues (non-fatal warnings) and composes with available material
+- If render fails → tries `offline-render-v2.mjs` as fallback before giving up
+- If anything fails, check `<output-dir>/pipeline.log` for the full trace
+
+### Running Manually
+
+```bash
+cd /home/figs/.openclaw-data/workspace/strudel-music
+source ~/.openclaw-data/audio-pipeline-venv/bin/activate
+
+# Full pipeline
+bash scripts/clone-pipeline.sh /path/to/track.mp3 /tmp/clone-output
+
+# Individual scripts
+python3 scripts/analyze-bpm-key.py /path/to/track.mp3 /tmp/analysis
+python3 scripts/extract-drums.py /tmp/stems/htdemucs/track/drums.wav /tmp/extracted/drums
+python3 scripts/extract-bass.py /tmp/stems/htdemucs/track/bass.wav /tmp/extracted
+python3 scripts/extract-leads.py /tmp/stems/htdemucs/track/other.wav /tmp/extracted
+```
+
+---
+
 ## Learning Resources
 
 Detailed documentation lives in `docs/`:

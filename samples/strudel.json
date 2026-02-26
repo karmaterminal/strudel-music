@@ -1,7 +1,6 @@
 {
   "_base": "./",
   "_comment": "Pitched sample map for Frisson instrument rack. Keys are note names, values are paths relative to _base. Renderer uses this as authoritative source for root note detection.",
-
   "kick": {
     "0": "kick/kick.wav"
   },
@@ -14,7 +13,6 @@
   "kick_ghost": {
     "0": "kick_ghost/kick_ghost.wav"
   },
-
   "bass_Cs1": {
     "cs1": "bass_Cs1/bass_Cs1.wav"
   },
@@ -45,14 +43,12 @@
   "bass_As1": {
     "as1": "bass_As1/bass_As1.wav"
   },
-
   "synth_lead": {
     "cs3": "synth_lead/synth_lead.wav"
   },
   "synth_lead_2": {
     "cs4": "synth_lead_2/synth_lead_2.wav"
   },
-
   "other_000": {
     "0": "other_000/other_000.wav"
   },
@@ -65,9 +61,7 @@
   "other_003": {
     "0": "other_003/other_003.wav"
   },
-
-  "_comment_bloom": "Bloom — Cosmic Gate & Pretty Pink (D minor, 126 BPM)",
-
+  "_comment_bloom": "Bloom \u2014 Cosmic Gate & Pretty Pink (D minor, 126 BPM)",
   "bloom_kick": {
     "0": "bloom_kick/bloom_kick.wav"
   },
@@ -83,7 +77,6 @@
   "bloom_mid_perc2": {
     "0": "bloom_mid_perc2/bloom_mid_perc2.wav"
   },
-
   "bloom_bass_D1": {
     "d1": "bloom_bass_D1/bloom_bass_D1.wav"
   },
@@ -108,7 +101,6 @@
   "bloom_bass_Cs2": {
     "cs2": "bloom_bass_Cs2/bloom_bass_Cs2.wav"
   },
-
   "bloom_lead_D3": {
     "d3": "bloom_lead_D3/bloom_lead_D3.wav"
   },
@@ -130,7 +122,6 @@
   "bloom_lead_G2": {
     "g2": "bloom_lead_G2/bloom_lead_G2.wav"
   },
-
   "bloom_bass_As2": {
     "as2": "bloom_bass_As2/bloom_bass_As2.wav"
   },
@@ -152,11 +143,9 @@
   "bloom_bass_Gs1": {
     "gs1": "bloom_bass_Gs1/bloom_bass_Gs1.wav"
   },
-
   "bloom_mid_perc3": {
     "0": "bloom_mid_perc3/bloom_mid_perc3.wav"
   },
-
   "bloom_lead_B2": {
     "b2": "bloom_lead_B2/bloom_lead_B2.wav"
   },
@@ -168,5 +157,58 @@
   },
   "bloom_lead_Gs2": {
     "gs2": "bloom_lead_Gs2/bloom_lead_Gs2.wav"
+  },
+  "frbass": {
+    "cs1": "frbass/bass_Cs1.wav",
+    "d1": "frbass/bass_D1.wav",
+    "ds1": "frbass/bass_Ds1.wav",
+    "e1": "frbass/bass_E1.wav",
+    "f1": "frbass/bass_F1.wav",
+    "fs1": "frbass/bass_Fs1.wav",
+    "g1": "frbass/bass_G1.wav",
+    "gs1": "frbass/bass_Gs1.wav",
+    "a1": "frbass/bass_A1.wav",
+    "as1": "frbass/bass_As1.wav"
+  },
+  "frkick": {
+    "0": "frkick/kick.wav"
+  },
+  "frhat": {
+    "0": "frhat/hat.wav"
+  },
+  "frclap": {
+    "0": "frclap/clap.wav"
+  },
+  "frkick_ghost": {
+    "0": "frkick_ghost/kick_ghost.wav"
+  },
+  "frlead": {
+    "0": "frlead/synth_lead.wav"
+  },
+  "frlead2": {
+    "0": "frlead2/synth_lead_2.wav"
+  },
+  "frissother": {
+    "0": "frissother/000.wav",
+    "1": "frissother/001.wav",
+    "2": "frissother/002.wav",
+    "3": "frissother/003.wav",
+    "4": "frissother/004.wav",
+    "5": "frissother/005.wav",
+    "6": "frissother/006.wav",
+    "7": "frissother/007.wav",
+    "8": "frissother/008.wav",
+    "9": "frissother/009.wav",
+    "10": "frissother/010.wav",
+    "11": "frissother/011.wav",
+    "12": "frissother/012.wav",
+    "13": "frissother/013.wav",
+    "14": "frissother/014.wav",
+    "15": "frissother/015.wav",
+    "16": "frissother/016.wav",
+    "17": "frissother/017.wav",
+    "18": "frissother/018.wav",
+    "19": "frissother/019.wav",
+    "20": "frissother/020.wav"
   }
 }

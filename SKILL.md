@@ -39,6 +39,8 @@ metadata:
       For untrusted patterns, use a sandbox (container/VM) with no credentials.
 ---
 
+> ⚠️ **Legal Notice:** This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material.
+
 # Strudel Music 🎵
 
 Compose, render, deconstruct, and remix music using code. Takes natural language prompts → writes Strudel patterns → renders offline through real Web Audio synthesis → posts audio or streams to Discord VC. Can also reverse-engineer any audio track into stems, samples, and generative programs.
@@ -174,6 +176,174 @@ Ships with **dirt-samples** (153 WAVs, CC-licensed). Security: downloads enforce
 
 ### Pattern Basics
 
+**CC0 / Free packs (just download and drop in `samples/`):**
+- [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — 800+ samples (full pack, we ship a subset)
+- [Signature Sounds – Homemade Drum Kit](https://signalsounds.com) (CC0) — 150+ one-shots
+- [Looping – Synth Pack 01](https://looping.com) (CC0) — synth one-shots + loops
+- [artgamesound.com](https://artgamesound.com) — CC0 searchable aggregator
+
+**Your own packs:** Export from any DAW (Ableton, FL Studio, M8 tracker, etc.) as WAV directories. Strudel doesn't care where they came from — it's just WAV files in folders.
+
+**Named banks** (Strudel built-in, requires CDN access):
+```javascript
+sound("bd sd cp hh").bank("RolandTR909")
+sound("bd sd hh oh").bank("LinnDrum")
+```
+
+### WSL2 Note
+
+If running on WSL2 and streaming to Discord VC, enable **mirrored networking**:
+
+```ini
+# %USERPROFILE%\.wslconfig
+[wsl2]
+networkingMode=mirrored
+```
+
+Then `wsl --shutdown` and relaunch. Without this, WSL2's NAT breaks Discord's UDP voice protocol — the bot joins the channel but no audio flows because IP discovery packets can't traverse the NAT return path. Mirrored mode eliminates the NAT by putting WSL2 directly on the host's network stack.
+
+This only affects VC streaming. Offline rendering and file posting work in any networking mode.
+
+## Platform Requirements
+
+Two tiers, depending on what you need:
+
+### Compose & Render (JS-only)
+- **Node.js 18+** (22+ recommended for stable `OfflineAudioContext`)
+- **ffmpeg** (MP3/Opus conversion)
+- Works everywhere — x86_64, ARM64, WSL2, bare metal, containers.
+- No Python. No GPU. No ML stack.
+
+### Full Pipeline (audio deconstruction with Demucs)
+Everything above, plus:
+- **Python 3.10+**
+- **pip packages:** `demucs`, `librosa`, `numpy`, `scipy`, `scikit-learn`, `torch`
+- ~2GB disk for PyTorch + Demucs model weights (downloaded on first run)
+- **Optional:** NVIDIA GPU + CUDA toolkit for ~5× Demucs speedup
+
+Install the Python deps:
+```bash
+pip install demucs librosa numpy scipy scikit-learn torch
+```
+
+If Python deps are missing, composition and rendering still work — you just can't do stem extraction. The skill should fail gracefully with a message, not a stack trace.
+
+---
+
+## Full Pipeline (Audio Deconstruction)
+
+If you have an MP3 and want to extract instruments from it, build sample racks, and compose with the extracted material — that's the full pipeline. It goes:
+
+```
+MP3 → Demucs (stem separation) → librosa (analysis) → sample slicing → Strudel composition → render → MP3
+```
+
+**This is a 4–8 minute process for a typical track.** See `docs/pipeline.md` for the complete stage-by-stage breakdown with commands, timings, and resource requirements.
+
+### Quick version
+
+```bash
+# 1. Separate stems (Python/Demucs)
+python -m demucs input.mp3 --out ./stems
+
+# 2. Analyze + slice (see docs/pipeline.md for details)
+# Currently semi-manual — analysis scripts in development
+
+# 3. Write composition referencing sliced samples
+# 4. Render
+bash scripts/dispatch.sh render my-composition.js 16 120
+
+# 5. Convert
+ffmpeg -i output.wav -c:a libmp3lame -q:a 2 output.mp3 -y
+```
+
+### Timings (ballpark)
+
+| Stage | CPU estimate | GPU estimate |
+|-------|-------------|-------------|
+| Demucs stem separation | ~15s/min of audio | ~3s/min of audio |
+| Audio analysis (per stem) | ~10–20s | ~10–20s |
+| Sample slicing | ~5s | ~5s |
+| Composition | instant (human/AI writes JS) | instant |
+| Rendering | ~30–60s/min of output | ~30–60s/min of output |
+| MP3 conversion | ~5s | ~5s |
+
+**Total (4-min track, CPU):** 4–8 minutes. **Compose + render only (no Demucs):** 2–3 minutes.
+
+---
+
+## ⚠️ Session Safety — READ THIS
+
+> **The full pipeline takes 4–8 minutes. Composition + render alone takes 2–3 minutes.**
+>
+> **DO NOT** run this inline in a Discord channel interaction or primary OpenClaw session.
+> The 30-second response timeout will kill the process mid-render. There is no supervisor to recover. The skill will appear broken — silence, no output, no error message.
+
+### How to run safely
+
+**From an OpenClaw agent (correct):**
+```javascript
+sessions_spawn({
+  task: "Render strudel composition: /strudel dark ambient tension, 65bpm",
+  mode: "run",
+  runTimeoutSeconds: 600  // 10 minutes — generous for full pipeline
+})
+```
+
+**Background process (also correct):**
+```bash
+exec({ command: "bash scripts/dispatch.sh render ...", background: true })
+```
+
+**Direct CLI (fine for testing):**
+```bash
+bash scripts/dispatch.sh render assets/compositions/fog-and-starlight.js 16 72
+```
+
+**What to tell the user:** "Rendering takes a few minutes — I'll post the audio when it's ready." Don't leave them hanging with no feedback.
+
+### What NOT to do
+
+```javascript
+// WRONG — will timeout after 30s in Discord context
+exec({ command: "bash scripts/dispatch.sh render ..." })
+
+// WRONG — blocking the main session for minutes
+// (anything inline that takes >30s)
+```
+
+---
+
+## Learning Resources
+
+Detailed documentation lives in `docs/`:
+
+| Document | What it covers |
+|----------|---------------|
+| [`docs/pipeline.md`](docs/pipeline.md) | Full pipeline stages, commands, timings, resource requirements, system dependencies |
+| [`docs/composition-guide.md`](docs/composition-guide.md) | Practical composition lessons — mini-notation pitfalls, the space-vs-angle-bracket rule, `.slow()` interactions, debugging hap explosions |
+| [`docs/TESTING.md`](docs/TESTING.md) | Testing strategy — smoke tests, cross-platform validation, quality gates, naive install testing |
+
+**Start with `composition-guide.md`** if you're writing patterns. The space-separated vs angle-bracket distinction is the #1 source of bugs (gain explosions, distortion, memory crashes). The guide covers it with real case studies.
+
+---
+
+## How It Works
+
+The offline renderer uses **node-web-audio-api** (Rust-based Web Audio for Node.js) for real audio synthesis:
+
+1. **Pattern evaluation** — `@strudel/core` + `@strudel/mini` + `@strudel/tonal` parse pattern code into timed "haps"
+2. **Audio scheduling** — Each hap becomes either:
+   - An **oscillator** (sine/saw/square/triangle) with ADSR envelope, biquad filter, stereo pan
+   - A **sample** (AudioBufferSourceNode) from the samples directory, with pitch shifting
+3. **Offline rendering** — `OfflineAudioContext.startRendering()` produces complete audio
+4. **Output** — 16-bit stereo WAV at 44.1kHz → ffmpeg → MP3/Opus
+
+**Note on mini notation:** The renderer explicitly calls `setStringParser(mini.mini)` after import because Strudel's npm dist bundles duplicate the Pattern class across modules. Same class of bug as [openclaw#22790](https://github.com/openclaw/openclaw/issues/22790).
+
+## Composition Reference
+
+### Tempo
 ```javascript
 setcpm(120/4)  // 120 BPM
 

@@ -6,6 +6,10 @@
 
 Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js — with real drum samples, ADSR envelopes, and biquad filters.
 
+## ⚠️ Legal Notice
+
+This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material. Extracted samples are for personal/educational use unless you have explicit permission from rights holders.
+
 ## What It Does
 
 ```
@@ -219,6 +223,14 @@ references/                — Mood decision tree, production techniques, archit
 .specify/
   workorders/              — SpecKit work tracking
 ```
+
+## Pipeline
+
+The full audio deconstruction pipeline runs through six stages: Demucs stem separation → audio analysis → sample slicing → composition → rendering → MP3 conversion. End-to-end, expect **4–8 minutes for a 4-minute track** on CPU. Composition + rendering (the JS-only path) takes 2–3 minutes with no Python required. See **[docs/pipeline.md](docs/pipeline.md)** for stage-by-stage breakdown, timings, resource requirements, and the critical session safety warning — this pipeline **must not** be run in a primary OpenClaw session or Discord interaction (it will timeout and appear broken).
+
+## Testing
+
+The publish path is: private fork RC → cross-platform validation (x86_64 + ARM64) → public repo merge → ClaHub publish. Each stage gates the next. See **[docs/TESTING.md](docs/TESTING.md)** for the full test matrix, quality gates, and naive install procedure.
 
 ## Development
 

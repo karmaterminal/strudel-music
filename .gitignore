@@ -9,3 +9,4 @@ tmp/
 *.local
 node_modules/
 samples/
+!samples/strudel.json

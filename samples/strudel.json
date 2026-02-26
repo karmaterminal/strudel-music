@@ -1,0 +1,68 @@
+{
+  "_base": "./",
+  "_comment": "Pitched sample map for Frisson instrument rack. Keys are note names, values are paths relative to _base. Renderer uses this as authoritative source for root note detection.",
+
+  "kick": {
+    "0": "kick/kick.wav"
+  },
+  "hat": {
+    "0": "hat/hat.wav"
+  },
+  "clap": {
+    "0": "clap/clap.wav"
+  },
+  "kick_ghost": {
+    "0": "kick_ghost/kick_ghost.wav"
+  },
+
+  "bass_Cs1": {
+    "cs1": "bass_Cs1/bass_Cs1.wav"
+  },
+  "bass_D1": {
+    "d1": "bass_D1/bass_D1.wav"
+  },
+  "bass_Ds1": {
+    "ds1": "bass_Ds1/bass_Ds1.wav"
+  },
+  "bass_E1": {
+    "e1": "bass_E1/bass_E1.wav"
+  },
+  "bass_F1": {
+    "f1": "bass_F1/bass_F1.wav"
+  },
+  "bass_Fs1": {
+    "fs1": "bass_Fs1/bass_Fs1.wav"
+  },
+  "bass_G1": {
+    "g1": "bass_G1/bass_G1.wav"
+  },
+  "bass_Gs1": {
+    "gs1": "bass_Gs1/bass_Gs1.wav"
+  },
+  "bass_A1": {
+    "a1": "bass_A1/bass_A1.wav"
+  },
+  "bass_As1": {
+    "as1": "bass_As1/bass_As1.wav"
+  },
+
+  "synth_lead": {
+    "cs3": "synth_lead/synth_lead.wav"
+  },
+  "synth_lead_2": {
+    "cs4": "synth_lead_2/synth_lead_2.wav"
+  },
+
+  "other_000": {
+    "0": "other_000/other_000.wav"
+  },
+  "other_001": {
+    "0": "other_001/other_001.wav"
+  },
+  "other_002": {
+    "0": "other_002/other_002.wav"
+  },
+  "other_003": {
+    "0": "other_003/other_003.wav"
+  }
+}

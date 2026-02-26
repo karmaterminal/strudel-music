@@ -198,9 +198,58 @@ function loadWavRaw(filePath) {
   return null;
 }
 
+// ── strudel.json root note manifest ──
+// Maps bank name → MIDI root note (authoritative when present)
+const strudelRootNotes = new Map();
+
+/**
+ * Parse a note key from strudel.json (e.g. "cs1", "a1", "d3") into MIDI note number.
+ * Returns null for non-note keys like "0" or numeric indices.
+ */
+function parseStrudelNoteKey(key) {
+  const m = String(key).match(/^([a-gA-G])(s|#|b)?(\d+)$/);
+  if (!m) return null;
+  const map = { c:0, d:2, e:4, f:5, g:7, a:9, b:11 };
+  let semi = map[m[1].toLowerCase()] ?? 0;
+  if (m[2] === 's' || m[2] === '#') semi++;
+  if (m[2] === 'b') semi--;
+  const oct = parseInt(m[3]);
+  return semi + (oct + 1) * 12;
+}
+
 if (existsSync(SAMPLES_DIR)) {
   console.log('Loading samples...');
   let sampleCount = 0;
+
+  // Load strudel.json manifest if present
+  const strudelJsonPath = path.join(SAMPLES_DIR, 'strudel.json');
+  let strudelManifest = null;
+  if (existsSync(strudelJsonPath)) {
+    try {
+      strudelManifest = JSON.parse(readFileSync(strudelJsonPath, 'utf8'));
+      console.log('  📋 Found strudel.json manifest');
+
+      // Extract root notes from the manifest
+      for (const [bankName, mapping] of Object.entries(strudelManifest)) {
+        if (bankName.startsWith('_')) continue; // skip meta keys
+        if (typeof mapping !== 'object' || mapping === null) continue;
+        const noteKeys = Object.keys(mapping).map(k => parseStrudelNoteKey(k)).filter(n => n !== null);
+        if (noteKeys.length > 0) {
+          // For multi-sample banks, use the lowest note as root (closest to fundamental)
+          // For single-sample banks, use that note
+          const rootMidi = Math.min(...noteKeys);
+          strudelRootNotes.set(bankName, rootMidi);
+        }
+      }
+
+      if (strudelRootNotes.size > 0) {
+        console.log(`  🎹 Root notes from manifest: ${[...strudelRootNotes.entries()].map(([k, v]) => `${k}→MIDI${v}`).join(', ')}`);
+      }
+    } catch (e) {
+      console.warn('  ⚠️ Failed to parse strudel.json:', e.message);
+    }
+  }
+
   for (const dir of readdirSync(SAMPLES_DIR)) {
     const dirPath = path.join(SAMPLES_DIR, dir);
     try {
@@ -256,10 +305,19 @@ function noteToSemitones(note) {
 
 /**
  * Detect root note from sample bank name.
- * e.g. "bass_Cs1" → MIDI 25 (C#1), "synth_lead" → MIDI 60 (C3 default)
+ * 
+ * Priority:
+ * 1. strudel.json manifest (authoritative if present)
+ * 2. Filename heuristic: e.g. "bass_Cs1" → MIDI 25 (C#1)
+ * 3. Default: MIDI 60 (C3)
  */
 function detectRootNote(sampleName) {
-  // Try to match a trailing note name like _Cs1, _A1, _Fs2 etc.
+  // 1. Check strudel.json manifest first (authoritative)
+  if (strudelRootNotes.has(sampleName)) {
+    return strudelRootNotes.get(sampleName);
+  }
+
+  // 2. Try to match a trailing note name like _Cs1, _A1, _Fs2 etc.
   const m = String(sampleName).match(/[_-]([A-Ga-g])(s|#|b)?(\d+)$/);
   if (m) {
     const map = { c:0, d:2, e:4, f:5, g:7, a:9, b:11 };
@@ -269,7 +327,9 @@ function detectRootNote(sampleName) {
     const oct = parseInt(m[3]);
     return semi + (oct + 1) * 12;
   }
-  return 60; // default: C3 / MIDI 60
+
+  // 3. Default
+  return 60; // C3 / MIDI 60
 }
 
 /**

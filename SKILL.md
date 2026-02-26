@@ -16,6 +16,7 @@ requires:
 optional:
   - python3 + demucs (for stem separation)
   - python3 + librosa (for pitch/onset analysis)
+envVars: []  # No additional env vars needed — uses OpenClaw's built-in Discord channel
 metadata:
   openclaw:
     emoji: "🎵"
@@ -33,10 +34,11 @@ metadata:
         package: ffmpeg
         bins: [ffmpeg]
         label: "Install ffmpeg (audio format conversion)"
-    securityNotes: >
-      Strudel compositions are JavaScript evaluated in Node.js. Patterns CAN
-      access filesystem, env vars, and network. Only run trusted compositions.
-      For untrusted patterns, use a sandbox (container/VM) with no credentials.
+    securityNotes: |
+      - Compositions are JavaScript executed by Node.js — they CAN access filesystem, env vars, and network
+      - Discord streaming uses OpenClaw's built-in voice channel support — no separate BOT_TOKEN required
+      - Run only trusted compositions or sandbox in a container/VM with no sensitive credentials
+      - The skill does NOT require or manage any Discord credentials directly
 ---
 
 > ⚠️ **Legal Notice:** This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material.
@@ -465,9 +467,41 @@ All synthesis is local and offline via `OfflineAudioContext`: oscillators, biqua
 
 ---
 
-## Security
+## 🔒 Security Model
 
-Strudel compositions are **evaluated JavaScript**. They can access the filesystem, environment, and network. Only run compositions you trust. For untrusted patterns, use an OpenClaw sandbox with no credentials mounted.
+Strudel compositions are JavaScript files executed by Node.js. They have the same access as any Node.js script:
+- **Filesystem**: read/write access to the working directory
+- **Environment**: can read environment variables
+- **Network**: can make HTTP requests
+
+**For untrusted compositions:**
+- Run in a container or VM with no sensitive credentials in the environment
+- Use OpenClaw's sub-agent isolation (each sub-agent gets its own process)
+- Review composition code before rendering
+
+**For your own compositions:** No special precautions needed — you wrote the code.
+
+This is the same trust model as any programming language skill. The renderer itself is safe; the risk is in what compositions you choose to run.
+
+### Discord Integration
+
+This skill uses OpenClaw's built-in Discord voice channel support for streaming. **No separate `BOT_TOKEN`, `DISCORD_TOKEN`, or any Discord credentials are required.** OpenClaw handles all Discord authentication and connection management. The skill simply produces audio files and hands them to OpenClaw's voice subsystem.
+
+### npm install safety
+
+`package.json` contains no `postinstall`, `preinstall`, or lifecycle hooks. `npm run setup` runs `npm install` + `scripts/download-samples.sh` (downloads CC0 sample packs from known URLs).
+
+### What `scripts/download-samples.sh` fetches
+
+The download script sparse-clones [tidalcycles/Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) from GitHub (CC-licensed) — specifically these directories: `bd sd hh oh cp cr ride rim mt lt ht cb 808bd 808sd 808hc 808oh`. This fetches ~153 WAV files (~11MB total). The script is idempotent (skips if samples already exist).
+
+### What `scripts/samples-manage.sh` does
+
+The sample manager downloads additional packs from user-specified URLs with safety controls:
+- **Size limit**: configurable via `STRUDEL_MAX_DOWNLOAD_MB` (default: 10GB)
+- **Host allowlist**: optional `STRUDEL_ALLOWED_HOSTS` (comma-separated; empty = allow all)
+- **MIME validation**: checks downloaded files are audio or archive types
+- **Path traversal protection**: validates extracted paths don't escape the samples directory (zip-slip protection)
 
 ---
 

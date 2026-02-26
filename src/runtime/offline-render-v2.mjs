@@ -366,6 +366,7 @@ for (const hap of haps) {
   if (typeof v !== 'object' || v === null) continue;
 
   const gain = Math.min(v.gain ?? 0.3, 1.0);
+  if (gain <= 0.001) continue; // Skip silent haps (saves memory on masked layers)
   const sound = v.s || '';
   const nVal = v.n !== undefined ? Math.round(Number(v.n)) : 0;
   const lpf = v.lpf ?? v.cutoff ?? 6000;

@@ -689,11 +689,13 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
 }
 
 // ── Main: chunk loop ──
+// Two-pass approach: render into float buffers, find peak, then normalize and write.
 console.log(`Rendering ${totalCycles} cycles in chunks of ${chunkSize}...`);
 
-const allPcmChunks = [];
+const allFloatChunks = [];  // Store raw float data for normalization pass
 let totalScheduled = 0;
 let totalHaps = 0;
+let globalPeak = 0;
 
 for (let c = 0; c < totalCycles; c += chunkSize) {
   const end = Math.min(c + chunkSize, totalCycles);
@@ -701,16 +703,15 @@ for (let c = 0; c < totalCycles; c += chunkSize) {
   totalScheduled += scheduled;
   totalHaps += haps;
   
-  // Convert to 16-bit PCM
-  const pcm = Buffer.alloc(left.length * 4);
+  // Track raw peak levels
   for (let i = 0; i < left.length; i++) {
-    // Soft clip to prevent harsh clipping
-    const l = Math.tanh(left[i]);
-    const r = Math.tanh(right[i]);
-    pcm.writeInt16LE(Math.round(Math.max(-1, Math.min(1, l)) * 32767), i * 4);
-    pcm.writeInt16LE(Math.round(Math.max(-1, Math.min(1, r)) * 32767), i * 4 + 2);
+    const al = Math.abs(left[i]);
+    const ar = Math.abs(right[i]);
+    if (al > globalPeak) globalPeak = al;
+    if (ar > globalPeak) globalPeak = ar;
   }
-  allPcmChunks.push(pcm);
+  
+  allFloatChunks.push({ left, right });
   
   if ((c / chunkSize) % 5 === 0 || end >= totalCycles) {
     const pct = Math.round(end / totalCycles * 100);
@@ -720,9 +721,30 @@ for (let c = 0; c < totalCycles; c += chunkSize) {
 }
 
 console.log(`  Total: ${totalScheduled}/${totalHaps} haps scheduled`);
+console.log(`  🔊 Raw peak: ${globalPeak.toFixed(4)} (${(20*Math.log10(globalPeak)).toFixed(1)} dBFS)`);
+
+// ── Normalize and convert to 16-bit PCM ──
+// Target: -3 dBTP (peak at 0.708) to leave headroom for MP3 encoding
+const targetPeak = 0.708; // -3 dBTP
+const normGain = globalPeak > 0 ? targetPeak / globalPeak : 1.0;
+console.log(`  📐 Normalizing: gain = ${normGain.toFixed(6)} (${(20*Math.log10(normGain)).toFixed(1)} dB)`);
+
+const allPcmChunks = [];
+for (const { left, right } of allFloatChunks) {
+  const pcm = Buffer.alloc(left.length * 4);
+  for (let i = 0; i < left.length; i++) {
+    const l = Math.max(-1, Math.min(1, left[i] * normGain));
+    const r = Math.max(-1, Math.min(1, right[i] * normGain));
+    pcm.writeInt16LE(Math.round(l * 32767), i * 4);
+    pcm.writeInt16LE(Math.round(r * 32767), i * 4 + 2);
+  }
+  allPcmChunks.push(pcm);
+}
+
+// Free float buffers
+allFloatChunks.length = 0;
 
 // ── Concatenate and write WAV ──
-const totalPcmLen = allPcmChunks.reduce((sum, c) => sum + c.length, 0);
 const pcm = Buffer.concat(allPcmChunks);
 
 const wav = makeWav(pcm, sampleRate, 2, 16);

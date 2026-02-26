@@ -1,202 +1,282 @@
 ---
 name: strudel-music
-description: "Compose, render, and play music using Strudel live-coding patterns. Usage: /strudel <prompt> — describe what you want to hear (mood, scene, genre, instruments). /strudel play <name> — play a saved composition in Discord VC. /strudel samples — manage sample packs. /strudel list — show available compositions. Like /imagine for Midjourney, but for music."
+description: >
+  Audio deconstruction and composition via Strudel live-coding. Compose music
+  from natural language prompts, render offline to WAV/MP3, stream to Discord VC.
+  Deconstruct any audio into stems, extract samples, compose with the vocabulary.
+  Usage: /strudel <prompt> | /strudel play <name> | /strudel list | /strudel samples.
+version: 0.3.0
+author: the dandelion cult
+license: MIT
+tags: [music, audio, strudel, composition, samples, trance]
 user-invocable: true
-metadata: { "openclaw": { "emoji": "🎵", "requires": { "bins": ["node"], "anyBins": ["ffmpeg"], "env": ["DISCORD_BOT_TOKEN"], "node": ">=18", "description": "Offline rendering requires Node.js 18+. ffmpeg needed for MP3/Opus conversion. DISCORD_BOT_TOKEN only required for VC streaming — compose/render works without it." }, "primaryEnv": "DISCORD_BOT_TOKEN", "install": [{ "id": "setup", "kind": "script", "script": "npm install && bash scripts/download-samples.sh", "label": "Install dependencies + download drum samples (~11MB from github.com/tidalcycles/Dirt-Samples, CC-licensed)" }, { "id": "ffmpeg", "kind": "apt", "package": "ffmpeg", "bins": ["ffmpeg"], "label": "Install ffmpeg (audio format conversion)" }], "securityNotes": "PATTERN EXECUTION: Strudel compositions are JavaScript evaluated in Node.js. Patterns CAN access the filesystem, environment variables, and network. Only run compositions you trust. For untrusted patterns, run in a sandbox (container/VM) with no credentials mounted. SAMPLE DOWNLOADS: Default samples fetched from github.com/tidalcycles/Dirt-Samples (CC-licensed). The 'samples add <url>' command enforces a configurable size limit (STRUDEL_MAX_DOWNLOAD_MB, default 10240/10GB), MIME type validation on downloaded archives, and an optional host allowlist (STRUDEL_ALLOWED_HOSTS, comma-separated). Only add packs from trusted sources. CREDENTIALS: DISCORD_BOT_TOKEN is only needed for VC streaming. Compose/render/list work with zero credentials. If providing a token, use minimal scopes (Connect, Speak, Send Messages). RENDERING: All audio synthesis is local and offline via node-web-audio-api (Rust/C++ Web Audio for Node.js). No browser, no puppeteer, no remote code execution. Legacy browser renderer scripts exist in repo but are marked DEPRECATED and not invoked by the skill. RECOMMENDED: Run this skill in an OpenClaw sandbox when accepting user-submitted patterns." } }
+requires:
+  - node >= 20
+  - ffmpeg
+optional:
+  - python3 + demucs (for stem separation)
+  - python3 + librosa (for pitch/onset analysis)
+metadata:
+  openclaw:
+    emoji: "🎵"
+    requires:
+      bins: [node]
+      anyBins: [ffmpeg]
+      node: ">=20"
+    install:
+      - id: setup
+        kind: script
+        script: "npm install && bash scripts/download-samples.sh"
+        label: "Install dependencies + download drum samples (~11MB)"
+      - id: ffmpeg
+        kind: apt
+        package: ffmpeg
+        bins: [ffmpeg]
+        label: "Install ffmpeg (audio format conversion)"
+    securityNotes: >
+      Strudel compositions are JavaScript evaluated in Node.js. Patterns CAN
+      access filesystem, env vars, and network. Only run trusted compositions.
+      For untrusted patterns, use a sandbox (container/VM) with no credentials.
 ---
 
 # Strudel Music 🎵
 
-**Like `/imagine` for Midjourney, but for music.** Compose, render, and stream music using Strudel live-coding patterns — entirely offline, no browser required.
+Compose, render, deconstruct, and remix music using code. Takes natural language prompts → writes Strudel patterns → renders offline through real Web Audio synthesis → posts audio or streams to Discord VC. Can also reverse-engineer any audio track into stems, samples, and generative programs.
 
-## Command Interface
+> **New here?** Read [docs/ONBOARDING.md](docs/ONBOARDING.md) for a ground-up introduction.
 
-When a user invokes `/strudel`, route based on intent:
+---
 
-### `/strudel <prompt>` — Compose from description
-Generate a Strudel pattern from a natural language prompt. The agent interprets the mood, instruments, tempo, and structure, writes a composition file, renders it to audio, and posts the result.
+## ⚠️ SESSION SAFETY — READ THIS FIRST
 
-**Examples:**
-- `/strudel dark ambient tension, low drones, sparse percussion, 65bpm`
-- `/strudel upbeat tavern music with fiddle and drums`
-- `/strudel lo-fi chill beats to study to`
-- `/strudel epic battle music, brass and timpani, 140bpm`
-- `/strudel a theme for a character named Cael — curious, quick, a little dangerous`
+**Rendering MUST run as a sub-agent or background process, never inline in your main session.**
 
-**Workflow:**
-1. Parse prompt → select mood, key, tempo, instruments from the decision tree
-2. Write a `.js` composition file using Strudel pattern syntax
-3. Render via `node src/runtime/offline-render-v2.mjs <file> <output.wav> <cycles> <bpm>`
-4. Convert: `ffmpeg -i output.wav -c:a libmp3lame -q:a 2 output.mp3`
-5. Post the MP3 as an attachment in the channel
-6. Optionally: play in Discord VC if user is in a voice channel
+The offline renderer (`chunked-render.mjs` / `offline-render-v2.mjs`) runs a tight audio-processing loop that blocks the Node.js event loop. If you run it in your main OpenClaw session, **it will kill the gateway after ~30 seconds** (the heartbeat timeout).
 
-### `/strudel play <name>` — Play in Discord VC
-Stream a saved composition into the user's Discord voice channel.
-
-```bash
-# Render + convert + stream
-node src/runtime/offline-render-v2.mjs "assets/compositions/<name>.js" /tmp/<name>.wav 16 120
-ffmpeg -i /tmp/<name>.wav -ar 48000 -ac 2 /tmp/<name>-48k.wav -y
-node scripts/vc-play.mjs /tmp/<name>-48k.wav
+```
+✅ Correct: spawn a sub-agent or use background exec
+❌ Wrong:   run the renderer inline in your main conversation
 ```
 
-### `/strudel list` — Show available compositions
-List all `.js` files in `assets/compositions/` with their metadata (`@title`, `@mood`, `@tempo`).
+**Always do this:**
+```bash
+# Background exec with timeout
+exec background:true timeout:120 command:"node src/runtime/chunked-render.mjs src/compositions/my-track.js output/my-track.wav 20"
+```
 
-### `/strudel samples` — Manage sample packs
-**Subcommands:**
-- `/strudel samples list` — show installed sample directories and counts
-- `/strudel samples download` — re-run `scripts/download-samples.sh` (idempotent — skips if already present)
-- `/strudel samples add <url>` — download a sample pack from a URL (ZIP/tar containing WAV directories)
-- `/strudel samples add <path>` — symlink or copy a local directory into `samples/`
+**Or spawn a sub-agent:**
+```
+sessions_spawn task:"Render strudel-music composition: node src/runtime/chunked-render.mjs ..."
+```
 
-**How custom samples work:**
-Drop any directory of WAV files into `samples/<name>/`. They're automatically discovered by the renderer. Use them in patterns with `s("<name>")`. Variations are indexed by filename sort order — access with `s("<name>").n(3)`.
+This is the #1 way to break things. Don't skip this.
 
-Example: if you have an Ableton drum rack exported as WAVs:
+---
+
+## Quick Start
+
+```bash
+# 1. Setup
+cd ~/.openclaw/workspace/strudel-music
+npm run setup              # installs deps + downloads samples (~11MB)
+
+# 2. Verify
+npm test                   # 12-point smoke test
+
+# 3. Render
+node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js output/fog.wav 16
+ffmpeg -i output/fog.wav -codec:a libmp3lame -b:a 192k output/fog.mp3
+```
+
+## Commands
+
+| Invocation | What it does |
+|---|---|
+| `/strudel <prompt>` | Compose from natural language — mood, scene, genre, instruments |
+| `/strudel play <name>` | Stream a saved composition into Discord VC |
+| `/strudel list` | Show available compositions with metadata |
+| `/strudel samples` | Manage sample packs (list, download, add) |
+| `/strudel concert <tracks...>` | Play a setlist in Discord VC |
+
+### Composition Workflow
+
+1. Parse prompt → select mood, key, tempo, instruments (see `references/mood-parameters.md`)
+2. Write a `.js` composition using Strudel pattern syntax
+3. Render (in background!):
+   ```bash
+   node src/runtime/chunked-render.mjs <file> <output.wav> <cycles> [chunkSize]
+   ```
+4. Convert to MP3:
+   ```bash
+   ffmpeg -i output.wav -codec:a libmp3lame -b:a 192k output.mp3
+   ```
+5. Post the MP3 as attachment or stream to Discord VC
+
+### Discord VC Streaming
+
+```bash
+node src/runtime/offline-render-v2.mjs assets/compositions/combat-assault.js /tmp/track.wav 12 140
+ffmpeg -i /tmp/track.wav -ar 48000 -ac 2 /tmp/track-48k.wav -y
+node scripts/vc-play.mjs /tmp/track-48k.wav
+```
+
+WSL2 users: enable mirrored networking (`networkingMode=mirrored` in `.wslconfig`) or VC streaming will fail silently (NAT breaks Discord's UDP voice protocol).
+
+## Sample Management
+
+### Directory Layout
+
+Samples live in `samples/`. Any directory of WAV files is auto-discovered.
+
 ```
 samples/
-  my-kit/
-    kick-soft.wav    → s("my-kit").n(0)
-    kick-hard.wav    → s("my-kit").n(1)
-    snare-tight.wav  → s("my-kit").n(2)
-    snare-loose.wav  → s("my-kit").n(3)
+├── strudel.json          ← sample map (pitch info, paths)
+├── kick/
+│   └── kick.wav
+├── hat/
+│   └── hat.wav
+├── bass_Cs1/
+│   └── bass_Cs1.wav      ← pitched sample (root: C#1)
+├── synth_lead/
+│   └── synth_lead.wav     ← pitched sample (root: C#3, declared in strudel.json)
+└── bloom_kick/
+    └── bloom_kick.wav     ← from audio deconstruction
 ```
 
-### `/strudel concert <name> [name2] [name3] ...` — Play a setlist
-Render and stream multiple compositions sequentially into Discord VC.
+### strudel.json Format
 
-## Setup
+Maps sample names to files with optional root note declarations. The renderer uses this as the authoritative source for pitch detection.
+
+```json
+{
+  "_base": "./",
+  "kick": { "0": "kick/kick.wav" },
+  "bass_Cs1": { "cs1": "bass_Cs1/bass_Cs1.wav" },
+  "synth_lead": { "cs3": "synth_lead/synth_lead.wav" }
+}
+```
+
+- Keys with note suffixes (`_Cs1`, `_D2`) declare the root pitch
+- Unpitched samples use `"0"` as the key
+- Always declare root notes for pitched samples — without it, the renderer defaults to C4, causing wrong transpositions (see [docs/KNOWN-PITFALLS.md](docs/KNOWN-PITFALLS.md#3-root-note-detection-defaults))
+
+### Managing Packs
 
 ```bash
-npm run setup
-# Installs all deps + downloads dirt-samples (~11MB, CC-licensed)
+bash scripts/samples-manage.sh list              # show installed packs
+bash scripts/samples-manage.sh add <url>          # download from URL
+bash scripts/samples-manage.sh add ~/my-samples/  # add local directory
 ```
 
-That's it. First render: `npm run test:render`
+Ships with **dirt-samples** (153 WAVs, CC-licensed). Security: downloads enforce size limits (`STRUDEL_MAX_DOWNLOAD_MB`, default 10GB), MIME validation, optional host allowlist (`STRUDEL_ALLOWED_HOSTS`).
 
-### Adding more sample packs
+## Composition Guide
 
-The skill ships with **dirt-samples** (96 WAVs: kicks, snares, hats, toms, 808s). For richer sounds, add sample packs:
+### Pattern Basics
 
-**CC0 / Free packs (just download and drop in `samples/`):**
-- [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — 800+ samples (full pack, we ship a subset)
-- [Signature Sounds – Homemade Drum Kit](https://signalsounds.com) (CC0) — 150+ one-shots
-- [Looping – Synth Pack 01](https://looping.com) (CC0) — synth one-shots + loops
-- [artgamesound.com](https://artgamesound.com) — CC0 searchable aggregator
-
-**Your own packs:** Export from any DAW (Ableton, FL Studio, M8 tracker, etc.) as WAV directories. Strudel doesn't care where they came from — it's just WAV files in folders.
-
-**Named banks** (Strudel built-in, requires CDN access):
-```javascript
-sound("bd sd cp hh").bank("RolandTR909")
-sound("bd sd hh oh").bank("LinnDrum")
-```
-
-### WSL2 Note
-
-If running on WSL2 and streaming to Discord VC, enable **mirrored networking**:
-
-```ini
-# %USERPROFILE%\.wslconfig
-[wsl2]
-networkingMode=mirrored
-```
-
-Then `wsl --shutdown` and relaunch. Without this, WSL2's NAT breaks Discord's UDP voice protocol — the bot joins the channel but no audio flows because IP discovery packets can't traverse the NAT return path. Mirrored mode eliminates the NAT by putting WSL2 directly on the host's network stack.
-
-This only affects VC streaming. Offline rendering and file posting work in any networking mode.
-
-## How It Works
-
-The offline renderer uses **node-web-audio-api** (Rust-based Web Audio for Node.js) for real audio synthesis:
-
-1. **Pattern evaluation** — `@strudel/core` + `@strudel/mini` + `@strudel/tonal` parse pattern code into timed "haps"
-2. **Audio scheduling** — Each hap becomes either:
-   - An **oscillator** (sine/saw/square/triangle) with ADSR envelope, biquad filter, stereo pan
-   - A **sample** (AudioBufferSourceNode) from the samples directory, with pitch shifting
-3. **Offline rendering** — `OfflineAudioContext.startRendering()` produces complete audio
-4. **Output** — 16-bit stereo WAV at 44.1kHz → ffmpeg → MP3/Opus
-
-**Note on mini notation:** The renderer explicitly calls `setStringParser(mini.mini)` after import because Strudel's npm dist bundles duplicate the Pattern class across modules. Same class of bug as [openclaw#22790](https://github.com/openclaw/openclaw/issues/22790).
-
-## Composition Reference
-
-### Tempo
 ```javascript
 setcpm(120/4)  // 120 BPM
-```
 
-### Layering
-```javascript
 stack(
-  s("bd sd bd sd"),                              // drums
-  note("c3 g3").s("sawtooth").lpf(800),          // bass
-  n("0 2 4 7").scale("C:minor").s("triangle")    // melody
+  s("bd sd [bd bd] sd").gain(0.4),           // drums (samples)
+  s("[hh hh] [hh oh]").gain(0.2),            // hats
+  note("c3 eb3 g3 c4")                       // melody
+    .s("sawtooth")
+    .lpf(sine.range(400, 2000).slow(8))      // filter sweep
+    .attack(0.01).decay(0.3).sustain(0.2)    // ADSR envelope
+    .room(0.4).delay(0.2)                    // space
+    .gain(0.3)
 )
 ```
 
-### Pattern syntax
-- `"a b c d"` — sequence (one per beat)
-- `"[a b]"` — subdivide (two in one beat)
-- `"<a b c>"` — alternate per cycle
-- `"a*3"` — repeat
-- `"~"` — rest/silence
-- `.slow(2)` / `.fast(2)` — time stretch
-- `.euclid(3,8)` — Euclidean rhythm
+### Mini Notation Quick Ref
 
-### Expression
-```javascript
-.lpf(sine.range(400, 4000).slow(8))   // filter sweep
-.gain(sine.range(0.1, 0.2).slow(9))   // breathing volume
-.pan(perlin.range(0.2, 0.8))          // organic stereo
-.room(0.5).roomsize(4)                 // reverb
-.delay(0.3).delaytime(0.25)           // delay
-.attack(0.01).decay(0.2).sustain(0.5).release(0.3)  // ADSR
-```
+| Syntax | Meaning |
+|---|---|
+| `"a b c d"` | Sequence (one per beat) |
+| `"[a b]"` | Subdivide (two in one beat) |
+| `"<a b c>"` | Alternate per cycle (slowcat) |
+| `"a*3"` | Repeat |
+| `"~"` | Rest / silence |
+| `.slow(2)` / `.fast(2)` | Time stretch |
+| `.euclid(3,8)` | Euclidean rhythm |
 
-### Song structure
-```javascript
-let intro = stack(pad, noise)
-let verse = stack(drums, bass, melody)
-let chorus = stack(drums, bass, melody, lead)
-
-arrange(
-  [8, intro],
-  [16, verse],
-  [8, chorus]
-).cpm(120/4)
-```
-
-### Mood→Parameter decision tree
+### Mood → Parameter Decision Tree
 
 | Mood | Tempo | Key/Scale | Character |
-|------|-------|-----------|-----------|
+|---|---|---|---|
 | tension | 60-80 | minor/phrygian | Low cutoff, sparse, drones |
 | combat | 120-160 | minor | Heavy drums, fast, distorted |
-| exploration | 80-100 | dorian/mixolydian | Open, delay, mid energy |
 | peace | 60-80 | pentatonic/major | Warm, slow, ambient |
-| mystery | 70-90 | whole tone | Reverb, sparse, unpredictable |
-| victory | 110-130 | major | Bright, fanfare, full |
-| sorrow | 48-65 | minor | Sustained pads, minimal |
+| mystery | 70-90 | whole tone | Reverb, sparse |
+| victory | 110-130 | major | Bright, fanfare |
 | ritual | 45-60 | dorian | Organ drones, chant |
 
-See `references/mood-parameters.md` for the full tree with transitions and leitmotifs.
-See `references/production-techniques.md` for advanced techniques (breathing, shimmer, earth pressure).
+Full tree: `references/mood-parameters.md`. Production techniques: `references/production-techniques.md`.
+
+### ⚠️ Critical Pitfall: Gain Patterns
+
+Use `<>` (slowcat) for sequential values, NOT spaces:
+
+```javascript
+// ❌ WRONG — all values play simultaneously, causes clipping
+s("kick").gain("0.3 0.3 0.5 0.3")
+
+// ✅ RIGHT — one value per cycle
+s("kick").gain("<0.3 0.3 0.5 0.3>")
+```
+
+Full list: [docs/KNOWN-PITFALLS.md](docs/KNOWN-PITFALLS.md)
+
+### Loudness Validation
+
+Always check after rendering:
+```bash
+ffmpeg -i output.wav -af loudnorm=print_format=json -f null - 2>&1 | grep -E "input_i|input_tp"
+```
+Target: -16 to -10 LUFS, true peak below -1 dBTP. Above -5 LUFS = something is wrong.
+
+## Audio Deconstruction Pipeline
+
+Full pipeline docs: [references/integration-pipeline.md](references/integration-pipeline.md)
+
+```
+Audio → Demucs (stems) → librosa (analysis) → strudel.json → Composition → Render
+```
+
+1. **Stem separation** — Demucs splits audio into vocals, drums, bass, other
+2. **Analysis** — librosa extracts pitches, onsets, rhythm patterns
+3. **Sample mapping** — Results written to `strudel.json` with root notes
+4. **Two paths:**
+   - **Grammar extraction** (through-composed music) → generative program capturing statistical DNA
+   - **Sample-based** (stanzaic/repetitive music) → stem slices played back through Strudel
+
+Requires Python stack: `uv init && uv add demucs librosa scikit-learn soundfile`
 
 ## File Structure
 
 ```
 src/runtime/
+  chunked-render.mjs      — Chunked offline renderer (avoids OOM on long pieces)
   offline-render-v2.mjs    — Core offline renderer
-  smoke-test.mjs           — 12-point verification test
-
+  smoke-test.mjs           — 12-point smoke test
 scripts/
   download-samples.sh      — Download dirt-samples (idempotent)
+  samples-manage.sh        — Sample pack manager
   vc-play.mjs              — Stream audio to Discord VC
-
-samples/                   — Sample packs (gitignored, downloaded on demand)
-assets/compositions/       — Saved compositions
-references/                — Mood trees, techniques, architecture docs
+samples/                   — Sample packs + strudel.json (gitignored)
+assets/compositions/       — 15 original compositions
+src/compositions/          — Audio deconstructions
+references/                — Mood trees, techniques, architecture
+docs/
+  KNOWN-PITFALLS.md        — Critical composition pitfalls
+  ONBOARDING.md            — Machine-actor onboarding guide
 ```
+
+## Renderer Internals
+
+Uses **node-web-audio-api** (Rust-based Web Audio for Node.js). No browser, no Puppeteer.
+
+The renderer calls `setStringParser(mini.mini)` after import because Strudel's npm dist bundles duplicate the `Pattern` class across modules — the mini notation parser registers on a different copy than the one used by `note()` and `s()`.
+
+All synthesis is local and offline via `OfflineAudioContext`: oscillators, biquad filters, ADSR envelopes, `AudioBufferSourceNode` for samples, dynamics compression, stereo panning. Output: 16-bit stereo WAV at 44.1kHz.

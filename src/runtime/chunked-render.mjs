@@ -533,8 +533,8 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
   let scheduled = 0;
   
   for (const hap of haps) {
-    const hapStartCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
-    const hapEndCycle = hap.whole?.end ?? hap.part?.end ?? hapStartCycle + 0.25;
+    const hapStartCycle = hap.part?.begin ?? hap.whole?.begin ?? 0;
+    const hapEndCycle = hap.part?.end ?? hap.whole?.end ?? hapStartCycle + 0.25;
     const hapStartSec = hapStartCycle / cps;
     const hapEndSec = hapEndCycle / cps;
     

@@ -230,6 +230,9 @@ stack(
 
   // ═══════════════════════════════════════════
   // BASS — C#1 pulsing 8th notes, enters bar 32
+  // Uses both .n() for sample selection and .note() for pitch-correct rendering
+  // .n() index: 0=A1 1=A#1 2=C#1 3=D1 4=D#1 5=E1 6=F1 7=F#1 8=G1 9=G#1
+  // .note() tells the renderer the target pitch so it can verify zero-shift
   // ═══════════════════════════════════════════
   s("frbass")
     .n(
@@ -255,6 +258,30 @@ stack(
       " 5 5 2 2" +
       " 2 2 2 2 2 2 2 2" +
       " 2 2 2 2 2 2>"
+    )
+    .note(
+      "<cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 a1 a1 a1 a1" +
+      " cs1 cs1 cs1 cs1 e1 e1 e1 e1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 a1 a1 a1 a1" +
+      " cs1 cs1 cs1 cs1 e1 e1 e1 e1" +
+      " cs1 cs1 a1 a1 e1 e1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 a1 a1 a1 a1" +
+      " e1 e1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1 cs1 cs1" +
+      " cs1 cs1 cs1 cs1 cs1 cs1>"
     )
     .struct("t t t t t t t t")
     .clip(1)

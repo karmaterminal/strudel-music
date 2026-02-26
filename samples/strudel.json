@@ -1,0 +1,55 @@
+{
+  "frbass": {
+    "cs1": "frbass/bass_Cs1.wav",
+    "d1": "frbass/bass_D1.wav",
+    "ds1": "frbass/bass_Ds1.wav",
+    "e1": "frbass/bass_E1.wav",
+    "f1": "frbass/bass_F1.wav",
+    "fs1": "frbass/bass_Fs1.wav",
+    "g1": "frbass/bass_G1.wav",
+    "gs1": "frbass/bass_Gs1.wav",
+    "a1": "frbass/bass_A1.wav",
+    "as1": "frbass/bass_As1.wav"
+  },
+  "frkick": {
+    "0": "frkick/kick.wav"
+  },
+  "frhat": {
+    "0": "frhat/hat.wav"
+  },
+  "frclap": {
+    "0": "frclap/clap.wav"
+  },
+  "frkick_ghost": {
+    "0": "frkick_ghost/kick_ghost.wav"
+  },
+  "frlead": {
+    "0": "frlead/synth_lead.wav"
+  },
+  "frlead2": {
+    "0": "frlead2/synth_lead_2.wav"
+  },
+  "frissother": {
+    "0": "frissother/000.wav",
+    "1": "frissother/001.wav",
+    "2": "frissother/002.wav",
+    "3": "frissother/003.wav",
+    "4": "frissother/004.wav",
+    "5": "frissother/005.wav",
+    "6": "frissother/006.wav",
+    "7": "frissother/007.wav",
+    "8": "frissother/008.wav",
+    "9": "frissother/009.wav",
+    "10": "frissother/010.wav",
+    "11": "frissother/011.wav",
+    "12": "frissother/012.wav",
+    "13": "frissother/013.wav",
+    "14": "frissother/014.wav",
+    "15": "frissother/015.wav",
+    "16": "frissother/016.wav",
+    "17": "frissother/017.wav",
+    "18": "frissother/018.wav",
+    "19": "frissother/019.wav",
+    "20": "frissother/020.wav"
+  }
+}

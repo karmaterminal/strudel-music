@@ -425,9 +425,24 @@ for (const hap of haps) {
       // When clip=1, let the sample play its full natural duration
       // instead of cutting at the cycle/hap boundary (#22, dev#1)
       const clipVal = v.clip !== undefined ? Number(v.clip) : 0;
-      const effectiveEnd = clipVal >= 1
-        ? hapStart + sampleBuf.duration
-        : Math.min(endTime, hapStart + sampleBuf.duration);
+      
+      // loopAt support: if loopAt is set OR the hap window exceeds the sample
+      // length, enable looping so the sample fills the entire hap duration.
+      // This is the offline-renderer counterpart to Ronan's synth.mjs loopfix.
+      const loopAtVal = v.loopAt;
+      const shouldLoop = loopAtVal != null || hapDur > sampleBuf.duration;
+      
+      if (shouldLoop) {
+        src.loop = true;
+        src.loopStart = 0;
+        src.loopEnd = sampleBuf.duration;
+      }
+      
+      const effectiveEnd = shouldLoop
+        ? endTime  // fill the entire hap window when looping
+        : clipVal >= 1
+          ? hapStart + sampleBuf.duration
+          : Math.min(endTime, hapStart + sampleBuf.duration);
       
       // Crossfade envelope: 30ms fade-in, 50ms fade-out (#22)
       // Replaces instant-on + 20ms fade-out which caused hard splice clicks

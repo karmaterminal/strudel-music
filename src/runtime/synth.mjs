@@ -227,16 +227,68 @@ export function renderHapsToAudio(haps, durationSec, sampleRate = 44100) {
       if (!pcm) continue;  // unknown sample, skip silently
 
       const sampleLen = pcm.length;
-      const endSampleIdx = Math.min(numSamples, startSample + sampleLen);
+      
+      // Determine playback speed (for pitch shifting via .speed())
+      const speed = value.speed ?? 1;
+      
+      // Determine how long this hap should play:
+      // If loopAt is set, or if clip/slow create a window longer than the sample,
+      // loop the sample to fill the entire hap duration.
+      // Otherwise play once (one-shot).
+      const hapDurationSamples = Math.ceil(hapDuration * sampleRate);
+      const loopAt = value.loopAt;
+      const clip = value.clip;
+      
+      // Loop if: loopAt is set, OR the hap duration exceeds the sample length
+      // (which means .slow() created a window the sample can't fill alone)
+      const shouldLoop = loopAt != null || hapDurationSamples > sampleLen;
+      
+      const endSampleIdx = shouldLoop
+        ? Math.min(numSamples, startSample + hapDurationSamples)
+        : Math.min(numSamples, startSample + Math.ceil(sampleLen / Math.abs(speed || 1)));
 
       const alpha = lpfCoeff(Math.min(cutoff, sampleRate / 2), sampleRate);
       const hpfAlpha = hpf > 0 ? lpfCoeff(Math.min(hpf, sampleRate / 2), sampleRate) : 0;
       let filteredL = 0, filteredR = 0;
       let hpPrevL = 0, hpPrevR = 0;
+      
+      // Crossfade length for loop points (avoid clicks at loop boundary)
+      const xfadeSamples = Math.min(2205, Math.floor(sampleLen * 0.05)); // 50ms or 5% of sample
 
       for (let i = startSample; i < endSampleIdx; i++) {
-        const srcIdx = i - startSample;
-        const raw = pcm[srcIdx] * gain;
+        const srcIdxRaw = (i - startSample) * Math.abs(speed || 1);
+        let raw;
+        
+        if (shouldLoop && sampleLen > 0) {
+          // Loop with crossfade at boundaries
+          const pos = srcIdxRaw % sampleLen;
+          const idx = Math.floor(pos);
+          const frac = pos - idx;
+          
+          // Linear interpolation for smooth playback at non-integer speeds
+          const s0 = pcm[idx % sampleLen];
+          const s1 = pcm[(idx + 1) % sampleLen];
+          let sample = s0 + frac * (s1 - s0);
+          
+          // Crossfade near loop boundary to avoid click
+          const distToEnd = sampleLen - pos;
+          if (distToEnd < xfadeSamples && xfadeSamples > 0) {
+            const fadeOut = distToEnd / xfadeSamples;
+            const fadeIn = 1 - fadeOut;
+            // Blend with beginning of sample
+            const loopPos = pos - (sampleLen - xfadeSamples);
+            const loopIdx = Math.max(0, Math.floor(loopPos));
+            const loopSample = pcm[loopIdx % sampleLen];
+            sample = sample * fadeOut + loopSample * fadeIn;
+          }
+          
+          raw = sample * gain;
+        } else {
+          // One-shot playback
+          const srcIdx = Math.floor(srcIdxRaw);
+          if (srcIdx >= sampleLen) break;
+          raw = pcm[srcIdx] * gain;
+        }
 
         // LPF
         filteredL = filteredL + alpha * (raw * panL - filteredL);

@@ -17,10 +17,40 @@ TMP_DIR="${STRUDEL_TMP:-${OPENCLAW_WORKSPACE:-${HOME}/.openclaw/workspace}/strud
 
 mkdir -p "$TMP_DIR"
 
+# ── Input validation helpers ──
+# Prevent shell injection via user-controlled arguments.
+_validate_numeric() {
+  local val="$1" label="$2"
+  if ! [[ "$val" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "❌ Invalid $label: '$val' (must be numeric)" >&2
+    exit 1
+  fi
+}
+
+_validate_name() {
+  local val="$1" label="$2"
+  if ! [[ "$val" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "❌ Invalid $label: '$val' (alphanumeric, hyphens, and underscores only)" >&2
+    exit 1
+  fi
+}
+
+_validate_path() {
+  local val="$1" label="$2"
+  # Block path traversal and shell metacharacters
+  if [[ "$val" == *".."* ]] || [[ "$val" =~ [\;\|\&\$\`\(\)\{\}] ]]; then
+    echo "❌ Invalid $label: suspicious characters detected" >&2
+    exit 1
+  fi
+}
+
 _render() {
   local INPUT="$1"
   local CYCLES="${2:-16}"
   local BPM="${3:-120}"
+  _validate_path "$INPUT" "composition path"
+  _validate_numeric "$CYCLES" "cycles"
+  _validate_numeric "$BPM" "BPM"
   local BASENAME
   BASENAME=$(basename "$INPUT" .js)
   local WAV="$TMP_DIR/${BASENAME}.wav"
@@ -41,6 +71,10 @@ _render() {
 _play() {
   local NAME="$1"
   local CHANNEL="${2:-}"
+  _validate_name "$NAME" "composition name"
+  if [ -n "$CHANNEL" ]; then
+    _validate_numeric "$CHANNEL" "channel ID"
+  fi
   local COMP="$COMP_DIR/${NAME}.js"
 
   if [ ! -f "$COMP" ]; then

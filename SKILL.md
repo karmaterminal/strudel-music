@@ -17,12 +17,17 @@ metadata:
       - id: setup
         kind: script
         script: "npm install && bash scripts/download-samples.sh"
-        label: "Install dependencies + download drum samples (~11MB)"
+        label: "Core: Node deps + drum samples (~11MB)"
       - id: ffmpeg
         kind: apt
         package: ffmpeg
         bins: [ffmpeg]
         label: "Install ffmpeg (audio format conversion)"
+      - id: demucs
+        kind: uv
+        package: demucs
+        bins: [demucs]
+        label: "Optional: Demucs stem separator for audio deconstruction"
     securityNotes: >
       Compositions are JavaScript files evaluated by Node.js. They CAN access
       the filesystem, environment variables, and network. Only run compositions
@@ -219,11 +224,11 @@ Everything above, plus:
 - ~2GB disk for PyTorch + Demucs model weights (downloaded on first run)
 - **Optional:** NVIDIA GPU + CUDA toolkit for ~5× Demucs speedup
 
-Install the Python deps (requires [uv](https://docs.astral.sh/uv/)):
+Install the Demucs CLI:
 ```bash
-uv sync                  # base deps (demucs, librosa, soundfile, lameenc)
-uv sync --extra gpu      # + PyTorch, numpy, scipy for GPU-accelerated Demucs
+uv tool install demucs   # installs demucs + all Python deps in an isolated environment
 ```
+If `uv` isn't available: `pip install demucs` also works (requires Python ≥3.10).
 
 If Python deps are missing, composition and rendering still work — you just can't do stem extraction. The skill should fail gracefully with a message, not a stack trace.
 

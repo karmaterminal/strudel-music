@@ -14,7 +14,7 @@
 
 - [ ] SKILL.md frontmatter valid (name, description, metadata)
 - [ ] Compositions parse without syntax errors
-- [ ] render-pattern.sh syntax valid
+- [ ] offline-render-v2.mjs renders successfully
 - [ ] No hardcoded secrets or paths
 - [ ] Security notes updated if execution surface changed
 

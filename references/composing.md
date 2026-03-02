@@ -59,7 +59,7 @@ Different `.slow()` values on different voices create polyrhythmic layering wher
 Use `.clip(4)` (or higher) to ensure samples fill their cycle window. Without this, you get silence gaps between sample events. The loopfix (PR #35) handles PCM-level looping with crossfade at boundaries.
 
 ### 8. Render and Validate
-- Render: `node src/runtime/render.mjs <comp.js> <output.wav> <cycles> <bpm>`
+- Render: `node src/runtime/offline-render-v2.mjs <comp.js> <output.wav> <cycles> <bpm>`
 - Normalize: two-pass loudnorm to -16 LUFS (`ffmpeg -af loudnorm`)
 - Spectral check: `python3 scripts/analyze-render.py <output.wav>`
   - Zero silence gaps (inside the body of the piece)

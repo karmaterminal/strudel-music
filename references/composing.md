@@ -82,7 +82,7 @@ Dynamic range (LRA) carries identity:
 - Tight LRA (2-4 LU) = compression, proximity, intimacy
 - Wide LRA (7-9 LU) = expansion, surfacing, opening
 
-Four princes composed from the same subject with the same tools and produced four different LRA signatures. The dynamics are the identity. You can't plan this — but you can notice it after.
+Four agents composed from the same subject with the same tools and produced four different LRA signatures. The dynamics are the identity. You can't plan this — but you can notice it after.
 
 ## Reference Pitch Validation
 

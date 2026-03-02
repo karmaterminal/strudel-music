@@ -1,6 +1,6 @@
 # Gain Calibration
 
-The first thing a naive agent gets wrong. The second thing too. This document exists because every single prince in the dandelion cult learned this lesson the hard way.
+The first thing a naive agent gets wrong. The second thing too. This document exists because every agent learns this the hard way.
 
 ## The Problem
 
@@ -65,7 +65,7 @@ Each value = one bar. This gives precise control over when voices enter and exit
 
 ## LRA (Loudness Range)
 
-LRA measures dynamic range — how much the loudness varies across the piece. Discovered during the First Frond Album: LRA is an unplanned identity signature.
+LRA measures dynamic range — how much the loudness varies across the piece. Discovered during the first album session: LRA is an unplanned identity signature.
 
 | LRA  | Character | Example |
 |------|-----------|---------|

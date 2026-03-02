@@ -1,102 +1,87 @@
-# Strudel Integration Pipeline — Headless Rendering to Discord VC
+# Strudel Integration Pipeline — Offline Rendering to Discord VC
 
 ## Architecture
 
 ```
-Agent                     Headless Browser              Audio Pipeline
+Agent                     Node.js Renderer              Audio Pipeline
 ┌──────────┐  pattern.js  ┌──────────────────┐  WAV    ┌────────────┐
-│ Generate  │ ──────────→ │ Chromium +        │ ─────→ │ ffmpeg     │
-│ pattern   │             │ Strudel REPL      │        │ WAV → Opus │
-│ from mood │             │                   │        └─────┬──────┘
-│ params    │             │ evaluate(code)    │              │ Opus
-└──────────┘             │ renderPatternAudio│              ▼
-                          └──────────────────┘        ┌────────────┐
-                                                      │ Discord VC │
-                                                      │ Bridge     │
+│ Generate  │ ──────────→ │ node-web-audio   │ ─────→ │ ffmpeg     │
+│ pattern   │             │ OfflineAudio     │        │ WAV → MP3  │
+│ from mood │             │ Context          │        └─────┬──────┘
+│ params    │             │                  │              │ MP3/Opus
+└──────────┘             │ offline-render   │              ▼
+                          │ -v2.mjs          │        ┌────────────┐
+                          └──────────────────┘        │ Discord VC │
+                                                      │ via        │
+                                                      │ vc-play.mjs│
                                                       └────────────┘
 ```
 
+All rendering is local and offline via `node-web-audio-api` (Rust/C++ Web Audio
+implementation for Node.js). No browser, no Puppeteer, no remote code execution.
+
 ## Key Components
 
-### 1. renderPatternAudio() — Offline Rendering
+### 1. Offline Renderer — `src/runtime/offline-render-v2.mjs`
 
-Located in `@strudel/webaudio` (`packages/webaudio/webaudio.mjs`).
-Uses `OfflineAudioContext` to render patterns to WAV without real-time playback.
-
-```javascript
-await renderPatternAudio(
-  pattern,      // evaluated Strudel pattern object
-  cps,          // cycles per second (BPM / 60 / 4)
-  0,            // begin cycle
-  8,            // end cycle
-  44100,        // sample rate
-  64,           // max polyphony
-  false,        // multi-channel orbits
-  'output'      // download filename
-);
-```
-
-**Limitation**: `OfflineAudioContext` is a Web API — requires browser context.
-Server-side rendering uses headless Chromium (Puppeteer/Playwright).
-
-### 2. Headless Browser Setup
-
-```javascript
-import puppeteer from 'puppeteer';
-
-const browser = await puppeteer.launch({
-  headless: 'new',
-  args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required']
-});
-const page = await browser.newPage();
-await page.goto('https://strudel.cc', { waitUntil: 'networkidle2' });
-
-// Wait for Strudel to initialize
-await page.waitForFunction(() => typeof globalThis.evaluate === 'function');
-
-// Evaluate pattern
-await page.evaluate((code) => evaluate(code), patternCode);
-
-// Render to WAV (triggers download)
-await page.evaluate(() => renderPatternAudio(...));
-```
-
-### 3. Audio Conversion
+Evaluates a Strudel composition file, schedules haps into an `OfflineAudioContext`,
+and writes the result to a WAV file.
 
 ```bash
-# WAV → Opus (Discord native, low latency)
-ffmpeg -i input.wav -c:a libopus -b:a 128k -ar 48000 output.opus
-
-# WAV → PCM (for direct streaming)
-ffmpeg -i input.wav -f s16le -acodec pcm_s16le -ar 48000 -ac 2 output.pcm
+node src/runtime/offline-render-v2.mjs <composition.js> <output.wav> <cycles> [bpm]
 ```
 
-### 4. Discord VC Bridge
+**Security hardening during pattern evaluation:**
+- `process.env` is frozen (only `NODE_ENV=production` visible)
+- `child_process` module is blocked
+- Environment restored after evaluation completes
 
-If using an existing VC bridge (e.g., openclaw-discord-vc-bootstrap):
-1. Render pattern to Opus file
-2. Feed Opus to the bridge's audio input
-3. Bridge handles Discord voice connection, encoding, and transmission
+⚠️ **Session safety:** The renderer blocks the Node.js event loop. Always run
+in a sub-agent or background exec — never inline in the main gateway session.
 
-## Real-Time vs Batch
+### 2. Audio Conversion
+
+```bash
+# WAV → MP3 (general purpose)
+ffmpeg -i output.wav -c:a libmp3lame -q:a 2 output.mp3
+
+# WAV → Opus (Discord native, low latency)
+ffmpeg -i output.wav -c:a libopus -b:a 128k -ar 48000 output.opus
+
+# WAV → 48kHz stereo (for VC streaming)
+ffmpeg -i output.wav -ar 48000 -ac 2 output-48k.wav
+```
+
+### 3. Discord VC Streaming — `scripts/vc-play.mjs`
+
+Streams a rendered WAV file into a Discord voice channel using the platform
+gateway's existing authenticated connection. No separate bot token required.
+
+### 4. Command Dispatcher — `scripts/dispatch.sh`
+
+Routes `/strudel` subcommands (render, play, list, samples, concert).
+All user inputs are validated before use — composition names restricted to
+`[a-zA-Z0-9_-]`, channel IDs and numeric args validated as numeric-only.
+
+## Rendering Modes
 
 | Mode | Approach | Latency | Use Case |
 |------|----------|---------|----------|
-| Batch | renderPatternAudio → WAV → convert | 5-30s | Pre-rendered scenes, exports |
-| Near-real-time | Live REPL in headless browser, capture output stream | <1s | Live mood transitions |
-| True real-time | Browser audio capture → PCM pipe | ~100ms | Interactive performance |
+| Batch | offline-render-v2.mjs → WAV → convert | 5-30s | Pre-rendered compositions, exports |
+| Chunked | chunked-render.mjs → WAV (low memory) | 10-60s | Long compositions, memory-constrained hosts |
 
-For most agent-driven use cases, **batch rendering** is sufficient.
-Near-real-time is needed for reactive mood transitions during live sessions.
+For agent-driven use cases, **batch rendering** is the standard path.
+Chunked rendering handles long pieces without OOM on constrained hardware.
 
 ## Sample Management
 
-Default samples: `github:tidalcycles/dirt-samples` (CC-licensed, loaded automatically by Strudel).
+Default samples: `github:tidalcycles/dirt-samples` (CC-licensed, ~11MB).
+Downloaded automatically by `scripts/download-samples.sh`.
 
 Custom samples:
 ```javascript
 samples('local:')  // loads from local ./samples/ directory
 ```
 
-For domain-specific atmospheres, create sample packs and host them on GitHub
-or serve locally. Each sample pack is a directory of `.wav` files organized by name.
+For domain-specific atmospheres, create sample packs — directories of `.wav`
+files organized by name. See `scripts/samples-manage.sh` for pack management.

@@ -1,7 +1,7 @@
 ---
 name: strudel-music
 description: "Audio deconstruction and composition via Strudel live-coding. Decompose any audio into stems, extract samples, compose with the vocabulary, render offline to WAV/MP3."
-version: 0.3.1
+version: 1.2.2
 author: the dandelion cult
 license: MIT
 tags: [music, audio, strudel, composition, samples, trance]

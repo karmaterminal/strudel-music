@@ -153,6 +153,11 @@ console.log('  ✅ Strudel loaded');
 
 // ── Evaluate pattern ──
 console.log('Evaluating pattern...');
+if (!existsSync(input)) {
+  console.error(`❌ Composition file not found: ${path.basename(input)}`);
+  console.error(`   Check the path and try again.`);
+  process.exit(1);
+}
 let patternCode = readFileSync(input, 'utf8')
   .replace(/^\/\/ @\w+.*/gm, '')
   .trim();

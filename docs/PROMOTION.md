@@ -68,7 +68,7 @@ git checkout -b feat/bloom-pipeline  # or whatever the feature is
 
 ### 3d. Review
 
-- **Three-prince review** (all three agents review independently), or **2-of-3 minimum** for smaller changes
+- **Three-agent review** (all three agents review independently), or **2-of-3 minimum** for smaller changes
 - Each reviewer checks:
   - Code correctness
   - No secrets/personal data
@@ -123,7 +123,7 @@ clawhub publish
 
 - [ ] Close all matched public issues with references to the merge commit
 - [ ] Update `MEMORY.md` with publish milestone (date, version, what shipped)
-- [ ] Announce in **#sprites-of-thornfield** — include version, key features, any known limitations
+- [ ] Announce in **the project's Discord channel** — include version, key features, any known limitations
 - [ ] Archive the corresponding private fork issues (close with "promoted to public" note)
 
 ---

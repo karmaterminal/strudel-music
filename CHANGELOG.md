@@ -1,6 +1,14 @@
 # Changelog
 
-## 1.2.1 (unreleased)
+## 1.2.2
+
+### Fixed
+- **T9: graceful error on missing composition file** — `offline-render-v2.mjs` now checks `existsSync` before `readFileSync`, showing a clean filename-only error instead of a stack trace when a composition path doesn't exist.
+
+### Changed
+- **Doc cleanup** — Replaced internal jargon with general-audience language in `references/gain-calibration.md`, `references/composing.md`, and `docs/PROMOTION.md`.
+
+## 1.2.1
 
 ### Removed
 - **`scripts/render-pattern.sh`** — Browser-based renderer using Puppeteer with `--no-sandbox`. Superseded by `src/runtime/offline-render-v2.mjs` which runs entirely in Node.js with frozen `process.env` and blocked `child_process`. Retrievable from git history at commit prior to this removal.

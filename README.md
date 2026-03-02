@@ -240,7 +240,7 @@ The full audio deconstruction pipeline runs through six stages: Demucs stem sepa
 
 ## Testing
 
-The publish path is: private fork RC → cross-platform validation (x86_64 + ARM64) → public repo merge → ClaHub publish. Each stage gates the next. See **[docs/TESTING.md](docs/TESTING.md)** for the full test matrix, quality gates, and naive install procedure.
+The publish path is: private fork RC → cross-platform validation (x86_64 + ARM64) → public repo merge → ClawHub publish. Each stage gates the next. See **[docs/TESTING.md](docs/TESTING.md)** for the full test matrix, quality gates, and naive install procedure.
 
 ## Development
 

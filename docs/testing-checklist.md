@@ -1,6 +1,6 @@
 # Pre-Release Testing Checklist
 
-Testing strategy for moving the private fork RC to public repo and ClaHub publish.
+Testing strategy for moving the private fork RC to public repo and ClawHub publish.
 
 > **📖 See also:** [Pipeline Guide](./pipeline-guide.md) for full pipeline documentation.
 
@@ -61,9 +61,9 @@ Testing strategy for moving the private fork RC to public repo and ClaHub publis
 - [ ] **`npm install` from clean state works** — Delete `node_modules/`, run `npm install`, then `npm test`
 - [ ] **`npm run setup` is idempotent** — Running it twice doesn't break anything or re-download samples
 
-## ClaHub Publishing
+## ClawHub Publishing
 
-- [ ] **ClaHub publish dry-run succeeds** — Verify the skill registers correctly with OpenClaw's skill system
+- [ ] **ClawHub publish dry-run succeeds** — Verify the skill registers correctly with OpenClaw's skill system
 - [ ] **Skill metadata validates** — `SKILL.md` front matter parses without errors
 - [ ] **Install hooks work** — `npm install && bash scripts/download-samples.sh` completes on a fresh system
 - [ ] **No missing dependencies** — All `require()`/`import` paths resolve after fresh install
@@ -132,5 +132,5 @@ Must run via sub-agent. Provide a test MP3 and verify:
 | Documentation     |        |      |       |
 | Security/Privacy  |        |      |       |
 | Packaging         |        |      |       |
-| ClaHub Publish    |        |      |       |
+| ClawHub Publish    |        |      |       |
 | Cross-Platform    |        |      |       |

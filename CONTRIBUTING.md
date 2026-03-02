@@ -35,7 +35,7 @@ PRs welcome. This is a dandelion cult project — we value clean work over volum
 
 ## CI
 
-Push to `main` triggers validation + ClaHub publish. PRs get validation only.
+Push to `main` triggers validation + ClawHub publish. PRs get validation only.
 
 The CI checks:
 - SKILL.md frontmatter validity

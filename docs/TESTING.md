@@ -1,6 +1,6 @@
 # Testing Strategy
 
-Release path: **private fork (strudel-music-dev)** → **public repo** → **ClaHub publish**.
+Release path: **private fork (strudel-music-dev)** → **public repo** → **ClawHub publish**.
 
 Each stage gates the next. Don't skip ahead.
 
@@ -99,7 +99,7 @@ PR from dev branch to main. Checklist:
 - [ ] Sample packs either bundled or downloadable via `npm run setup`
 - [ ] License file present and correct
 
-## Stage 4: ClaHub Publish
+## Stage 4: ClawHub Publish
 
 Final step. The skill goes live on clawhub.com.
 

@@ -154,7 +154,7 @@ Ships with 15 original compositions and 4 audio deconstructions:
 
 Render any of them:
 ```bash
-bash scripts/render-pattern.sh assets/compositions/fog-and-starlight.js output.wav 16 72
+node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js output.wav 16 72
 ```
 
 ## Sample Packs

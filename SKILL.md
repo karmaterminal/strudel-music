@@ -219,9 +219,10 @@ Everything above, plus:
 - ~2GB disk for PyTorch + Demucs model weights (downloaded on first run)
 - **Optional:** NVIDIA GPU + CUDA toolkit for ~5× Demucs speedup
 
-Install the Python deps:
+Install the Python deps (requires [uv](https://docs.astral.sh/uv/)):
 ```bash
-pip install demucs librosa numpy scipy scikit-learn torch
+uv sync                  # base deps (demucs, librosa, soundfile, lameenc)
+uv sync --extra gpu      # + PyTorch, numpy, scipy for GPU-accelerated Demucs
 ```
 
 If Python deps are missing, composition and rendering still work — you just can't do stem extraction. The skill should fail gracefully with a message, not a stack trace.

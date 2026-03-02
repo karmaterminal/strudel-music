@@ -7,3 +7,5 @@ node_modules/
 *.pcm
 samples/
 !samples/strudel.json
+.venv/
+__pycache__/

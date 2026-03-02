@@ -10,3 +10,8 @@ tmp/
 node_modules/
 samples/
 !samples/strudel.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc

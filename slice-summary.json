@@ -1,0 +1,250 @@
+{
+  "tracks_processed": 4,
+  "total_slices": 316,
+  "total_artifact_flags": 123,
+  "tracks": [
+    {
+      "name": "Skinny Love",
+      "prefix": "skinny_love",
+      "bpm": 76.0,
+      "slice_duration_s": 25.263,
+      "total_slices": 40,
+      "stems": {
+        "bass": {
+          "n_slices": 10,
+          "artifact_flags": [
+            "n3",
+            "n4",
+            "n6",
+            "n7",
+            "n8"
+          ]
+        },
+        "drums": {
+          "n_slices": 10,
+          "artifact_flags": [
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9"
+          ]
+        },
+        "other": {
+          "n_slices": 10,
+          "artifact_flags": [
+            "n9"
+          ]
+        },
+        "vocals": {
+          "n_slices": 10,
+          "artifact_flags": [
+            "n9"
+          ]
+        }
+      },
+      "artifact_flag_count": 15
+    },
+    {
+      "name": "How to Disappear Completely",
+      "prefix": "htdc",
+      "bpm": 156.6,
+      "slice_duration_s": 12.26,
+      "total_slices": 120,
+      "stems": {
+        "bass": {
+          "n_slices": 30,
+          "artifact_flags": [
+            "n0",
+            "n9",
+            "n10",
+            "n11",
+            "n12",
+            "n13",
+            "n20",
+            "n21",
+            "n22",
+            "n23",
+            "n24",
+            "n25"
+          ]
+        },
+        "drums": {
+          "n_slices": 30,
+          "artifact_flags": [
+            "n0",
+            "n1",
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9",
+            "n10",
+            "n11",
+            "n12",
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n17",
+            "n18",
+            "n19",
+            "n20",
+            "n21",
+            "n22",
+            "n23",
+            "n24",
+            "n25",
+            "n26",
+            "n27",
+            "n28"
+          ]
+        },
+        "other": {
+          "n_slices": 30,
+          "artifact_flags": [
+            "n17",
+            "n19",
+            "n22"
+          ]
+        },
+        "vocals": {
+          "n_slices": 30,
+          "artifact_flags": [
+            "n2"
+          ]
+        }
+      },
+      "artifact_flag_count": 45
+    },
+    {
+      "name": "Sufjan Stevens, Fourth Of July (Official Audio)",
+      "prefix": "fourth_july",
+      "bpm": 123.0,
+      "slice_duration_s": 15.604,
+      "total_slices": 72,
+      "stems": {
+        "bass": {
+          "n_slices": 18,
+          "artifact_flags": [
+            "n0",
+            "n6",
+            "n7",
+            "n8",
+            "n9",
+            "n10",
+            "n11",
+            "n12",
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n17"
+          ]
+        },
+        "drums": {
+          "n_slices": 18,
+          "artifact_flags": [
+            "n7"
+          ]
+        },
+        "other": {
+          "n_slices": 18,
+          "artifact_flags": [
+            "n0"
+          ]
+        },
+        "vocals": {
+          "n_slices": 18,
+          "artifact_flags": [
+            "n1",
+            "n3"
+          ]
+        }
+      },
+      "artifact_flag_count": 17
+    },
+    {
+      "name": "Simon & Garfunkel - America (Audio)",
+      "prefix": "america",
+      "bpm": 178.2,
+      "slice_duration_s": 10.774,
+      "total_slices": 84,
+      "stems": {
+        "bass": {
+          "n_slices": 21,
+          "artifact_flags": [
+            "n0",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9",
+            "n10",
+            "n11",
+            "n12",
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n18",
+            "n19",
+            "n20"
+          ]
+        },
+        "drums": {
+          "n_slices": 21,
+          "artifact_flags": [
+            "n0",
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9",
+            "n10",
+            "n11",
+            "n12",
+            "n13",
+            "n14",
+            "n15",
+            "n16",
+            "n17"
+          ]
+        },
+        "other": {
+          "n_slices": 21,
+          "artifact_flags": [
+            "n0",
+            "n1",
+            "n3",
+            "n7",
+            "n8",
+            "n10",
+            "n11",
+            "n17",
+            "n18",
+            "n20"
+          ]
+        },
+        "vocals": {
+          "n_slices": 21,
+          "artifact_flags": [
+            "n17"
+          ]
+        }
+      },
+      "artifact_flag_count": 46
+    }
+  ]
+}

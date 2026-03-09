@@ -626,8 +626,9 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
         
         // Linear interpolation
         const frac = samplePos - sIdx;
+        if (!activeBuf.data[0] || sIdx >= activeBuf.data[0].length) break;
         const s0 = activeBuf.data[0][sIdx];
-        const s1 = sIdx + 1 < activeBuf.length ? activeBuf.data[0][sIdx + 1] : s0;
+        const s1 = sIdx + 1 < activeBuf.data[0].length ? activeBuf.data[0][sIdx + 1] : s0;
         const sample = s0 + frac * (s1 - s0);
         
         left[i] += sample * env * panL;

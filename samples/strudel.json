@@ -1,17 +1,128 @@
 {
   "_base": "./",
   "_comment": "Pitched sample map for Frisson instrument rack. Keys are note names, values are paths relative to _base. Renderer uses this as authoritative source for root note detection.",
-  "kick": {
-    "0": "kick/kick.wav"
+  "_comment_bloom": "Bloom \u2014 Cosmic Gate & Pretty Pink (D minor, 126 BPM)",
+  "america_bass": [
+    "america_bass/n0.wav",
+    "america_bass/n1.wav",
+    "america_bass/n10.wav",
+    "america_bass/n11.wav",
+    "america_bass/n12.wav",
+    "america_bass/n13.wav",
+    "america_bass/n14.wav",
+    "america_bass/n15.wav",
+    "america_bass/n16.wav",
+    "america_bass/n17.wav",
+    "america_bass/n18.wav",
+    "america_bass/n19.wav",
+    "america_bass/n2.wav",
+    "america_bass/n20.wav",
+    "america_bass/n3.wav",
+    "america_bass/n4.wav",
+    "america_bass/n5.wav",
+    "america_bass/n6.wav",
+    "america_bass/n7.wav",
+    "america_bass/n8.wav",
+    "america_bass/n9.wav"
+  ],
+  "america_drums": [
+    "america_drums/n0.wav",
+    "america_drums/n1.wav",
+    "america_drums/n10.wav",
+    "america_drums/n11.wav",
+    "america_drums/n12.wav",
+    "america_drums/n13.wav",
+    "america_drums/n14.wav",
+    "america_drums/n15.wav",
+    "america_drums/n16.wav",
+    "america_drums/n17.wav",
+    "america_drums/n18.wav",
+    "america_drums/n19.wav",
+    "america_drums/n2.wav",
+    "america_drums/n20.wav",
+    "america_drums/n3.wav",
+    "america_drums/n4.wav",
+    "america_drums/n5.wav",
+    "america_drums/n6.wav",
+    "america_drums/n7.wav",
+    "america_drums/n8.wav",
+    "america_drums/n9.wav"
+  ],
+  "america_other": [
+    "america_other/n0.wav",
+    "america_other/n1.wav",
+    "america_other/n10.wav",
+    "america_other/n11.wav",
+    "america_other/n12.wav",
+    "america_other/n13.wav",
+    "america_other/n14.wav",
+    "america_other/n15.wav",
+    "america_other/n16.wav",
+    "america_other/n17.wav",
+    "america_other/n18.wav",
+    "america_other/n19.wav",
+    "america_other/n2.wav",
+    "america_other/n20.wav",
+    "america_other/n3.wav",
+    "america_other/n4.wav",
+    "america_other/n5.wav",
+    "america_other/n6.wav",
+    "america_other/n7.wav",
+    "america_other/n8.wav",
+    "america_other/n9.wav"
+  ],
+  "america_vocals": [
+    "america_vocals/n0.wav",
+    "america_vocals/n1.wav",
+    "america_vocals/n10.wav",
+    "america_vocals/n11.wav",
+    "america_vocals/n12.wav",
+    "america_vocals/n13.wav",
+    "america_vocals/n14.wav",
+    "america_vocals/n15.wav",
+    "america_vocals/n16.wav",
+    "america_vocals/n17.wav",
+    "america_vocals/n18.wav",
+    "america_vocals/n19.wav",
+    "america_vocals/n2.wav",
+    "america_vocals/n20.wav",
+    "america_vocals/n3.wav",
+    "america_vocals/n4.wav",
+    "america_vocals/n5.wav",
+    "america_vocals/n6.wav",
+    "america_vocals/n7.wav",
+    "america_vocals/n8.wav",
+    "america_vocals/n9.wav"
+  ],
+  "arthas_choir": [
+    "arthas_choir/arthas_choir_0.wav",
+    "arthas_choir/arthas_choir_1.wav",
+    "arthas_choir/arthas_choir_2.wav",
+    "arthas_choir/arthas_choir_3.wav"
+  ],
+  "arthas_low": [
+    "arthas_low/arthas_low_0.wav",
+    "arthas_low/arthas_low_1.wav",
+    "arthas_low/arthas_low_2.wav",
+    "arthas_low/arthas_low_3.wav"
+  ],
+  "arthas_perc": [
+    "arthas_perc/arthas_perc_0.wav",
+    "arthas_perc/arthas_perc_1.wav",
+    "arthas_perc/arthas_perc_2.wav",
+    "arthas_perc/arthas_perc_3.wav"
+  ],
+  "arthas_strings": [
+    "arthas_strings/arthas_strings_0.wav",
+    "arthas_strings/arthas_strings_1.wav",
+    "arthas_strings/arthas_strings_2.wav",
+    "arthas_strings/arthas_strings_3.wav"
+  ],
+  "bass_A1": {
+    "a1": "bass_A1/bass_A1.wav"
   },
-  "hat": {
-    "0": "hat/hat.wav"
-  },
-  "clap": {
-    "0": "clap/clap.wav"
-  },
-  "kick_ghost": {
-    "0": "kick_ghost/kick_ghost.wav"
+  "bass_As1": {
+    "as1": "bass_As1/bass_As1.wav"
   },
   "bass_Cs1": {
     "cs1": "bass_Cs1/bass_Cs1.wav"
@@ -37,90 +148,8 @@
   "bass_Gs1": {
     "gs1": "bass_Gs1/bass_Gs1.wav"
   },
-  "bass_A1": {
-    "a1": "bass_A1/bass_A1.wav"
-  },
-  "bass_As1": {
-    "as1": "bass_As1/bass_As1.wav"
-  },
-  "synth_lead": {
-    "cs3": "synth_lead/synth_lead.wav"
-  },
-  "synth_lead_2": {
-    "cs4": "synth_lead_2/synth_lead_2.wav"
-  },
-  "other_000": {
-    "0": "other_000/other_000.wav"
-  },
-  "other_001": {
-    "0": "other_001/other_001.wav"
-  },
-  "other_002": {
-    "0": "other_002/other_002.wav"
-  },
-  "other_003": {
-    "0": "other_003/other_003.wav"
-  },
-  "_comment_bloom": "Bloom \u2014 Cosmic Gate & Pretty Pink (D minor, 126 BPM)",
-  "bloom_kick": {
-    "0": "bloom_kick/bloom_kick.wav"
-  },
-  "bloom_snare": {
-    "0": "bloom_snare/bloom_snare.wav"
-  },
-  "bloom_mid_perc": {
-    "0": "bloom_mid_perc/bloom_mid_perc.wav"
-  },
-  "bloom_mid_perc1": {
-    "0": "bloom_mid_perc1/bloom_mid_perc1.wav"
-  },
-  "bloom_mid_perc2": {
-    "0": "bloom_mid_perc2/bloom_mid_perc2.wav"
-  },
-  "bloom_bass_D1": {
-    "d1": "bloom_bass_D1/bloom_bass_D1.wav"
-  },
-  "bloom_bass_D2": {
-    "d2": "bloom_bass_D2/bloom_bass_D2.wav"
-  },
   "bloom_bass_As1": {
     "as1": "bloom_bass_As1/bloom_bass_As1.wav"
-  },
-  "bloom_bass_C1": {
-    "c1": "bloom_bass_C1/bloom_bass_C1.wav"
-  },
-  "bloom_bass_G1": {
-    "g1": "bloom_bass_G1/bloom_bass_G1.wav"
-  },
-  "bloom_bass_Ds1": {
-    "ds1": "bloom_bass_Ds1/bloom_bass_Ds1.wav"
-  },
-  "bloom_bass_E2": {
-    "e2": "bloom_bass_E2/bloom_bass_E2.wav"
-  },
-  "bloom_bass_Cs2": {
-    "cs2": "bloom_bass_Cs2/bloom_bass_Cs2.wav"
-  },
-  "bloom_lead_D3": {
-    "d3": "bloom_lead_D3/bloom_lead_D3.wav"
-  },
-  "bloom_lead_A2": {
-    "a2": "bloom_lead_A2/bloom_lead_A2.wav"
-  },
-  "bloom_lead_As2": {
-    "as2": "bloom_lead_As2/bloom_lead_As2.wav"
-  },
-  "bloom_lead_C3": {
-    "c3": "bloom_lead_C3/bloom_lead_C3.wav"
-  },
-  "bloom_lead_E3": {
-    "e3": "bloom_lead_E3/bloom_lead_E3.wav"
-  },
-  "bloom_lead_F3": {
-    "f3": "bloom_lead_F3/bloom_lead_F3.wav"
-  },
-  "bloom_lead_G2": {
-    "g2": "bloom_lead_G2/bloom_lead_G2.wav"
   },
   "bloom_bass_As2": {
     "as2": "bloom_bass_As2/bloom_bass_As2.wav"
@@ -131,33 +160,1507 @@
   "bloom_bass_B1": {
     "b1": "bloom_bass_B1/bloom_bass_B1.wav"
   },
+  "bloom_bass_C1": {
+    "c1": "bloom_bass_C1/bloom_bass_C1.wav"
+  },
   "bloom_bass_Cs1": {
     "cs1": "bloom_bass_Cs1/bloom_bass_Cs1.wav"
+  },
+  "bloom_bass_Cs2": {
+    "cs2": "bloom_bass_Cs2/bloom_bass_Cs2.wav"
+  },
+  "bloom_bass_D1": {
+    "d1": "bloom_bass_D1/bloom_bass_D1.wav"
+  },
+  "bloom_bass_D2": {
+    "d2": "bloom_bass_D2/bloom_bass_D2.wav"
+  },
+  "bloom_bass_Ds1": {
+    "ds1": "bloom_bass_Ds1/bloom_bass_Ds1.wav"
   },
   "bloom_bass_Ds2": {
     "ds2": "bloom_bass_Ds2/bloom_bass_Ds2.wav"
   },
+  "bloom_bass_E2": {
+    "e2": "bloom_bass_E2/bloom_bass_E2.wav"
+  },
   "bloom_bass_Fs2": {
     "fs2": "bloom_bass_Fs2/bloom_bass_Fs2.wav"
+  },
+  "bloom_bass_G1": {
+    "g1": "bloom_bass_G1/bloom_bass_G1.wav"
   },
   "bloom_bass_Gs1": {
     "gs1": "bloom_bass_Gs1/bloom_bass_Gs1.wav"
   },
-  "bloom_mid_perc3": {
-    "0": "bloom_mid_perc3/bloom_mid_perc3.wav"
+  "bloom_kick": {
+    "0": "bloom_kick/bloom_kick.wav"
+  },
+  "bloom_lead_A2": {
+    "a2": "bloom_lead_A2/bloom_lead_A2.wav"
+  },
+  "bloom_lead_As2": {
+    "as2": "bloom_lead_As2/bloom_lead_As2.wav"
   },
   "bloom_lead_B2": {
     "b2": "bloom_lead_B2/bloom_lead_B2.wav"
   },
+  "bloom_lead_C3": {
+    "c3": "bloom_lead_C3/bloom_lead_C3.wav"
+  },
   "bloom_lead_Cs3": {
     "cs3": "bloom_lead_Cs3/bloom_lead_Cs3.wav"
+  },
+  "bloom_lead_D3": {
+    "d3": "bloom_lead_D3/bloom_lead_D3.wav"
   },
   "bloom_lead_Ds3": {
     "ds3": "bloom_lead_Ds3/bloom_lead_Ds3.wav"
   },
+  "bloom_lead_E3": {
+    "e3": "bloom_lead_E3/bloom_lead_E3.wav"
+  },
+  "bloom_lead_F3": {
+    "f3": "bloom_lead_F3/bloom_lead_F3.wav"
+  },
+  "bloom_lead_G2": {
+    "g2": "bloom_lead_G2/bloom_lead_G2.wav"
+  },
   "bloom_lead_Gs2": {
     "gs2": "bloom_lead_Gs2/bloom_lead_Gs2.wav"
   },
+  "bloom_mid_perc": {
+    "0": "bloom_mid_perc/bloom_mid_perc.wav"
+  },
+  "bloom_mid_perc1": {
+    "0": "bloom_mid_perc1/bloom_mid_perc1.wav"
+  },
+  "bloom_mid_perc2": {
+    "0": "bloom_mid_perc2/bloom_mid_perc2.wav"
+  },
+  "bloom_mid_perc3": {
+    "0": "bloom_mid_perc3/bloom_mid_perc3.wav"
+  },
+  "bloom_snare": {
+    "0": "bloom_snare/bloom_snare.wav"
+  },
+  "cinematic_fire": [
+    "cinematic_fire/firebrst_flamethrower-whoosh.wav",
+    "cinematic_fire/firebrst_gas-burst-exhaust-1.wav",
+    "cinematic_fire/fireburn_big-campfire-fire-crackles_op_ocular-001.wav",
+    "cinematic_fire/fireburn_big-campfire-fire-crackles_op_ocular-002.wav",
+    "cinematic_fire/firecrkl_inside-fireplace-clos-up-crackling.wav",
+    "cinematic_fire/firecrkl_inside-fireplace-transient-pops.wav",
+    "cinematic_fire/firecrkl_outside-fireplace-big-fire-heavy.wav",
+    "cinematic_fire/firecrkl_outside-fireplace-crackle.wav",
+    "cinematic_fire/firegas_big-tremolo-gas-rising-crispy-fire-impact_op_ocular.wav",
+    "cinematic_fire/firegas_crispy-gas-whoosh_op_ocular.wav",
+    "cinematic_fire/firegas_gas-boiling-liquid_op_ocular.wav",
+    "cinematic_fire/firegas_heavy-gas-burst-ignition-delay_op_ocular.wav",
+    "cinematic_fire/firegas_impact-and-long-gas-burst-ignition-phase-movement_op_ocular.wav",
+    "cinematic_fire/firegas_long-gas-ignition-rising-soft-fire-burst_op_ocular.wav",
+    "cinematic_fire/firegas_soft-gas-interaction_op_ocular.wav",
+    "cinematic_fire/firegas_soft-gas-rising-and-hit-long-reverb_op_ocular.wav",
+    "cinematic_fire/firegas_white-noise-exhaust-crackling.wav",
+    "cinematic_fire/fireign_bullet-drop-reverse-into-zippo-clickingtransition-light-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_bullet-drop-reverse-into-zippo-clickingtransition-synth-bass-rising-long-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_bullet-drop-reverse-into-zippo-opening-and-clickingtransition-med-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_bullet-drop-reverse-into-zippo-opening-transition-med-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_bullet-drop-reverse-into-zippo-transition.wav",
+    "cinematic_fire/fireign_button-lighter-multi-activation_op_ocular.wav",
+    "cinematic_fire/fireign_clicking-transition-sound-opening-zippo-light-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_clicking-transition-sound-zippo-heavy-fire-crackles-closing-med-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_clicking-transition-sound-zippo.wav",
+    "cinematic_fire/fireign_deep-lighter-ignite-transition-whoosh.wav",
+    "cinematic_fire/fireign_double-crispy-fire-hit-signal-lost-hit_op_ocular.wav",
+    "cinematic_fire/fireign_gas-burst-exhaust-2.wav",
+    "cinematic_fire/fireign_high-crispy-fire-crackles-light-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_lighter-ignite-high-pitch-crackle-gas.wav",
+    "cinematic_fire/fireign_lighter-ignite-with-gas-flame.wav",
+    "cinematic_fire/fireign_lighter-ignite.wav",
+    "cinematic_fire/fireign_long-crackling-fire-whoosh-riser-small-reverb.wav",
+    "cinematic_fire/fireign_match-ignite.wav",
+    "cinematic_fire/fireign_matches-friction-fire-lighting-big-space-soft-rising_op_ocular.wav",
+    "cinematic_fire/fireign_matches-friction-fire-lighting-short-reverb_op_ocular.wav",
+    "cinematic_fire/fireign_matches-friction-fire-lighting_op_ocular.wav",
+    "cinematic_fire/fireign_multi-clicking-transition-sound-zippo_op_ocular.wav",
+    "cinematic_fire/fireign_opening-zippo-small-reverb.wav",
+    "cinematic_fire/fireign_shaken-match-fire-bass-noise_op_ocular.wav",
+    "cinematic_fire/fireign_short-crispy-fire-whoosh-phase-movements_op_ocular-001.wav",
+    "cinematic_fire/fireign_short-crispy-fire-whoosh-phase-movements_op_ocular-002.wav",
+    "cinematic_fire/fireign_soft-crispy-fire-hit-phase-movements_op_ocular.wav",
+    "cinematic_fire/fireign_zippo-metal-small-reverb.wav",
+    "cinematic_fire/firemisc_liquid-on-hot-metal-bass-roar-tail_op_ocular.wav",
+    "cinematic_fire/firemisc_liquid-on-hot-metal-long-reverb_op_ocular.wav",
+    "cinematic_fire/firemisc_liquid-on-hot-metal-phase-movements-tail_op_ocular.wav",
+    "cinematic_fire/firemisc_liquid-on-hot-metal-whoosh_op_ocular.wav",
+    "cinematic_fire/firemisc_liquid-on-hot-metal_op_ocular.wav",
+    "cinematic_fire/firemisc_process-fire-extinguisher-multi-air-burst-med-reverb_op_ocular.wav",
+    "cinematic_fire/firemisc_process-fire-extinguisher-multi-air-burst-short-reverb_op_ocular.wav",
+    "cinematic_fire/firemisc_process-fire-extinguisher-multi-small-air-burst-med-reverb_op_ocular.wav",
+    "cinematic_fire/firemisc_process-small-fire-extinguisher-multi-air-burst-med-reverb_op_ocular.wav",
+    "cinematic_fire/firetrch_waving-torch-around-heavy-crackle.wav",
+    "cinematic_fire/fireturb_clicking-transition-collapse.wav",
+    "cinematic_fire/fireturb_crispy-fire-burst-heavy-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-fire-burst-phase-movement_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-impact-thunder-cracky-synth-bass_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-impact-thunder-cracky_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence-distorted_op_ocular-001.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence-distorted_op_ocular-002.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence-distorted_op_ocular-003.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence-light-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence-morphing-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_crispy-high-fire-sequence_op_ocular.wav",
+    "cinematic_fire/fireturb_double-crispy-high-burst_op_ocular.wav",
+    "cinematic_fire/fireturb_fire-movements-sequence-muffled-weird-tail_op_ocular.wav",
+    "cinematic_fire/fireturb_gas-rising-traditional-spark-lighter-big-space_op_ocular.wav",
+    "cinematic_fire/fireturb_heavy-crispy-fire-burst-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_heavy-crispy-fire-sequence-distorted_op_ocular-001.wav",
+    "cinematic_fire/fireturb_heavy-crispy-fire-sequence-distorted_op_ocular-002.wav",
+    "cinematic_fire/fireturb_heavy-crispy-fire-sequence-distorted_op_ocular-003.wav",
+    "cinematic_fire/fireturb_heavy-crispy-fire-sequence-distorted_op_ocular-004.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-double-burst-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-001.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-002.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-003.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-004.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-005.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-006.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-007.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-008.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-009.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-010.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-011.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-012.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-013.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-014.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-015.wav",
+    "cinematic_fire/fireturb_heavy-crispy-high-fire-sequence-distorted_op_ocular-016.wav",
+    "cinematic_fire/fireturb_long-crispy-high-burst_op_ocular.wav",
+    "cinematic_fire/fireturb_soft-fire-sequence-distorted_op_ocular.wav",
+    "cinematic_fire/fireturb_soft-fire-sequence_op_ocular-001.wav",
+    "cinematic_fire/fireturb_soft-fire-sequence_op_ocular-002.wav",
+    "cinematic_fire/firewhsh_crackling-cigarette-transition-whoosh.wav",
+    "cinematic_fire/firewhsh_crackling-distorted-fire-whoosh.wav",
+    "cinematic_fire/firewhsh_crackling-fire-riser-tree-branch.wav",
+    "cinematic_fire/firewhsh_crackling-fire-whoosh.wav",
+    "cinematic_fire/firewhsh_deep-fire-whoosh.wav",
+    "cinematic_fire/firewhsh_deep-flames-whoosh.wav",
+    "cinematic_fire/firewhsh_flanged-crispy-fire-whoosh_op_ocular.wav",
+    "cinematic_fire/firewhsh_lighter-whoosh-distorted-gas-exhaust.wav",
+    "cinematic_fire/firewhsh_match-ignite-transition-whoosh.wav",
+    "cinematic_fire/firewhsh_quick-torch-whoosh.wav",
+    "cinematic_fire/firewhsh_short-match-riser.wav",
+    "cinematic_fire/firewhsh_zippo-ignite-whoosh-gas-flame-heavy.wav"
+  ],
+  "cinematic_stone": [
+    "cinematic_stone/._rockbrk_dry-break-impact-crispy-small-rise-and-hit.wav",
+    "cinematic_stone/._rockbrk_heavy-impact-crispy-synth-bass.wav",
+    "cinematic_stone/._rockbrk_heavy-rock-crackles-light-synth-bass-sequence-distorted.wav",
+    "cinematic_stone/._rockbrk_heavy-rock-crackles-tone-pass-by-light-synth-bass.wav",
+    "cinematic_stone/._rockbrk_heavy-rock-crackles-tremolo-sequence-light-distorted.wav",
+    "cinematic_stone/._rockbrk_long-crackles-rock-and-tile-impact.wav",
+    "cinematic_stone/._rockbrk_multi-rock-impacts-heavy-synth-bass-sequence-slow-motion.wav",
+    "cinematic_stone/._rockbrk_rock-yielding-to-pressure-low-granular-crackles.wav",
+    "cinematic_stone/._rockbrk_sequence-smooth-massive-rock-breaks-and-impact.wav",
+    "cinematic_stone/._rockbrk_sequence-smooth-massive-rocks-breaks-and-impact-tone.wav",
+    "cinematic_stone/._rockbrk_sequence-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/._rockbrk_short-rise-and-hit-smooth-massive-rocks-breaks-and-impact-light-bass-synth.wav",
+    "cinematic_stone/._rockbrk_single-hit-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/._rockbrk_soft-rock-impact-heavy-synth-bass-long-rock-crackles-tail.wav",
+    "cinematic_stone/._rockbrk_squence-rock-yielding-to-pressure-low-granular-crackles.wav",
+    "cinematic_stone/._rockbrk_whoosh-and-hit-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/._rockfric_massive-rocks-frictions-liquify.wav",
+    "cinematic_stone/._rockimpt_double-hit-granular-rocks-crackles-tone-resonance-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_double-hit-rocks-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_heavy-single-rocks-impact-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_increased-multi-rock-impacts-sequence-synth-bass.wav",
+    "cinematic_stone/._rockimpt_long-crackle-rise-rock-slap-impact.wav",
+    "cinematic_stone/._rockimpt_reverse-molten-rock-rise-pebbles-impact-large-reverb-tail.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-molten-rocks-soft-crackles-high-electronic-whistling-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-molten-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-rocks-and-tiles-crackles-smooth-bass-1.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-rocks-and-tiles-crackles-smooth-bass-2.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_rise-and-hit-tremolo-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_rock-and-tile-impact-high-velocity-sequence.wav",
+    "cinematic_stone/._rockimpt_rock-impact-smooth-bass-dry.wav",
+    "cinematic_stone/._rockimpt_sequence-granular-rocks-crackles-hit-debris-falling-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_sequence-granular-rocks-crackles-hit-debris-falling-tone-resonance-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_short-bass-rise-organic-stones-impact.wav",
+    "cinematic_stone/._rockimpt_short-rise-and-hit-dry-rocks-soft-crackles-crispy.wav",
+    "cinematic_stone/._rockimpt_short-rise-and-hit-molten-rocks-soft-crackles-smooth-bass-slimmy-tail-tone.wav",
+    "cinematic_stone/._rockimpt_short-rise-granular-rocks-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_short-sequence-granular-rocks-whoosh-and-impact.wav",
+    "cinematic_stone/._rockimpt_short-sequence-rock-stress-and-impact-high-velocity.wav",
+    "cinematic_stone/._rockimpt_single-distorted-hit-rocks-organic-crackle-debris-falling-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-1.wav",
+    "cinematic_stone/._rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-2.wav",
+    "cinematic_stone/._rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-3.wav",
+    "cinematic_stone/._rockimpt_single-hit-granular-rocks-crackles-high-tremolo-long-rev-tail.wav",
+    "cinematic_stone/._rockimpt_single-hit-gravel-shake-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_single-hit-molten-rocks-crackles.wav",
+    "cinematic_stone/._rockimpt_single-hit-soft-crackles-smooth.wav",
+    "cinematic_stone/._rockimpt_whoosh-and-hit-granular-rock-crackles-and-debris-falling-smooth-bass-tone-rev.wav",
+    "cinematic_stone/._rockimpt_whoosh-and-hit-granular-rocks-crackles-and-tile-smooth-bass-tone-rev.wav",
+    "cinematic_stone/._rockimpt_whoosh-and-hit-granular-rocks-crackles-heavy-crispy-clicks-smooth-bass.wav",
+    "cinematic_stone/._rockimpt_whoosh-granular-rock-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockmisc_double-whoosh-long-rock-crackles-tail.wav",
+    "cinematic_stone/._rockmisc_stone-and-tile-thunder-sequence.wav",
+    "cinematic_stone/._rockmvmt_-heavy-rock-rising-dry-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_heavy-rocks-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_liquid-rocks-rise-granular-crackles-and-hit.wav",
+    "cinematic_stone/._rockmvmt_long-whoosh-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_reverse-rise-tremolo-rocks-and-gravels-heavy-whoosh.wav",
+    "cinematic_stone/._rockmvmt_sequence-dry-rocks-soft-crackles-crispy-high-slimmy-tone-1.wav",
+    "cinematic_stone/._rockmvmt_sequence-dry-rocks-soft-crackles-crispy-high-slimmy-tone-2.wav",
+    "cinematic_stone/._rockmvmt_sequence-granular-rocks-double-whoosh-light-distorted.wav",
+    "cinematic_stone/._rockmvmt_sequence-granular-rocks-heavy-synth-bass-double-whoosh.wav",
+    "cinematic_stone/._rockmvmt_sequence-granular-rocks-multi-whoosh.wav",
+    "cinematic_stone/._rockmvmt_sequence-heavy-rocks-movement-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_sequence-intense-granular-rocks-movement.wav",
+    "cinematic_stone/._rockmvmt_sequence-liquid-rocks-multi-whoosh-and-impact.wav",
+    "cinematic_stone/._rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-1.wav",
+    "cinematic_stone/._rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-2.wav",
+    "cinematic_stone/._rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-3.wav",
+    "cinematic_stone/._rockmvmt_sequence-molten-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_sequence-organic-granular-rocks-double-whoosh.wav",
+    "cinematic_stone/._rockmvmt_sequence-rocks-and-tiles-crackles-pitch-correction-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_sequence-rocks-and-tiles-crackles-smooth-bass.wav",
+    "cinematic_stone/._rockmvmt_sequence-tiles-frictions-organic-granular-rock-double-whoosh.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-granular-rocks-crispy-multi-whoosh.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-1.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-2.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-3.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-4.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-1.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-2.wav",
+    "cinematic_stone/._rockmvmt_short-sequence-organic-granular-rock-double-whoosh.wav",
+    "cinematic_stone/._rocktonl_short-sequence-granular-low-hit-high-tonal.wav",
+    "cinematic_stone/._rocktonl_short-sequence-smooth-massive-rocks-breaks-tone.wav",
+    "cinematic_stone/._rocktonl_short-sequence-tonal-scratchs-high-tonal.wav",
+    "cinematic_stone/rockbrk_dry-break-impact-crispy-small-rise-and-hit.wav",
+    "cinematic_stone/rockbrk_heavy-impact-crispy-synth-bass.wav",
+    "cinematic_stone/rockbrk_heavy-rock-crackles-light-synth-bass-sequence-distorted.wav",
+    "cinematic_stone/rockbrk_heavy-rock-crackles-tone-pass-by-light-synth-bass.wav",
+    "cinematic_stone/rockbrk_heavy-rock-crackles-tremolo-sequence-light-distorted.wav",
+    "cinematic_stone/rockbrk_long-crackles-rock-and-tile-impact.wav",
+    "cinematic_stone/rockbrk_multi-rock-impacts-heavy-synth-bass-sequence-slow-motion.wav",
+    "cinematic_stone/rockbrk_rock-yielding-to-pressure-low-granular-crackles.wav",
+    "cinematic_stone/rockbrk_sequence-smooth-massive-rock-breaks-and-impact.wav",
+    "cinematic_stone/rockbrk_sequence-smooth-massive-rocks-breaks-and-impact-tone.wav",
+    "cinematic_stone/rockbrk_sequence-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/rockbrk_short-rise-and-hit-smooth-massive-rocks-breaks-and-impact-light-bass-synth.wav",
+    "cinematic_stone/rockbrk_single-hit-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/rockbrk_soft-rock-impact-heavy-synth-bass-long-rock-crackles-tail.wav",
+    "cinematic_stone/rockbrk_squence-rock-yielding-to-pressure-low-granular-crackles.wav",
+    "cinematic_stone/rockbrk_whoosh-and-hit-smooth-massive-rocks-breaks-and-impact.wav",
+    "cinematic_stone/rockfric_massive-rocks-frictions-liquify.wav",
+    "cinematic_stone/rockimpt_double-hit-granular-rocks-crackles-tone-resonance-smooth-bass.wav",
+    "cinematic_stone/rockimpt_double-hit-rocks-crackles-smooth-bass.wav",
+    "cinematic_stone/rockimpt_heavy-single-rocks-impact-smooth-bass.wav",
+    "cinematic_stone/rockimpt_increased-multi-rock-impacts-sequence-synth-bass.wav",
+    "cinematic_stone/rockimpt_long-crackle-rise-rock-slap-impact.wav",
+    "cinematic_stone/rockimpt_reverse-molten-rock-rise-pebbles-impact-large-reverb-tail.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-molten-rocks-soft-crackles-high-electronic-whistling-smooth-bass.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-molten-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-rocks-and-tiles-crackles-smooth-bass-1.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-rocks-and-tiles-crackles-smooth-bass-2.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockimpt_rise-and-hit-tremolo-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockimpt_rock-and-tile-impact-high-velocity-sequence.wav",
+    "cinematic_stone/rockimpt_rock-impact-smooth-bass-dry.wav",
+    "cinematic_stone/rockimpt_sequence-granular-rocks-crackles-hit-debris-falling-smooth-bass.wav",
+    "cinematic_stone/rockimpt_sequence-granular-rocks-crackles-hit-debris-falling-tone-resonance-smooth-bass.wav",
+    "cinematic_stone/rockimpt_short-bass-rise-organic-stones-impact.wav",
+    "cinematic_stone/rockimpt_short-rise-and-hit-dry-rocks-soft-crackles-crispy.wav",
+    "cinematic_stone/rockimpt_short-rise-and-hit-molten-rocks-soft-crackles-smooth-bass-slimmy-tail-tone.wav",
+    "cinematic_stone/rockimpt_short-rise-granular-rocks-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockimpt_short-sequence-granular-rocks-whoosh-and-impact.wav",
+    "cinematic_stone/rockimpt_short-sequence-rock-stress-and-impact-high-velocity.wav",
+    "cinematic_stone/rockimpt_single-distorted-hit-rocks-organic-crackle-debris-falling-smooth-bass.wav",
+    "cinematic_stone/rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-1.wav",
+    "cinematic_stone/rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-2.wav",
+    "cinematic_stone/rockimpt_single-hit-granular-rocks-crackles-and-debris-falling-smooth-bass-3.wav",
+    "cinematic_stone/rockimpt_single-hit-granular-rocks-crackles-high-tremolo-long-rev-tail.wav",
+    "cinematic_stone/rockimpt_single-hit-gravel-shake-smooth-bass.wav",
+    "cinematic_stone/rockimpt_single-hit-molten-rocks-crackles.wav",
+    "cinematic_stone/rockimpt_single-hit-soft-crackles-smooth.wav",
+    "cinematic_stone/rockimpt_whoosh-and-hit-granular-rock-crackles-and-debris-falling-smooth-bass-tone-rev.wav",
+    "cinematic_stone/rockimpt_whoosh-and-hit-granular-rocks-crackles-and-tile-smooth-bass-tone-rev.wav",
+    "cinematic_stone/rockimpt_whoosh-and-hit-granular-rocks-crackles-heavy-crispy-clicks-smooth-bass.wav",
+    "cinematic_stone/rockimpt_whoosh-granular-rock-hit-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockmisc_double-whoosh-long-rock-crackles-tail.wav",
+    "cinematic_stone/rockmisc_stone-and-tile-thunder-sequence.wav",
+    "cinematic_stone/rockmvmt_-heavy-rock-rising-dry-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_heavy-rocks-crackles-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_liquid-rocks-rise-granular-crackles-and-hit.wav",
+    "cinematic_stone/rockmvmt_long-whoosh-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_reverse-rise-tremolo-rocks-and-gravels-heavy-whoosh.wav",
+    "cinematic_stone/rockmvmt_sequence-dry-rocks-soft-crackles-crispy-high-slimmy-tone-1.wav",
+    "cinematic_stone/rockmvmt_sequence-dry-rocks-soft-crackles-crispy-high-slimmy-tone-2.wav",
+    "cinematic_stone/rockmvmt_sequence-granular-rocks-double-whoosh-light-distorted.wav",
+    "cinematic_stone/rockmvmt_sequence-granular-rocks-heavy-synth-bass-double-whoosh.wav",
+    "cinematic_stone/rockmvmt_sequence-granular-rocks-multi-whoosh.wav",
+    "cinematic_stone/rockmvmt_sequence-heavy-rocks-movement-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_sequence-intense-granular-rocks-movement.wav",
+    "cinematic_stone/rockmvmt_sequence-liquid-rocks-multi-whoosh-and-impact.wav",
+    "cinematic_stone/rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-1.wav",
+    "cinematic_stone/rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-2.wav",
+    "cinematic_stone/rockmvmt_sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-3.wav",
+    "cinematic_stone/rockmvmt_sequence-molten-rocks-soft-crackles-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_sequence-organic-granular-rocks-double-whoosh.wav",
+    "cinematic_stone/rockmvmt_sequence-rocks-and-tiles-crackles-pitch-correction-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_sequence-rocks-and-tiles-crackles-smooth-bass.wav",
+    "cinematic_stone/rockmvmt_sequence-tiles-frictions-organic-granular-rock-double-whoosh.wav",
+    "cinematic_stone/rockmvmt_short-sequence-granular-rocks-crispy-multi-whoosh.wav",
+    "cinematic_stone/rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-1.wav",
+    "cinematic_stone/rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-2.wav",
+    "cinematic_stone/rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-3.wav",
+    "cinematic_stone/rockmvmt_short-sequence-liquid-rocks-crispy-multi-whoosh-4.wav",
+    "cinematic_stone/rockmvmt_short-sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-1.wav",
+    "cinematic_stone/rockmvmt_short-sequence-molten-rocks-soft-crackles-fast-tremolo-smooth-bass-2.wav",
+    "cinematic_stone/rockmvmt_short-sequence-organic-granular-rock-double-whoosh.wav",
+    "cinematic_stone/rocktonl_short-sequence-granular-low-hit-high-tonal.wav",
+    "cinematic_stone/rocktonl_short-sequence-smooth-massive-rocks-breaks-tone.wav",
+    "cinematic_stone/rocktonl_short-sequence-tonal-scratchs-high-tonal.wav"
+  ],
+  "cinematic_water": [
+    "cinematic_water/watrbubl_bubbles-burst-light-echo.wav",
+    "cinematic_water/watrbubl_bubbles-water-movements-whoosh.wav",
+    "cinematic_water/watrbubl_heavy-bubbles-water-movements-sequence.wav",
+    "cinematic_water/watrbubl_processed-bubbles-underwater-movements-sequence.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-bass-hits-sequence-1.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-bass-hits-sequence-2.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-bass-pulsation-rythmic-rising.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-drum-hit-sequence-1.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-drum-hit-sequence-2.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-drum-hits-sequence.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-high-squeak-rising-and-impact.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-high-squeak-sequence.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-rythmic-rising-and-liquid-impact.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-sequence-1.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-sequence-2.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-sequence-fast-tremolo.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-whoosh-1.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-whoosh-2.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-whoosh-3.wav",
+    "cinematic_water/watrbubl_processed-bubbles-water-movements-whoosh-fast-tremolo.wav",
+    "cinematic_water/watrbubl_processed-crispy-bubbles-burst-slimmy-bass-hits.wav",
+    "cinematic_water/watrbubl_processed-crispy-bubbles-water-movements-slimmy-bass-hits-sequence.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-double-whooshes.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-and-soft-impact-drowned-robot-roar.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-drowned-robot-roar-1.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-drowned-robot-roar-2.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-light-flanger-roar-1.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-light-flanger-roar-2.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence-light-flanger-turn-off.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-sequence.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-underwater-whoosh.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-bass-hits-long-sequence.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-crazy-tremolo-whoosh.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-high-resonance-sequence.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-sequence-1.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-sequence-2.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-sequence-3.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-sequence-phase-movement.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-soft-tremolo-sequence.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-water-movements-whoosh.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-whoosh-light-reverb.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-whoosh.wav",
+    "cinematic_water/watrbubl_processed-heavy-bubbles-whooshes-high-resonance.wav",
+    "cinematic_water/watrbubl_processed-light-bubbles-water-movements-high-squeak-sequence.wav",
+    "cinematic_water/watrbubl_processed-light-bubbles-water-movements-sequence.wav",
+    "cinematic_water/watrbubl_processed-synth-liquify-burst-delay.wav",
+    "cinematic_water/watrbubl_processed-synth-liquify-long-whoosh-flanger-roar.wav",
+    "cinematic_water/watrbubl_processed-synth-liquify-sequence.wav",
+    "cinematic_water/watrbubl_processed-synth-liquify-whoosh-bubbles.wav",
+    "cinematic_water/watrbubl_stretched-bubbles-high-fizzy.wav",
+    "cinematic_water/watrbubl_stretched-bubbles-water-movements-sequence.wav",
+    "cinematic_water/watrbubl_water-emptied-into-sink-med-reverb.wav",
+    "cinematic_water/watrbubl_waterfall-flow-movements-sequence-med-reverb.wav",
+    "cinematic_water/watrmisc_processed-double-impact-sequence-slimmy-boiling-liquid-big-space-1.wav",
+    "cinematic_water/watrmisc_processed-double-impact-sequence-slimmy-boiling-liquid-big-space-2.wav",
+    "cinematic_water/watrmisc_processed-double-impact-sequence-slimmy-boiling-liquid.wav",
+    "cinematic_water/watrmisc_rainstorm-plastic-surface-tremolo-sequence-1.wav",
+    "cinematic_water/watrmisc_rainstorm-plastic-surface-tremolo-sequence-2.wav",
+    "cinematic_water/watrmisc_rainstorm-plastic-surface-tremolo-short-sequence.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-container-rising.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-container-whoosh-1.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-container-whoosh-2.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-container-whoosh-3.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-container-whoosh-med-reverb.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-metal-container-rising-and-impact-1.wav",
+    "cinematic_water/watrmvmt_processed-movement-water-metal-container-rising-and-impact-2.wav",
+    "cinematic_water/watrwave_classic-ocean-waves-light-reverb.wav",
+    "cinematic_water/watrwave_classic-ocean-waves-long-whoosh-soft-phasor-movement-light-reverb.wav",
+    "cinematic_water/watrwave_classic-ocean-waves-med-reverb.wav",
+    "cinematic_water/watrwave_classic-ocean-waves-soft-bass-synth.wav",
+    "cinematic_water/watrwave_heavy-ocean-waves-drum-hit-sequence.wav",
+    "cinematic_water/watrwave_heavy-ocean-waves-rising-and-impact-bass-hit-whoosh-light-reverb.wav",
+    "cinematic_water/watrwave_heavy-ocean-waves-synth-bass-whoosh.wav",
+    "cinematic_water/watrwave_heavy-ocean-waves-underwater-bass-hit-sequence-1.wav",
+    "cinematic_water/watrwave_heavy-ocean-waves-underwater-bass-hit-sequence-2.wav",
+    "cinematic_water/watrwave_huge-ocean-waves-foam-med-reverb.wav",
+    "cinematic_water/watrwave_huge-ocean-waves-long-foam-tail-light-reverb-1.wav",
+    "cinematic_water/watrwave_huge-ocean-waves-long-foam-tail-light-reverb-2.wav",
+    "cinematic_water/watrwave_huge-ocean-waves-long-whoosh-foam-light-reverb.wav"
+  ],
+  "clap": {
+    "0": "clap/clap.wav"
+  },
+  "classic_horror": {
+    "0": [
+      "classic_horror/ambdsgn_atmosphere-sub-rhythmic-metal-hit-drone.wav"
+    ],
+    "1": [
+      "classic_horror/belllrg_devil-bells-ghost-whispers.wav"
+    ],
+    "2": [
+      "classic_horror/creasrce_creature-breath-growl-angry-monster.wav"
+    ],
+    "3": [
+      "classic_horror/creasrce_creature-growl-growling-vox-stretchd-pitched.wav"
+    ],
+    "4": [
+      "classic_horror/creasrce_creature-monster-voice-stretched-pitched.wav"
+    ],
+    "5": [
+      "classic_horror/doorcreak_creepy-atmosphere-door-squeaks-sudden-metallic.wav"
+    ],
+    "6": [
+      "classic_horror/doormetl_slow-door-slide-creepy-squeaks-metallic.wav"
+    ],
+    "7": [
+      "classic_horror/doorwood_impact-door-wood-low-hit-squeal.wav"
+    ],
+    "8": [
+      "classic_horror/dsgndist_horror-hit-feedback-distortion-jumpscare.wav"
+    ],
+    "9": [
+      "classic_horror/dsgndist_metal-scraping-jumpscare-sub-rumble-distorted.wav"
+    ],
+    "10": [
+      "classic_horror/dsgndron_ambiences-whisper-reverb-rumble-low-horn.wav"
+    ],
+    "11": [
+      "classic_horror/dsgndron_drone-dark-low-human-voice-wood-destruction.wav"
+    ],
+    "12": [
+      "classic_horror/dsgndron_evil-breath-tension-atmosphere.wav"
+    ],
+    "13": [
+      "classic_horror/dsgndron_low-rumble-deep-avalanche-noisy-texture.wav"
+    ],
+    "14": [
+      "classic_horror/dsgndron_low-rumble-sub-rain-metal.wav"
+    ],
+    "15": [
+      "classic_horror/dsgndron_metal-drone-deep-ambient-rumble-impact.wav"
+    ],
+    "16": [
+      "classic_horror/dsgndron_rumble-footstep-rhythmic-rise-deep-ambient.wav"
+    ],
+    "17": [
+      "classic_horror/dsgndron_rumble-wind-chimes-gravel-movement-atmosphere.wav"
+    ],
+    "18": [
+      "classic_horror/dsgnerie_ghost-attack-chaos-airy-exhale-whoosh.wav"
+    ],
+    "19": [
+      "classic_horror/dsgnerie_ghostly-atmosphere.wav"
+    ],
+    "20": [
+      "classic_horror/dsgnerie_ghostly-wind-rumble.wav"
+    ],
+    "21": [
+      "classic_horror/dsgnerie_heavy-door-squeak-heavy-rumble-creepy-movements.wav"
+    ],
+    "22": [
+      "classic_horror/dsgnerie_low-dense-atonal-drone-rumble-movement.wav"
+    ],
+    "23": [
+      "classic_horror/dsgnerie_metalic-drone-sting.wav"
+    ],
+    "24": [
+      "classic_horror/dsgnerie_metallic-stinger.wav"
+    ],
+    "25": [
+      "classic_horror/dsgnerie_pulse-heartbeat-dark-ambience-sub-low.wav"
+    ],
+    "26": [
+      "classic_horror/dsgnerie_rumble-clock-rhythmic-metal-hit-rise.wav"
+    ],
+    "27": [
+      "classic_horror/dsgnerie_rumble-high-tone-scary-transition-metalic.wav"
+    ],
+    "28": [
+      "classic_horror/dsgnerie_tension-atmosphere-cello-scratch.wav"
+    ],
+    "29": [
+      "classic_horror/dsgnerie_tension-creak-door-squeak.wav"
+    ],
+    "30": [
+      "classic_horror/dsgnerie_tonal-transition-scary-confusion-metal.wav"
+    ],
+    "31": [
+      "classic_horror/dsgngran_musical-sting-c-dark-haunted-delay-synth.wav"
+    ],
+    "32": [
+      "classic_horror/dsgnimpt_alarm-hit-disonant.wav"
+    ],
+    "33": [
+      "classic_horror/dsgnimpt_drone-reverse-metal-deep-slow-atmosphere.wav"
+    ],
+    "34": [
+      "classic_horror/dsgnimpt_evil-bell-sting-drone.wav"
+    ],
+    "35": [
+      "classic_horror/dsgnimpt_evil-impact-hard-hit-screams-low-boom.wav"
+    ],
+    "36": [
+      "classic_horror/dsgnimpt_evil-impact-hit-sub-metal-string-slide.wav"
+    ],
+    "37": [
+      "classic_horror/dsgnimpt_evil-piano-hit-long-tail.wav"
+    ],
+    "38": [
+      "classic_horror/dsgnimpt_ghostly-creature.wav"
+    ],
+    "39": [
+      "classic_horror/dsgnimpt_hard-hit-squeal-impact-scary.wav"
+    ],
+    "40": [
+      "classic_horror/dsgnimpt_hard-hit-whoosh-metallic-reverse-squeal.wav"
+    ],
+    "41": [
+      "classic_horror/dsgnimpt_hit-downer-bass-reverse-noise.wav"
+    ],
+    "42": [
+      "classic_horror/dsgnimpt_hit-scream-pizzicato.wav"
+    ],
+    "43": [
+      "classic_horror/dsgnimpt_impact-hit-boom-human-voice.wav"
+    ],
+    "44": [
+      "classic_horror/dsgnimpt_impact-metal-dark-long-tail.wav"
+    ],
+    "45": [
+      "classic_horror/dsgnimpt_impact-rumble-metalic-squeal-rise-creepy.wav"
+    ],
+    "46": [
+      "classic_horror/dsgnimpt_jumpscare-deep-sub-human-voice-hit-whoosh.wav"
+    ],
+    "47": [
+      "classic_horror/dsgnimpt_jumpscare-high-pitch.wav"
+    ],
+    "48": [
+      "classic_horror/dsgnimpt_jumpscare-metal-particles-low-airy.wav"
+    ],
+    "49": [
+      "classic_horror/dsgnimpt_jumpscare-one-shot-deep-sub-tire-squeal.wav"
+    ],
+    "50": [
+      "classic_horror/dsgnimpt_jumpscare-scream.wav"
+    ],
+    "51": [
+      "classic_horror/dsgnimpt_low-pitched-ghostly-echoes-jumpscare-distorted.wav"
+    ],
+    "52": [
+      "classic_horror/dsgnimpt_metalic-impact-high-boom-cymbal-reverse.wav"
+    ],
+    "53": [
+      "classic_horror/dsgnimpt_metallic-hit-disonant.wav"
+    ],
+    "54": [
+      "classic_horror/dsgnimpt_metallic-jumpscare.wav"
+    ],
+    "55": [
+      "classic_horror/dsgnimpt_metallic-sting-hit-piano.wav"
+    ],
+    "56": [
+      "classic_horror/dsgnimpt_one-shot-church-bell-hard-hit-low-impact.wav"
+    ],
+    "57": [
+      "classic_horror/dsgnimpt_one-shot-har-hit-metalic-sub.wav"
+    ],
+    "58": [
+      "classic_horror/dsgnimpt_one-shot-hard-hit-metal-low-boom.wav"
+    ],
+    "59": [
+      "classic_horror/dsgnimpt_one-shot-high-hit-impact-metal-church.wav"
+    ],
+    "60": [
+      "classic_horror/dsgnimpt_one-shot-impact-metal-heavy-reverb-tail.wav"
+    ],
+    "61": [
+      "classic_horror/dsgnimpt_one-shot-low-boom-rumble-hit-human-sigh.wav"
+    ],
+    "62": [
+      "classic_horror/dsgnimpt_one-shot-metallic-hit-scream-boom.wav"
+    ],
+    "63": [
+      "classic_horror/dsgnimpt_one-shot-piano-keys-hard-hit-low-impact.wav"
+    ],
+    "64": [
+      "classic_horror/dsgnimpt_piano-hit-long-reverb.wav"
+    ],
+    "65": [
+      "classic_horror/dsgnimpt_piano-key-impact-hit-reverse-string-instruments.wav"
+    ],
+    "66": [
+      "classic_horror/dsgnimpt_piano-string-keys-impact-jumpscare-scream.wav"
+    ],
+    "67": [
+      "classic_horror/dsgnimpt_riser-impact-metal-heavy-reverb-tail-scary-reverse.wav"
+    ],
+    "68": [
+      "classic_horror/dsgnimpt_riser-impact-metallic-hit.wav"
+    ],
+    "69": [
+      "classic_horror/dsgnimpt_riser-metalic-metalic-squeal-reverse-impact.wav"
+    ],
+    "70": [
+      "classic_horror/dsgnimpt_riser-metalic-reverse-impact-boom-rumble.wav"
+    ],
+    "71": [
+      "classic_horror/dsgnimpt_riser-metallic-low-boom-reverse-impact.wav"
+    ],
+    "72": [
+      "classic_horror/dsgnimpt_riser-reverse-breathing-human-high-resonance.wav"
+    ],
+    "73": [
+      "classic_horror/dsgnimpt_riser-reverse-reverb-tail-whoosh.wav"
+    ],
+    "74": [
+      "classic_horror/dsgnimpt_rumble-low-metalic-reverse-hard-hit-drone.wav"
+    ],
+    "75": [
+      "classic_horror/dsgnimpt_scary-impact-hit-noises.wav"
+    ],
+    "76": [
+      "classic_horror/dsgnimpt_scream-jumpscare-hit-sub.wav"
+    ],
+    "77": [
+      "classic_horror/dsgnimpt_shot-impact-metal-heavy-reverb-tail-scary.wav"
+    ],
+    "78": [
+      "classic_horror/dsgnimpt_sting-hit-reverb.wav"
+    ],
+    "79": [
+      "classic_horror/dsgnrise_creepy-metal-string-guitar-transition.wav"
+    ],
+    "80": [
+      "classic_horror/dsgnrise_door-knock-reverse-reverb-tail-door-wood.wav"
+    ],
+    "81": [
+      "classic_horror/dsgnrise_evil-atmosphere-riser.wav"
+    ],
+    "82": [
+      "classic_horror/dsgnrise_ghostly-riser-wind.wav"
+    ],
+    "83": [
+      "classic_horror/dsgnrise_heartbeat-whisper-reverb-rise-noise-reverse.wav"
+    ],
+    "84": [
+      "classic_horror/dsgnrise_heavy-steps-hit.wav"
+    ],
+    "85": [
+      "classic_horror/dsgnrise_high-pitched-riser-knob-door-tone-noisy.wav"
+    ],
+    "86": [
+      "classic_horror/dsgnrise_high-riser-drone-ambient-squish-human.wav"
+    ],
+    "87": [
+      "classic_horror/dsgnrise_high-riser-glass-broken-impact-resonan.wav"
+    ],
+    "88": [
+      "classic_horror/dsgnrise_hit-string-riser.wav"
+    ],
+    "89": [
+      "classic_horror/dsgnrise_impact-metal-reverb-whisper-kids-high-riser.wav"
+    ],
+    "90": [
+      "classic_horror/dsgnrise_knock-door-atmosphere-string-instruments.wav"
+    ],
+    "91": [
+      "classic_horror/dsgnrise_long-soft-raiser-metallic-dark-transition.wav"
+    ],
+    "92": [
+      "classic_horror/dsgnrise_long-tension-riser-feedback-electric-hum.wav"
+    ],
+    "93": [
+      "classic_horror/dsgnrise_low-synth-down-rise-deep.wav"
+    ],
+    "94": [
+      "classic_horror/dsgnrise_metallic-riser-human-voice-reverse-whoosh.wav"
+    ],
+    "95": [
+      "classic_horror/dsgnrise_metallic-riser-string-slide-metal-scratch.wav"
+    ],
+    "96": [
+      "classic_horror/dsgnrise_metallic-strings-slides-drone-effect-riser.wav"
+    ],
+    "97": [
+      "classic_horror/dsgnrise_metallic-tense-atmosphere.wav"
+    ],
+    "98": [
+      "classic_horror/dsgnrise_monster-riser.wav"
+    ],
+    "99": [
+      "classic_horror/dsgnrise_reversed-chaos-chaotic-riser-transition.wav"
+    ],
+    "100": [
+      "classic_horror/dsgnrise_riser-ambience-noisy-synth-dark-particles.wav"
+    ],
+    "101": [
+      "classic_horror/dsgnrise_riser-reversed-metal-chain-metallic-scrape.wav"
+    ],
+    "102": [
+      "classic_horror/dsgnrise_riser-squeal-metal-scream-reverse.wav"
+    ],
+    "103": [
+      "classic_horror/dsgnrise_riser-tension-metallic.wav"
+    ],
+    "104": [
+      "classic_horror/dsgnrise_rumble-high-rise-human-voice-sub-whoosh.wav"
+    ],
+    "105": [
+      "classic_horror/dsgnrise_rumble-high-rise-laughter-sub.wav"
+    ],
+    "106": [
+      "classic_horror/dsgnrise_rumble-whisper-reverb-scary-transition.wav"
+    ],
+    "107": [
+      "classic_horror/dsgnrise_squeak-door-rise-impact-wood-door.wav"
+    ],
+    "108": [
+      "classic_horror/dsgnrise_whispers-riser-tension.wav"
+    ],
+    "109": [
+      "classic_horror/dsgntonl_creepy-knife-squeaks-reverb-tail-jumpscare.wav"
+    ],
+    "110": [
+      "classic_horror/dsgntonl_dark-whoosh-squeal-rhythmic.wav"
+    ],
+    "111": [
+      "classic_horror/dsgntonl_metal-screech-metal-sratch-delayed-tail.wav"
+    ],
+    "112": [
+      "classic_horror/dsgnvocl_airy-ghost-wind-breath-whoosh.wav"
+    ],
+    "113": [
+      "classic_horror/dsgnvocl_angry-witch-scream-scary-haunted-spell.wav"
+    ],
+    "114": [
+      "classic_horror/dsgnvocl_angry-witch-voice-scary-haunted-spell.wav"
+    ],
+    "115": [
+      "classic_horror/dsgnvocl_creatures-grwoling-angry-evil-deep-low.wav"
+    ],
+    "116": [
+      "classic_horror/dsgnvocl_crying-witches-scary-creepy-vocals.wav"
+    ],
+    "117": [
+      "classic_horror/dsgnvocl_deep-low-masculine-vocal-spell-scary-monster.wav"
+    ],
+    "118": [
+      "classic_horror/dsgnvocl_evil-breath-rumble-dark.wav"
+    ],
+    "119": [
+      "classic_horror/dsgnvocl_evil-drone-dark-drone.wav"
+    ],
+    "120": [
+      "classic_horror/dsgnvocl_evil-spell-witches-vocals-voices-creepy.wav"
+    ],
+    "121": [
+      "classic_horror/dsgnvocl_ghostly-ambience.wav"
+    ],
+    "122": [
+      "classic_horror/dsgnvocl_reversed-female-voices-panned-mental-chaos.wav"
+    ],
+    "123": [
+      "classic_horror/dsgnvocl_rumble-evil-drone.wav"
+    ],
+    "124": [
+      "classic_horror/dsgnvocl_scream-whoosh-squeal.wav"
+    ],
+    "125": [
+      "classic_horror/dsgnvocl_voices-breath-exhale-ghost-panned.wav"
+    ],
+    "126": [
+      "classic_horror/dsgnwhsh_evil-metallic-textures-hauted-noises-sharp.wav"
+    ],
+    "127": [
+      "classic_horror/dsgnwhsh_ghostly-transition-whoosh.wav"
+    ],
+    "128": [
+      "classic_horror/dsgnwhsh_impact-dark-metal-reverse-tension.wav"
+    ],
+    "129": [
+      "classic_horror/dsgnwhsh_impact-metal-hard-hit-noisy-texture.wav"
+    ],
+    "130": [
+      "classic_horror/dsgnwhsh_low-metallic-accemt-sting-transition.wav"
+    ],
+    "131": [
+      "classic_horror/dsgnwhsh_piano-whoosh-impact-metallic-hard-hit.wav"
+    ],
+    "132": [
+      "classic_horror/dsgnwhsh_scary-transition-metalic-texture-whoosh.wav"
+    ],
+    "133": [
+      "classic_horror/dsgnwhsh_sharp-metal-scrape-metal-chain-metallic.wav"
+    ],
+    "134": [
+      "classic_horror/dsgnwhsh_synth-dark-rise-human-voice-noisy-texture.wav"
+    ],
+    "135": [
+      "classic_horror/elecbuzz_metal-scrape-riser-sub-rumble-distorted.wav"
+    ],
+    "136": [
+      "classic_horror/elecbuzz_static-noise-feedback-high-pitched-reversed.wav"
+    ],
+    "137": [
+      "classic_horror/hmnhart_heartbeat-low-drone-rise-reverse.wav"
+    ],
+    "138": [
+      "classic_horror/metlfric_creepy-metallic-squeaks-angry-metallic-chaotic.wav"
+    ],
+    "139": [
+      "classic_horror/metlfric_rusty-metal-moving-creepy-noises-metallic.wav"
+    ],
+    "140": [
+      "classic_horror/musckeyd_scary-transition-string-instruments-human.wav"
+    ],
+    "141": [
+      "classic_horror/muscstr_cello-growling-stretched-cello-low-string.wav"
+    ],
+    "142": [
+      "classic_horror/muscstr_cello-hit-transition-sting-metallic-hit.wav"
+    ],
+    "143": [
+      "classic_horror/muscstr_cello-reverse-low-rise-reverb-tail-pitch.wav"
+    ],
+    "144": [
+      "classic_horror/muscstr_cello-rise-whoosh-sting-resonant.wav"
+    ],
+    "145": [
+      "classic_horror/muscstr_cello-slide-fret-transition-scary-movements.wav"
+    ],
+    "146": [
+      "classic_horror/muscstr_cello-slide-tension.wav"
+    ],
+    "147": [
+      "classic_horror/muscstr_creepy-filtered-violins-low-strings-evil.wav"
+    ],
+    "148": [
+      "classic_horror/muscstr_creepy-musical-tension-cello-violin-creepy.wav"
+    ],
+    "149": [
+      "classic_horror/muscstr_evil-musical-sting-cello-violin-creepy.wav"
+    ],
+    "150": [
+      "classic_horror/muscstr_ghostly-string-hit.wav"
+    ],
+    "151": [
+      "classic_horror/muscstr_haunted-cello-transition.wav"
+    ],
+    "152": [
+      "classic_horror/muscstr_hit-airy-cello-violin-jumpscare.wav"
+    ],
+    "153": [
+      "classic_horror/muscstr_hit-cello-double-bass.wav"
+    ],
+    "154": [
+      "classic_horror/muscstr_impact-high-whoosh-metalic-squeal-cello.wav"
+    ],
+    "155": [
+      "classic_horror/muscstr_metallic-string-slide-high-pitched-transition.wav"
+    ],
+    "156": [
+      "classic_horror/muscstr_processed-cello-hit-stretched-strings-crackling.wav"
+    ],
+    "157": [
+      "classic_horror/muscstr_riser-cello-high-pitch.wav"
+    ],
+    "158": [
+      "classic_horror/muscstr_riser-cello-suspense-drone-dark-whoosh.wav"
+    ],
+    "159": [
+      "classic_horror/muscstr_riser-dark-cello-distortion-reverse-piano.wav"
+    ],
+    "160": [
+      "classic_horror/muscstr_scary-scratching-strings-musical-sub-pulse.wav"
+    ],
+    "161": [
+      "classic_horror/muscstr_sting-metallic.wav"
+    ],
+    "162": [
+      "classic_horror/muscstr_stretched-cello-low-string-rumble-evil.wav"
+    ]
+  },
+  "dm_bass_low_impact": [
+    "dm_bass_low_impact/dm_bass_low_impact.wav"
+  ],
+  "dm_bass_metal": [
+    "dm_bass_metal/dm_bass_metal.wav"
+  ],
+  "dm_braaam_d": [
+    "dm_braaam_d/dm_braaam_d.wav"
+  ],
+  "dm_braaam_dmin": [
+    "dm_braaam_dmin/dm_braaam_dmin.wav"
+  ],
+  "dm_clock_breath": [
+    "dm_clock_breath/dm_clock_breath.wav"
+  ],
+  "dm_clock_world3": [
+    "dm_clock_world3/dm_clock_world3.wav"
+  ],
+  "dm_deep_hit": [
+    "dm_deep_hit/dm_deep_hit.wav"
+  ],
+  "dm_deep_single": [
+    "dm_deep_single/dm_deep_single.wav"
+  ],
+  "dm_glitch_107": [
+    "dm_glitch_107/dm_glitch_107.wav"
+  ],
+  "dm_glitch_111": [
+    "dm_glitch_111/dm_glitch_111.wav"
+  ],
+  "dm_horn_d": [
+    "dm_horn_d/dm_horn_d.wav"
+  ],
+  "dm_machine_out": [
+    "dm_machine_out/dm_machine_out.wav"
+  ],
+  "dm_riser_dark": [
+    "dm_riser_dark/dm_riser_dark.wav"
+  ],
+  "dm_riser_rumble": [
+    "dm_riser_rumble/dm_riser_rumble.wav"
+  ],
+  "dm_riser_tonal": [
+    "dm_riser_tonal/dm_riser_tonal.wav"
+  ],
+  "dm_robot_growl": [
+    "dm_robot_growl/dm_robot_growl.wav"
+  ],
+  "dm_robot_init": [
+    "dm_robot_init/dm_robot_init.wav"
+  ],
+  "dm_robot_overload": [
+    "dm_robot_overload/dm_robot_overload.wav"
+  ],
+  "fantasy_ambiences": {
+    "0": [
+      "fantasy_ambiences/ambfant_abandoned-place-water-drops-smooth-rain-low-mid-ghostly-wind-distant-monster-screams.wav"
+    ],
+    "1": [
+      "fantasy_ambiences/ambfant_cursed-forest-low-mid-wind-heavy-rain-little-spirits-passing-by-distant-low-breaths.wav"
+    ],
+    "2": [
+      "fantasy_ambiences/ambfant_cursed-forest-low-tone-distant-massive-creature-noises-airy-wind-heavy-rain-loopable.wav"
+    ],
+    "3": [
+      "fantasy_ambiences/ambfant_cursed-forest-low-tone-distant-massive-creature-noises-drops-of-water-loopable.wav"
+    ],
+    "4": [
+      "fantasy_ambiences/ambfant_cursed-forest-low-tone-distant-massive-creature-noises-weird-birds-loopable.wav"
+    ],
+    "5": [
+      "fantasy_ambiences/ambfant_cursed-forest-low-tone-futuristic-trafic-in-the-distance-weird-birds-loopable.wav"
+    ],
+    "6": [
+      "fantasy_ambiences/ambfant_cursed-forest-mid-tone-heavy-rain-ghostly-wind-distant-revenge-spirit-loopable.wav"
+    ],
+    "7": [
+      "fantasy_ambiences/ambfant_cursed-place-disturbing-winds-black-magic-loopable.wav"
+    ],
+    "8": [
+      "fantasy_ambiences/ambfant_cursed-place-disturbing-winds-high-tone-weakened-spirits-loopable.wav"
+    ],
+    "9": [
+      "fantasy_ambiences/ambfant_cursed-place-disturbing-winds-musical-tone-loopable-1.wav"
+    ],
+    "10": [
+      "fantasy_ambiences/ambfant_cursed-place-disturbing-winds-musical-tone-loopable-2.wav"
+    ],
+    "11": [
+      "fantasy_ambiences/ambfant_cursed-swamp-gatherings-of-spirits.wav"
+    ],
+    "12": [
+      "fantasy_ambiences/ambfant_ethereal-disturbing-forest-low-tone-spirit-birds-loopable.wav"
+    ],
+    "13": [
+      "fantasy_ambiences/ambfant_ethereal-disturbing-forest-soft-sparkling-low-tone-spirit-birds-loopable.wav"
+    ],
+    "14": [
+      "fantasy_ambiences/ambfant_ethereal-disturbing-forest-weird-sparkling-mid-tone-spirit-birds-loopable.wav"
+    ],
+    "15": [
+      "fantasy_ambiences/ambfant_ethereal-forest-low-mid-tone-little-insects-soft-rain-loopable.wav"
+    ],
+    "16": [
+      "fantasy_ambiences/ambfant_ethereal-forest-low-pulse-tone-small-river-flow-rythmic-crystal-bubbles-soft-birds-loopable-1.wav"
+    ],
+    "17": [
+      "fantasy_ambiences/ambfant_ethereal-forest-low-pulse-tone-small-river-flow-rythmic-crystal-bubbles-soft-birds-loopable-2.wav"
+    ],
+    "18": [
+      "fantasy_ambiences/ambfant_ethereal-forest-smooth-white-noise-mid-tone-spirit-birds-and-animals-water-loopable.wav"
+    ],
+    "19": [
+      "fantasy_ambiences/ambfant_ethereal-forest-tone-smooth-bells-birds-loopable.wav"
+    ],
+    "20": [
+      "fantasy_ambiences/ambfant_ethereal-forest-water-drops-smooth-rain-low-mid-wind-wood-squeaks.wav"
+    ],
+    "21": [
+      "fantasy_ambiences/ambfant_ethereal-jungle-high-tone-sparkling-soft-river-rain-spirit-birds-waves-loopable.wav"
+    ],
+    "22": [
+      "fantasy_ambiences/ambfant_ethereal-jungle-high-tone-sparkling-soft-river-spirit-birds-waves-loopable.wav"
+    ],
+    "23": [
+      "fantasy_ambiences/ambfant_ethereal-jungle-smooth-rain-mid-tone-spirit-birds-and-frogs-water-loopable.wav"
+    ],
+    "24": [
+      "fantasy_ambiences/ambfant_ethereal-jungle-weird-sparkling-soft-airy-rain-spirit-birds-waves-loopable.wav"
+    ],
+    "25": [
+      "fantasy_ambiences/ambfant_ethereal-jungle-weird-sparkling-soft-airy-wind-spirit-birds-waves-loopable.wav"
+    ],
+    "26": [
+      "fantasy_ambiences/ambfant_ethereal-place-high-tone-low-ghostly-wind-soft-distortion.wav"
+    ],
+    "27": [
+      "fantasy_ambiences/ambfant_ethereal-place-high-tone-low-musical-strings-smooth-religious-choirs-loopable.wav"
+    ],
+    "28": [
+      "fantasy_ambiences/ambfant_ethereal-place-low-heavy-tone-high-ghostly-choirs-soft-distortion.wav"
+    ],
+    "29": [
+      "fantasy_ambiences/ambfant_ethereal-place-moutains-winds-soft-crickets-weird-synth-bubbles-sparkles-crackles.wav"
+    ],
+    "30": [
+      "fantasy_ambiences/ambfant_ethereal-place-musical-distorted-tone-loud-low-wind-loopable.wav"
+    ],
+    "31": [
+      "fantasy_ambiences/ambfant_ethereal-place-musical-high-tone-loud-low-wind-loopable.wav"
+    ],
+    "32": [
+      "fantasy_ambiences/ambfant_high-synthetic-strings-mid-tone-smooth-white-noise-loopable.wav"
+    ],
+    "33": [
+      "fantasy_ambiences/ambfant_light-magic-blessed-place-loopable.wav"
+    ],
+    "34": [
+      "fantasy_ambiences/ambfant_magical-place-high-bell-notes-high-tone-low-wind-loopable.wav"
+    ],
+    "35": [
+      "fantasy_ambiences/ambfant_magical-place-high-bell-notes-low-suspens-tone-loopable.wav"
+    ],
+    "36": [
+      "fantasy_ambiences/ambfant_magical-place-mid-bell-notes-sparkling-low-tone-loopable.wav"
+    ],
+    "37": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-low-suspens-tone-loopable-1.wav"
+    ],
+    "38": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-low-suspens-tone-loopable-2.wav"
+    ],
+    "39": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-low-tone-loopable-1.wav"
+    ],
+    "40": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-low-tone-loopable-2.wav"
+    ],
+    "41": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-low-tone-loopable-3.wav"
+    ],
+    "42": [
+      "fantasy_ambiences/ambfant_magical-place-sparkling-blessing-mid-high-tone-echo-birds-loopable.wav"
+    ],
+    "43": [
+      "fantasy_ambiences/ambfant_musical-pad-synth-rythmic-low-tone-smooth-white-noise-loopable.wav"
+    ],
+    "44": [
+      "fantasy_ambiences/ambfant_musical-pad-synth-rythmic-water-drops-falling-cave-loopable.wav"
+    ],
+    "45": [
+      "fantasy_ambiences/ambfant_opressing-cave-amused-goblins-distant-drops-of-water-echo-loopable.wav"
+    ],
+    "46": [
+      "fantasy_ambiences/ambfant_opressing-cave-heavy-distorted-low-tone-soft-wind-monsters-movements-reverb-loopable.wav"
+    ],
+    "47": [
+      "fantasy_ambiences/ambfant_opressing-cave-heavy-wind-drops-of-water-organic-gurgle-loopable.wav"
+    ],
+    "48": [
+      "fantasy_ambiences/ambfant_opressing-cave-heavy-wind-water-drops-distant-spirits-voice-reverse-breaths-loopable.wav"
+    ],
+    "49": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-continuous-mid-tone-intriguing-bells-loopable.wav"
+    ],
+    "50": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-continuous-tone-vocode-tone-voices-loopable.wav"
+    ],
+    "51": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-mid-high-tone-breathings-enclosed-spirit-loopable.wav"
+    ],
+    "52": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-mid-tone-distant-voices-opressive-place-loopable.wav"
+    ],
+    "53": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-mid-tone-high-metalic-strings-opressive-place-loopable.wav"
+    ],
+    "54": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-rythmic-bells-sparkling-low-tone-loopable.wav"
+    ],
+    "55": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-rythmic-bells-sparkling-mid-whsipertone-loopable.wav"
+    ],
+    "56": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-unstable-continuous-high-tone-intriguing-melody-loopable.wav"
+    ],
+    "57": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-unstable-continuous-high-tone-uhm-female-voice-bells.wav"
+    ],
+    "58": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-unstable-continuous-high-tone-weird-bells-notes-loopable.wav"
+    ],
+    "59": [
+      "fantasy_ambiences/ambfant_strange-ethereal-place-unstable-continuous-high-tone-weird-bells-notes.wav"
+    ],
+    "60": [
+      "fantasy_ambiences/ambfant_strange-musical-high-tone-synthetic-magical-rythmic-loopable.wav"
+    ],
+    "61": [
+      "fantasy_ambiences/ambfant_synth-musical-pad-hightone-unstable-smooth-white-noise-loopable.wav"
+    ],
+    "62": [
+      "fantasy_ambiences/ambfant_synth-musical-pad-low-mid-tone-unstable-birds-spi-rits-echoes-water-waves-noise-loopable.wav"
+    ],
+    "63": [
+      "fantasy_ambiences/ambfant_synth-musical-pad-low-mid-tone-unstable-birds-spirits-echoes-distant-bells-loopable.wav"
+    ],
+    "64": [
+      "fantasy_ambiences/ambfant_synth-musical-pad-mid-high-tone-unstable-birds-spirits-echoes-loopable.wav"
+    ],
+    "65": [
+      "fantasy_ambiences/ambfant_synth-musical-pad-mid-tone-distant-monster-breathing-unstable-water-drops-loopable.wav"
+    ],
+    "66": [
+      "fantasy_ambiences/ambfant_synthetic-choirs-and-strings-low-mid-tone-smooth-white-noise-light-distortion-loopable.wav"
+    ],
+    "67": [
+      "fantasy_ambiences/ambfant_unhealthy-place-dark-magic-spirits-crying-out-in-agony-distorted-plucks-loopable.wav"
+    ],
+    "68": [
+      "fantasy_ambiences/ambfant_unhealthy-place-ethereal-appeased-spirits-soft-plucks-loopable.wav"
+    ]
+  },
+  "forest": {
+    "0": [
+      "forest/ambforst_afternoon-forest-warm-day-cicadas-crickets.wav"
+    ],
+    "1": [
+      "forest/ambforst_afternoon-quiete-woodland-birdsong.wav"
+    ],
+    "2": [
+      "forest/ambforst_birdsong-choir-small-stream.wav"
+    ],
+    "3": [
+      "forest/ambforst_birdsong-deep-wind-woodland.wav"
+    ],
+    "4": [
+      "forest/ambforst_birdsong-quiete-woodland.wav"
+    ],
+    "5": [
+      "forest/ambforst_birdsong-surrounding-dense-wind-high-in-trees.wav"
+    ],
+    "6": [
+      "forest/ambforst_breeze-moderate-flapping-wings.wav"
+    ],
+    "7": [
+      "forest/ambforst_calm-birds-soft-wind.wav"
+    ],
+    "8": [
+      "forest/ambforst_calm-forest-birdsong-movement-in-trees.wav"
+    ],
+    "9": [
+      "forest/ambforst_constant-hiss-birdsong-big-forest.wav"
+    ],
+    "10": [
+      "forest/ambforst_crows-birds-hunting-open-field.wav"
+    ],
+    "11": [
+      "forest/ambforst_dense-forest-birdsong-constant-crickets-cicadas-distant-dogs.wav"
+    ],
+    "12": [
+      "forest/ambforst_dense-forest-birdsong-tropical.wav"
+    ],
+    "13": [
+      "forest/ambforst_distant-dogs-woodland-birdsong-flapping-wings.wav"
+    ],
+    "14": [
+      "forest/ambforst_distant-thunder-birdsong-ominous.wav"
+    ],
+    "15": [
+      "forest/ambforst_filtered-air-soft-hiss-birdsong.wav"
+    ],
+    "16": [
+      "forest/ambforst_forest-ambience-loop-windy-breezy-birds.wav"
+    ],
+    "17": [
+      "forest/ambforst_forest-ambience-loop-winter-woodland-1.wav"
+    ],
+    "18": [
+      "forest/ambforst_forest-ambience-loop-winter-woodland-2.wav"
+    ],
+    "19": [
+      "forest/ambforst_forest-ambience-loop-woodland-pheasant.wav"
+    ],
+    "20": [
+      "forest/ambforst_forest-ambience-loop-woodland-river-tree.wav"
+    ],
+    "21": [
+      "forest/ambforst_fresh-ambience-lively-woodland-constant-wind-birdsong.wav"
+    ],
+    "22": [
+      "forest/ambforst_gentle-wind-rustling-treetops.wav"
+    ],
+    "23": [
+      "forest/ambforst_light-hiss-few-birds-fly-flying-by.wav"
+    ],
+    "24": [
+      "forest/ambforst_lively-woodland-birdsong-soft-hiss.wav"
+    ],
+    "25": [
+      "forest/ambforst_lively-woodland-many-birds-birdsong-wind-in-trees-flapping-wings.wav"
+    ],
+    "26": [
+      "forest/ambforst_many-birds-birdsong-quiete-forest.wav"
+    ],
+    "27": [
+      "forest/ambforst_medium-windy-forest-moving-branches-and-trees.wav"
+    ],
+    "28": [
+      "forest/ambforst_moving-branches-heavy-wind-in-trees.wav"
+    ],
+    "29": [
+      "forest/ambforst_moving-leaves-windy-distant-dogs.wav"
+    ],
+    "30": [
+      "forest/ambforst_moving-trunk-branches-rattling.wav"
+    ],
+    "31": [
+      "forest/ambforst_nighttime-heavy-wind-in-trees-rattling-branches.wav"
+    ],
+    "32": [
+      "forest/ambforst_nighttime-tawny-owl-scary-moving-branches.wav"
+    ],
+    "33": [
+      "forest/ambforst_nighttime-tawny-owl-wind-in-trees.wav"
+    ],
+    "34": [
+      "forest/ambforst_nighttime-tawny-owls-moving-grass-wind-in-trees.wav"
+    ],
+    "35": [
+      "forest/ambforst_quiet-calm-birdsong-movement-in-trees.wav"
+    ],
+    "36": [
+      "forest/ambforst_quiet-calm-woodland-movement-in-bushes-soft-birdsong.wav"
+    ],
+    "37": [
+      "forest/ambforst_quiet-winter-woodland-pigeon-quiete-rustle.wav"
+    ],
+    "38": [
+      "forest/ambforst_quiet-winter-woodland-woodpecker-birdsong.wav"
+    ],
+    "39": [
+      "forest/ambforst_quiet-woodland-soft-wind-soft-birdsong.wav"
+    ],
+    "40": [
+      "forest/ambforst_quiete-atmosphere-high-wind-gusts.wav"
+    ],
+    "41": [
+      "forest/ambforst_quiete-forest-birdsong-high-in-trees.wav"
+    ],
+    "42": [
+      "forest/ambforst_quiete-forest-distant-farm-woodland.wav"
+    ],
+    "43": [
+      "forest/ambforst_quiete-woodland-nighttime-frog-choir.wav"
+    ],
+    "44": [
+      "forest/ambforst_quite-atmosphere-moving-animals-in-trees-small-sounds.wav"
+    ],
+    "45": [
+      "forest/ambforst_quite-woodland-after-rain.wav"
+    ],
+    "46": [
+      "forest/ambforst_rain-on-leaves-woodland-soft-birdsong.wav"
+    ],
+    "47": [
+      "forest/ambforst_recurring-cicada-quiete-woodland.wav"
+    ],
+    "48": [
+      "forest/ambforst_rustling-leaves-windy-birdsong-single-fly.wav"
+    ],
+    "49": [
+      "forest/ambforst_small-stream-birds-song-distant-traffic.wav"
+    ],
+    "50": [
+      "forest/ambforst_soft-birdsong-cuckoo-wind-in-trees-branches.wav"
+    ],
+    "51": [
+      "forest/ambforst_warm-forest-flies-birdsong-windy.wav"
+    ],
+    "52": [
+      "forest/ambforst_wind-in-high-tree-tops-few-birds.wav"
+    ],
+    "53": [
+      "forest/ambforst_wind-in-trees-crakling-branches-movement.wav"
+    ],
+    "54": [
+      "forest/ambforst_wind-in-trees-gusts-moving-trees.wav"
+    ],
+    "55": [
+      "forest/ambforst_wind-in-trees-rustling-birds-movement.wav"
+    ],
+    "56": [
+      "forest/ambforst_wind-in-trees-small-bird-left-wind-in-leaves.wav"
+    ],
+    "57": [
+      "forest/ambforst_windy-atmosphere-birds-woodpecker.wav"
+    ],
+    "58": [
+      "forest/ambforst_windy-day-birdsong-distant-thunder.wav"
+    ],
+    "59": [
+      "forest/ambforst_woodland-clearing-soft-hiss-bird-calls.wav"
+    ],
+    "60": [
+      "forest/dsgndron_designed-fantasy-birds-reverb-distant-crickets.wav"
+    ],
+    "61": [
+      "forest/dsgndron_designed-fantasy-birds-reverb.wav"
+    ],
+    "62": [
+      "forest/dsgndron_designed-fantasy-drone-rain-birds-reverb.wav"
+    ],
+    "63": [
+      "forest/rainvege_gentle-rain-in-forest-high-pitch-bird.wav"
+    ],
+    "64": [
+      "forest/rainvege_rain-on-leaves-birdsong-distant-rooster-and-traffic-tropical.wav"
+    ],
+    "65": [
+      "forest/rainwatr_rain-in-water-stream-birdsong.wav"
+    ],
+    "66": [
+      "forest/watrfall_waterfall-river-woodland-stream.wav"
+    ],
+    "67": [
+      "forest/watrflow_quiet-winter-woodland-small-stream-river-water.wav"
+    ],
+    "68": [
+      "forest/watrflow_small-river-birdsong-quiete-forest.wav"
+    ],
+    "69": [
+      "forest/watrflow_small-river-stream-in-forest.wav"
+    ],
+    "70": [
+      "forest/watrflow_small-stream-birdsong-river-water.wav"
+    ],
+    "71": [
+      "forest/watrflow_small-stream-in-forest-background-wind.wav"
+    ]
+  },
+  "fourth_july_bass": [
+    "fourth_july_bass/n0.wav",
+    "fourth_july_bass/n1.wav",
+    "fourth_july_bass/n10.wav",
+    "fourth_july_bass/n11.wav",
+    "fourth_july_bass/n12.wav",
+    "fourth_july_bass/n13.wav",
+    "fourth_july_bass/n14.wav",
+    "fourth_july_bass/n15.wav",
+    "fourth_july_bass/n16.wav",
+    "fourth_july_bass/n17.wav",
+    "fourth_july_bass/n2.wav",
+    "fourth_july_bass/n3.wav",
+    "fourth_july_bass/n4.wav",
+    "fourth_july_bass/n5.wav",
+    "fourth_july_bass/n6.wav",
+    "fourth_july_bass/n7.wav",
+    "fourth_july_bass/n8.wav",
+    "fourth_july_bass/n9.wav"
+  ],
+  "fourth_july_drums": [
+    "fourth_july_drums/n0.wav",
+    "fourth_july_drums/n1.wav",
+    "fourth_july_drums/n10.wav",
+    "fourth_july_drums/n11.wav",
+    "fourth_july_drums/n12.wav",
+    "fourth_july_drums/n13.wav",
+    "fourth_july_drums/n14.wav",
+    "fourth_july_drums/n15.wav",
+    "fourth_july_drums/n16.wav",
+    "fourth_july_drums/n17.wav",
+    "fourth_july_drums/n2.wav",
+    "fourth_july_drums/n3.wav",
+    "fourth_july_drums/n4.wav",
+    "fourth_july_drums/n5.wav",
+    "fourth_july_drums/n6.wav",
+    "fourth_july_drums/n7.wav",
+    "fourth_july_drums/n8.wav",
+    "fourth_july_drums/n9.wav"
+  ],
+  "fourth_july_other": [
+    "fourth_july_other/n0.wav",
+    "fourth_july_other/n1.wav",
+    "fourth_july_other/n10.wav",
+    "fourth_july_other/n11.wav",
+    "fourth_july_other/n12.wav",
+    "fourth_july_other/n13.wav",
+    "fourth_july_other/n14.wav",
+    "fourth_july_other/n15.wav",
+    "fourth_july_other/n16.wav",
+    "fourth_july_other/n17.wav",
+    "fourth_july_other/n2.wav",
+    "fourth_july_other/n3.wav",
+    "fourth_july_other/n4.wav",
+    "fourth_july_other/n5.wav",
+    "fourth_july_other/n6.wav",
+    "fourth_july_other/n7.wav",
+    "fourth_july_other/n8.wav",
+    "fourth_july_other/n9.wav"
+  ],
+  "fourth_july_vocals": [
+    "fourth_july_vocals/n0.wav",
+    "fourth_july_vocals/n1.wav",
+    "fourth_july_vocals/n10.wav",
+    "fourth_july_vocals/n11.wav",
+    "fourth_july_vocals/n12.wav",
+    "fourth_july_vocals/n13.wav",
+    "fourth_july_vocals/n14.wav",
+    "fourth_july_vocals/n15.wav",
+    "fourth_july_vocals/n16.wav",
+    "fourth_july_vocals/n17.wav",
+    "fourth_july_vocals/n2.wav",
+    "fourth_july_vocals/n3.wav",
+    "fourth_july_vocals/n4.wav",
+    "fourth_july_vocals/n5.wav",
+    "fourth_july_vocals/n6.wav",
+    "fourth_july_vocals/n7.wav",
+    "fourth_july_vocals/n8.wav",
+    "fourth_july_vocals/n9.wav"
+  ],
   "frbass": {
     "cs1": "frbass/bass_Cs1.wav",
     "d1": "frbass/bass_D1.wav",
@@ -170,24 +1673,36 @@
     "a1": "frbass/bass_A1.wav",
     "as1": "frbass/bass_As1.wav"
   },
-  "frkick": {
-    "0": "frkick/kick.wav"
+  "frclap": {
+    "0": "frclap/clap.wav"
   },
   "frhat": {
     "0": "frhat/hat.wav"
   },
-  "frclap": {
-    "0": "frclap/clap.wav"
-  },
-  "frkick_ghost": {
-    "0": "frkick_ghost/kick_ghost.wav"
-  },
-  "frlead": {
-    "0": "frlead/synth_lead.wav"
-  },
-  "frlead2": {
-    "0": "frlead2/synth_lead_2.wav"
-  },
+  "frisson_bass": [
+    "frisson_bass/0.wav",
+    "frisson_bass/1.wav",
+    "frisson_bass/2.wav",
+    "frisson_bass/3.wav",
+    "frisson_bass/4.wav",
+    "frisson_bass/5.wav",
+    "frisson_bass/6.wav",
+    "frisson_bass/7.wav",
+    "frisson_bass/8.wav",
+    "frisson_bass/9.wav"
+  ],
+  "frisson_clap": [
+    "frisson_clap/0.wav"
+  ],
+  "frisson_ghost": [
+    "frisson_ghost/0.wav"
+  ],
+  "frisson_hat": [
+    "frisson_hat/0.wav"
+  ],
+  "frisson_kick": [
+    "frisson_kick/0.wav"
+  ],
   "frissother": {
     "0": "frissother/000.wav",
     "1": "frissother/001.wav",
@@ -210,5 +1725,1099 @@
     "18": "frissother/018.wav",
     "19": "frissother/019.wav",
     "20": "frissother/020.wav"
+  },
+  "frkick": {
+    "0": "frkick/kick.wav"
+  },
+  "frkick_ghost": {
+    "0": "frkick_ghost/kick_ghost.wav"
+  },
+  "frlead": {
+    "0": "frlead/synth_lead.wav"
+  },
+  "frlead2": {
+    "0": "frlead2/synth_lead_2.wav"
+  },
+  "hallur_bass_deep": [
+    "hallur_bass_deep/hallur_bass_deep.wav"
+  ],
+  "hallur_bass_entry_01": [
+    "hallur_bass_entry_01/hallur_bass_entry_01.wav"
+  ],
+  "hallur_bass_final": [
+    "hallur_bass_final/hallur_bass_final.wav"
+  ],
+  "hallur_bass_peak_01": [
+    "hallur_bass_peak_01/hallur_bass_peak_01.wav"
+  ],
+  "hallur_bass_sustain_01": [
+    "hallur_bass_sustain_01/hallur_bass_sustain_01.wav"
+  ],
+  "hallur_bass_wave2_01": [
+    "hallur_bass_wave2_01/hallur_bass_wave2_01.wav"
+  ],
+  "hallur_bass_wave2_02": [
+    "hallur_bass_wave2_02/hallur_bass_wave2_02.wav"
+  ],
+  "hallur_bass_wave2_03": [
+    "hallur_bass_wave2_03/hallur_bass_wave2_03.wav"
+  ],
+  "hallur_drums_texture": [
+    "hallur_drums_texture/hallur_drums_texture.wav"
+  ],
+  "hallur_other_bright_01": [
+    "hallur_other_bright_01/hallur_other_bright_01.wav"
+  ],
+  "hallur_other_build_01": [
+    "hallur_other_build_01/hallur_other_build_01.wav"
+  ],
+  "hallur_other_intro_drone": [
+    "hallur_other_intro_drone/hallur_other_intro_drone.wav"
+  ],
+  "hallur_other_outro": [
+    "hallur_other_outro/hallur_other_outro.wav"
+  ],
+  "hallur_other_peak_01": [
+    "hallur_other_peak_01/hallur_other_peak_01.wav"
+  ],
+  "hallur_other_pre_crest": [
+    "hallur_other_pre_crest/hallur_other_pre_crest.wav"
+  ],
+  "hallur_other_retreat": [
+    "hallur_other_retreat/hallur_other_retreat.wav"
+  ],
+  "hallur_other_surface": [
+    "hallur_other_surface/hallur_other_surface.wav"
+  ],
+  "hallur_other_wave2_01": [
+    "hallur_other_wave2_01/hallur_other_wave2_01.wav"
+  ],
+  "hallur_other_wave2_02": [
+    "hallur_other_wave2_02/hallur_other_wave2_02.wav"
+  ],
+  "hallur_other_wave2_03": [
+    "hallur_other_wave2_03/hallur_other_wave2_03.wav"
+  ],
+  "hat": {
+    "0": "hat/hat.wav"
+  },
+  "hive_drone": [
+    "hive_drone/000.wav",
+    "hive_drone/001.wav",
+    "hive_drone/002.wav",
+    "hive_drone/003.wav",
+    "hive_drone/004.wav",
+    "hive_drone/005.wav",
+    "hive_drone/006.wav",
+    "hive_drone/007.wav",
+    "hive_drone/008.wav",
+    "hive_drone/009.wav",
+    "hive_drone/010.wav",
+    "hive_drone/011.wav"
+  ],
+  "hive_drums": [
+    "hive_drums/000.wav",
+    "hive_drums/001.wav",
+    "hive_drums/002.wav",
+    "hive_drums/003.wav",
+    "hive_drums/004.wav",
+    "hive_drums/005.wav",
+    "hive_drums/006.wav",
+    "hive_drums/007.wav",
+    "hive_drums/008.wav",
+    "hive_drums/009.wav",
+    "hive_drums/010.wav",
+    "hive_drums/011.wav",
+    "hive_drums/012.wav",
+    "hive_drums/013.wav",
+    "hive_drums/014.wav",
+    "hive_drums/015.wav",
+    "hive_drums/016.wav",
+    "hive_drums/017.wav",
+    "hive_drums/018.wav",
+    "hive_drums/019.wav"
+  ],
+  "hive_pipes": [
+    "hive_pipes/000.wav",
+    "hive_pipes/001.wav",
+    "hive_pipes/002.wav",
+    "hive_pipes/003.wav",
+    "hive_pipes/004.wav",
+    "hive_pipes/005.wav",
+    "hive_pipes/006.wav",
+    "hive_pipes/007.wav",
+    "hive_pipes/008.wav",
+    "hive_pipes/009.wav",
+    "hive_pipes/010.wav",
+    "hive_pipes/011.wav",
+    "hive_pipes/012.wav",
+    "hive_pipes/013.wav",
+    "hive_pipes/014.wav",
+    "hive_pipes/015.wav",
+    "hive_pipes/016.wav",
+    "hive_pipes/017.wav",
+    "hive_pipes/018.wav",
+    "hive_pipes/019.wav",
+    "hive_pipes/020.wav",
+    "hive_pipes/021.wav"
+  ],
+  "hozier_fg_bass": {
+    "0": "hozier_fg_bass/n0.wav",
+    "1": "hozier_fg_bass/n1.wav",
+    "2": "hozier_fg_bass/n10.wav",
+    "3": "hozier_fg_bass/n11.wav",
+    "4": "hozier_fg_bass/n12.wav",
+    "5": "hozier_fg_bass/n13.wav",
+    "6": "hozier_fg_bass/n14.wav",
+    "7": "hozier_fg_bass/n2.wav",
+    "8": "hozier_fg_bass/n3.wav",
+    "9": "hozier_fg_bass/n4.wav",
+    "10": "hozier_fg_bass/n5.wav",
+    "11": "hozier_fg_bass/n6.wav",
+    "12": "hozier_fg_bass/n7.wav",
+    "13": "hozier_fg_bass/n8.wav",
+    "14": "hozier_fg_bass/n9.wav"
+  },
+  "hozier_fg_drums": {
+    "0": "hozier_fg_drums/n0.wav",
+    "1": "hozier_fg_drums/n1.wav",
+    "2": "hozier_fg_drums/n10.wav",
+    "3": "hozier_fg_drums/n11.wav",
+    "4": "hozier_fg_drums/n12.wav",
+    "5": "hozier_fg_drums/n13.wav",
+    "6": "hozier_fg_drums/n14.wav",
+    "7": "hozier_fg_drums/n2.wav",
+    "8": "hozier_fg_drums/n3.wav",
+    "9": "hozier_fg_drums/n4.wav",
+    "10": "hozier_fg_drums/n5.wav",
+    "11": "hozier_fg_drums/n6.wav",
+    "12": "hozier_fg_drums/n7.wav",
+    "13": "hozier_fg_drums/n8.wav",
+    "14": "hozier_fg_drums/n9.wav"
+  },
+  "hozier_fg_other": {
+    "0": "hozier_fg_other/n0.wav",
+    "1": "hozier_fg_other/n1.wav",
+    "2": "hozier_fg_other/n10.wav",
+    "3": "hozier_fg_other/n11.wav",
+    "4": "hozier_fg_other/n12.wav",
+    "5": "hozier_fg_other/n13.wav",
+    "6": "hozier_fg_other/n14.wav",
+    "7": "hozier_fg_other/n2.wav",
+    "8": "hozier_fg_other/n3.wav",
+    "9": "hozier_fg_other/n4.wav",
+    "10": "hozier_fg_other/n5.wav",
+    "11": "hozier_fg_other/n6.wav",
+    "12": "hozier_fg_other/n7.wav",
+    "13": "hozier_fg_other/n8.wav",
+    "14": "hozier_fg_other/n9.wav"
+  },
+  "hozier_fg_vocals": {
+    "0": "hozier_fg_vocals/n0.wav",
+    "1": "hozier_fg_vocals/n1.wav",
+    "2": "hozier_fg_vocals/n10.wav",
+    "3": "hozier_fg_vocals/n11.wav",
+    "4": "hozier_fg_vocals/n12.wav",
+    "5": "hozier_fg_vocals/n13.wav",
+    "6": "hozier_fg_vocals/n14.wav",
+    "7": "hozier_fg_vocals/n2.wav",
+    "8": "hozier_fg_vocals/n3.wav",
+    "9": "hozier_fg_vocals/n4.wav",
+    "10": "hozier_fg_vocals/n5.wav",
+    "11": "hozier_fg_vocals/n6.wav",
+    "12": "hozier_fg_vocals/n7.wav",
+    "13": "hozier_fg_vocals/n8.wav",
+    "14": "hozier_fg_vocals/n9.wav"
+  },
+  "htdc_bass": [
+    "htdc_bass/n0.wav",
+    "htdc_bass/n1.wav",
+    "htdc_bass/n10.wav",
+    "htdc_bass/n11.wav",
+    "htdc_bass/n12.wav",
+    "htdc_bass/n13.wav",
+    "htdc_bass/n14.wav",
+    "htdc_bass/n15.wav",
+    "htdc_bass/n16.wav",
+    "htdc_bass/n17.wav",
+    "htdc_bass/n18.wav",
+    "htdc_bass/n19.wav",
+    "htdc_bass/n2.wav",
+    "htdc_bass/n20.wav",
+    "htdc_bass/n21.wav",
+    "htdc_bass/n22.wav",
+    "htdc_bass/n23.wav",
+    "htdc_bass/n24.wav",
+    "htdc_bass/n25.wav",
+    "htdc_bass/n26.wav",
+    "htdc_bass/n27.wav",
+    "htdc_bass/n28.wav",
+    "htdc_bass/n29.wav",
+    "htdc_bass/n3.wav",
+    "htdc_bass/n4.wav",
+    "htdc_bass/n5.wav",
+    "htdc_bass/n6.wav",
+    "htdc_bass/n7.wav",
+    "htdc_bass/n8.wav",
+    "htdc_bass/n9.wav"
+  ],
+  "htdc_drums": [
+    "htdc_drums/n0.wav",
+    "htdc_drums/n1.wav",
+    "htdc_drums/n10.wav",
+    "htdc_drums/n11.wav",
+    "htdc_drums/n12.wav",
+    "htdc_drums/n13.wav",
+    "htdc_drums/n14.wav",
+    "htdc_drums/n15.wav",
+    "htdc_drums/n16.wav",
+    "htdc_drums/n17.wav",
+    "htdc_drums/n18.wav",
+    "htdc_drums/n19.wav",
+    "htdc_drums/n2.wav",
+    "htdc_drums/n20.wav",
+    "htdc_drums/n21.wav",
+    "htdc_drums/n22.wav",
+    "htdc_drums/n23.wav",
+    "htdc_drums/n24.wav",
+    "htdc_drums/n25.wav",
+    "htdc_drums/n26.wav",
+    "htdc_drums/n27.wav",
+    "htdc_drums/n28.wav",
+    "htdc_drums/n29.wav",
+    "htdc_drums/n3.wav",
+    "htdc_drums/n4.wav",
+    "htdc_drums/n5.wav",
+    "htdc_drums/n6.wav",
+    "htdc_drums/n7.wav",
+    "htdc_drums/n8.wav",
+    "htdc_drums/n9.wav"
+  ],
+  "htdc_other": [
+    "htdc_other/n0.wav",
+    "htdc_other/n1.wav",
+    "htdc_other/n10.wav",
+    "htdc_other/n11.wav",
+    "htdc_other/n12.wav",
+    "htdc_other/n13.wav",
+    "htdc_other/n14.wav",
+    "htdc_other/n15.wav",
+    "htdc_other/n16.wav",
+    "htdc_other/n17.wav",
+    "htdc_other/n18.wav",
+    "htdc_other/n19.wav",
+    "htdc_other/n2.wav",
+    "htdc_other/n20.wav",
+    "htdc_other/n21.wav",
+    "htdc_other/n22.wav",
+    "htdc_other/n23.wav",
+    "htdc_other/n24.wav",
+    "htdc_other/n25.wav",
+    "htdc_other/n26.wav",
+    "htdc_other/n27.wav",
+    "htdc_other/n28.wav",
+    "htdc_other/n29.wav",
+    "htdc_other/n3.wav",
+    "htdc_other/n4.wav",
+    "htdc_other/n5.wav",
+    "htdc_other/n6.wav",
+    "htdc_other/n7.wav",
+    "htdc_other/n8.wav",
+    "htdc_other/n9.wav"
+  ],
+  "htdc_vocals": [
+    "htdc_vocals/n0.wav",
+    "htdc_vocals/n1.wav",
+    "htdc_vocals/n10.wav",
+    "htdc_vocals/n11.wav",
+    "htdc_vocals/n12.wav",
+    "htdc_vocals/n13.wav",
+    "htdc_vocals/n14.wav",
+    "htdc_vocals/n15.wav",
+    "htdc_vocals/n16.wav",
+    "htdc_vocals/n17.wav",
+    "htdc_vocals/n18.wav",
+    "htdc_vocals/n19.wav",
+    "htdc_vocals/n2.wav",
+    "htdc_vocals/n20.wav",
+    "htdc_vocals/n21.wav",
+    "htdc_vocals/n22.wav",
+    "htdc_vocals/n23.wav",
+    "htdc_vocals/n24.wav",
+    "htdc_vocals/n25.wav",
+    "htdc_vocals/n26.wav",
+    "htdc_vocals/n27.wav",
+    "htdc_vocals/n28.wav",
+    "htdc_vocals/n29.wav",
+    "htdc_vocals/n3.wav",
+    "htdc_vocals/n4.wav",
+    "htdc_vocals/n5.wav",
+    "htdc_vocals/n6.wav",
+    "htdc_vocals/n7.wav",
+    "htdc_vocals/n8.wav",
+    "htdc_vocals/n9.wav"
+  ],
+  "kick": {
+    "0": "kick/kick.wav"
+  },
+  "kick_ghost": {
+    "0": "kick_ghost/kick_ghost.wav"
+  },
+  "ljh_other": [
+    "ljh_other/000.wav",
+    "ljh_other/001.wav",
+    "ljh_other/002.wav",
+    "ljh_other/003.wav",
+    "ljh_other/004.wav",
+    "ljh_other/005.wav",
+    "ljh_other/006.wav",
+    "ljh_other/007.wav",
+    "ljh_other/008.wav",
+    "ljh_other/009.wav",
+    "ljh_other/010.wav",
+    "ljh_other/011.wav",
+    "ljh_other/012.wav",
+    "ljh_other/013.wav",
+    "ljh_other/014.wav"
+  ],
+  "ljh_vocals": [
+    "ljh_vocals/000.wav",
+    "ljh_vocals/001.wav",
+    "ljh_vocals/002.wav",
+    "ljh_vocals/003.wav",
+    "ljh_vocals/004.wav",
+    "ljh_vocals/005.wav",
+    "ljh_vocals/006.wav",
+    "ljh_vocals/007.wav",
+    "ljh_vocals/008.wav",
+    "ljh_vocals/009.wav",
+    "ljh_vocals/010.wav",
+    "ljh_vocals/011.wav",
+    "ljh_vocals/012.wav",
+    "ljh_vocals/013.wav",
+    "ljh_vocals/014.wav"
+  ],
+  "other_000": {
+    "0": "other_000/other_000.wav"
+  },
+  "other_001": {
+    "0": "other_001/other_001.wav"
+  },
+  "other_002": {
+    "0": "other_002/other_002.wav"
+  },
+  "other_003": {
+    "0": "other_003/other_003.wav"
+  },
+  "rain_thunder": {
+    "0": [
+      "rain_thunder/rain_hail-heavy-tile-roof-loop.wav"
+    ],
+    "1": [
+      "rain_thunder/rain_heavy-bright-drips-jungle-forest-birds-constant-loop.wav"
+    ],
+    "2": [
+      "rain_thunder/rain_heavy-city-children-crowd-constant-loop.wav"
+    ],
+    "3": [
+      "rain_thunder/rain_heavy-city-talking-center-splash-tiles-loop.wav"
+    ],
+    "4": [
+      "rain_thunder/rain_heavy-concrete-thunder-city-suburban-loop.wav"
+    ],
+    "5": [
+      "rain_thunder/rain_heavy-concrete-thunder-distant-children-loop.wav"
+    ],
+    "6": [
+      "rain_thunder/rain_heavy-distant-thunder-puddles-splash-loop.wav"
+    ],
+    "7": [
+      "rain_thunder/rain_heavy-glass-roof-interior-inside-loop.wav"
+    ],
+    "8": [
+      "rain_thunder/rain_heavy-interior-shed-inside-wind-hiss-loop.wav"
+    ],
+    "9": [
+      "rain_thunder/rain_heavy-lake-distant-traffic-constant-puddle-park-loop.wav"
+    ],
+    "10": [
+      "rain_thunder/rain_heavy-shelter-roof-plastic-umbrella-filtered-loop.wav"
+    ],
+    "11": [
+      "rain_thunder/rain_heavy-skylight-glass-window-gentle-shelter-loop.wav"
+    ],
+    "12": [
+      "rain_thunder/rain_heavy-stationary-car-roof-inside-interior-loop.wav"
+    ],
+    "13": [
+      "rain_thunder/rain_heavy-storm-drips-roof-loop.wav"
+    ],
+    "14": [
+      "rain_thunder/rain_heavy-storm-wind-constant-splash-loop.wav"
+    ],
+    "15": [
+      "rain_thunder/rain_heavy-street-distant-traffic-constant-loop.wav"
+    ],
+    "16": [
+      "rain_thunder/rain_heavy-suburban-dripping-traffic-loop.wav"
+    ],
+    "17": [
+      "rain_thunder/rain_heavy-thunder-interior-inside-filtered-roof-loop.wav"
+    ],
+    "18": [
+      "rain_thunder/rain_heavy-thunder-rumble-hail-long-roof-loop.wav"
+    ],
+    "19": [
+      "rain_thunder/rain_heavy-thunder-rumbles-dripping-loop.wav"
+    ],
+    "20": [
+      "rain_thunder/rain_heavy-tin-roof-puddles-loop.wav"
+    ],
+    "21": [
+      "rain_thunder/rain_heavy-window-drops-interior-inside-loop.wav"
+    ],
+    "22": [
+      "rain_thunder/rain_light-city-urban-distant-thunder-loop.wav"
+    ],
+    "23": [
+      "rain_thunder/rain_light-constant-hiss-noise-loop.wav"
+    ],
+    "24": [
+      "rain_thunder/rain_light-gentle-simple-hiss-forest-loop.wav"
+    ],
+    "25": [
+      "rain_thunder/rain_light-suburban-noise-traffic-bird-call-loop.wav"
+    ],
+    "26": [
+      "rain_thunder/rain_light-window-drops-ticking-interior-inside-loop.wav"
+    ],
+    "27": [
+      "rain_thunder/rain_moderate-car-roof-window-loop.wav"
+    ],
+    "28": [
+      "rain_thunder/rain_moderate-city-alley-dripping-loop.wav"
+    ],
+    "29": [
+      "rain_thunder/rain_moderate-concrete-drips-dripping-loop.wav"
+    ],
+    "30": [
+      "rain_thunder/rain_moderate-constant-high-picth-noise-loop.wav"
+    ],
+    "31": [
+      "rain_thunder/rain_moderate-distant-traffic-birds-park-suburban-street-loop.wav"
+    ],
+    "32": [
+      "rain_thunder/rain_moderate-distant-traffic-constant-loop.wav"
+    ],
+    "33": [
+      "rain_thunder/rain_moderate-drip-gutters-hiss-noise-loop.wav"
+    ],
+    "34": [
+      "rain_thunder/rain_moderate-drownpour-drops-loop.wav"
+    ],
+    "35": [
+      "rain_thunder/rain_moderate-gutters-dripping-leaking-loop.wav"
+    ],
+    "36": [
+      "rain_thunder/rain_moderate-medium-stone-hiss-constant-loop.wav"
+    ],
+    "37": [
+      "rain_thunder/rain_moderate-park-seagulls-traffic-honks-loop.wav"
+    ],
+    "38": [
+      "rain_thunder/rain_moderate-rhythmic-dripping-droplets-loop.wav"
+    ],
+    "39": [
+      "rain_thunder/rain_moderate-shelter-umbrella-tent-park-forest-loop.wav"
+    ],
+    "40": [
+      "rain_thunder/rain_moderate-suburban-noise-traffic-passing-cars-loop.wav"
+    ],
+    "41": [
+      "rain_thunder/rain_moderate-tarp-tent-plastic-umbrella-crackling-loop.wav"
+    ],
+    "42": [
+      "rain_thunder/rain_moderate-tent-plastic-filtered-crackling-loop.wav"
+    ],
+    "43": [
+      "rain_thunder/rain_moderate-thunder-soft-rain-loop.wav"
+    ],
+    "44": [
+      "rain_thunder/rain_moderate-tile-tin-roof-loop.wav"
+    ],
+    "45": [
+      "rain_thunder/rain_moderate-umbrella-plastic-tent-crackling-loop.wav"
+    ],
+    "46": [
+      "rain_thunder/rain_moderate-urban-city-traffic-noise-loop.wav"
+    ],
+    "47": [
+      "rain_thunder/rain_soft-car-roof-raindrops-wind-waves-loop.wav"
+    ],
+    "48": [
+      "rain_thunder/rain_soft-clean-crisp-loop.wav"
+    ],
+    "49": [
+      "rain_thunder/rain_soft-concrete-dripping-distant-traffic-loop.wav"
+    ],
+    "50": [
+      "rain_thunder/rain_soft-gentle-bright-hiss-white-noise-loop.wav"
+    ],
+    "51": [
+      "rain_thunder/rain_soft-gentle-suburban-dripping-loop.wav"
+    ],
+    "52": [
+      "rain_thunder/rain_soft-quite-raindrops-subway-distant-traffic-overpass-loop.wav"
+    ],
+    "53": [
+      "rain_thunder/rain_soft-skylight-glass-window-gentle-shelter-1-loop.wav"
+    ],
+    "54": [
+      "rain_thunder/rain_soft-skylight-glass-window-gentle-shelter-2-loop.wav"
+    ],
+    "55": [
+      "rain_thunder/rain_soft-small-waterfall-stream-puddle-lake-park-dripping-loop.wav"
+    ],
+    "56": [
+      "rain_thunder/rain_soft-suburban-passing-cars-street-loop.wav"
+    ],
+    "57": [
+      "rain_thunder/rain_soft-umbrella-high-pitch-crackle-loop.wav"
+    ],
+    "58": [
+      "rain_thunder/rain_soft-wet-roads-high-street-traffic-loop.wav"
+    ],
+    "59": [
+      "rain_thunder/rain_soft-woodland-heavy-drips-hiss-quite-loop.wav"
+    ]
+  },
+  "roomtones": {
+    "0": [
+      "roomtones/ambroom_bathroom-shower-on-reverb-loop.wav"
+    ],
+    "1": [
+      "roomtones/ambroom_bathroom-water-dripping-drain-sound-loop.wav"
+    ],
+    "2": [
+      "roomtones/ambroom_broken-fridge-deep-rattle-empty-loop.wav"
+    ],
+    "3": [
+      "roomtones/ambroom_constant-blowing-fan-big-area-loop.wav"
+    ],
+    "4": [
+      "roomtones/ambroom_constant-hiss-undefinable-exterior-noise-loop.wav"
+    ],
+    "5": [
+      "roomtones/ambroom_constant-light-buzz-soft-outside-noise-water-drip-loop.wav"
+    ],
+    "6": [
+      "roomtones/ambroom_constant-rattling-of-fridge-engine-loop.wav"
+    ],
+    "7": [
+      "roomtones/ambroom_constant-sound-of-ventilation-shaft-loop.wav"
+    ],
+    "8": [
+      "roomtones/ambroom_control-room-machine-noise-distant-exterior-sound-loop.wav"
+    ],
+    "9": [
+      "roomtones/ambroom_deep-ventilation-rattling-noise-loop.wav"
+    ],
+    "10": [
+      "roomtones/ambroom_distant-lawn-mower-door-open-loop.wav"
+    ],
+    "11": [
+      "roomtones/ambroom_distant-outside-cars-passing-by-loop.wav"
+    ],
+    "12": [
+      "roomtones/ambroom_electricty-buzz-noise-constant-soft-water-dripping-walking-on-stairs-loop.wav"
+    ],
+    "13": [
+      "roomtones/ambroom_fan-noise-soft-rain-on-roof-summer-rain-loop.wav"
+    ],
+    "14": [
+      "roomtones/ambroom_filtered-ventilation-noise-control-room-distant-outside-noise-loop.wav"
+    ],
+    "15": [
+      "roomtones/ambroom_hollow-air-soft-vevntilation-sounds-loop.wav"
+    ],
+    "16": [
+      "roomtones/ambroom_inside-freezer-crackling-of-ice-loop.wav"
+    ],
+    "17": [
+      "roomtones/ambroom_inside-fridge-engine-rattle-loop.wav"
+    ],
+    "18": [
+      "roomtones/ambroom_inside-outside-construction-box-ventilation-loop.wav"
+    ],
+    "19": [
+      "roomtones/ambroom_kitchen-noise-different-noises-in-house-loop.wav"
+    ],
+    "20": [
+      "roomtones/ambroom_light-buzz-flicker-electricty-noise-loop.wav"
+    ],
+    "21": [
+      "roomtones/ambroom_light-buzzing-constant-noise-electricity-loop.wav"
+    ],
+    "22": [
+      "roomtones/ambroom_livingroom-ticking-clock-door-open-birds-loop.wav"
+    ],
+    "23": [
+      "roomtones/ambroom_loud-fan-plain-outside-window-open-birds-loop.wav"
+    ],
+    "24": [
+      "roomtones/ambroom_machine-room-underground-subway-noise-electric-loop.wav"
+    ],
+    "25": [
+      "roomtones/ambroom_multiple-people-upstairs-party-filtered-chatter-loop.wav"
+    ],
+    "26": [
+      "roomtones/ambroom_office-basemenet-hollow-ventilation-noise-loop.wav"
+    ],
+    "27": [
+      "roomtones/ambroom_outside-helicopter-hollow-air-noise-constant-loop.wav"
+    ],
+    "28": [
+      "roomtones/ambroom_quiete-big-space-vehicles-pasing-by-soft-birdsong-loop.wav"
+    ],
+    "29": [
+      "roomtones/ambroom_quiete-filtered-chatter-distant-loop.wav"
+    ],
+    "30": [
+      "roomtones/ambroom_quiete-room-exterior-noise-carwash-loop.wav"
+    ],
+    "31": [
+      "roomtones/ambroom_quiete-room-heavy-wind-outside-bedroom-cosy-scary-loop.wav"
+    ],
+    "32": [
+      "roomtones/ambroom_quiete-room-rain-on-window-distant-dog-barking-loop.wav"
+    ],
+    "33": [
+      "roomtones/ambroom_quiete-sewers-underground-water-flowing-and-driping-scary-loop.wav"
+    ],
+    "34": [
+      "roomtones/ambroom_quiete-ventilation-constant-loop.wav"
+    ],
+    "35": [
+      "roomtones/ambroom_quite-house-constant-no-noise-1-loop.wav"
+    ],
+    "36": [
+      "roomtones/ambroom_quite-house-constant-no-noise-2-loop.wav"
+    ],
+    "37": [
+      "roomtones/ambroom_rain-ticking-on-window-above-bad-exterior-weather-loop.wav"
+    ],
+    "38": [
+      "roomtones/ambroom_rattling-ventilation-constant-noise-loop.wav"
+    ],
+    "39": [
+      "roomtones/ambroom_restaurant-office-distant-chatter-filtered-loop.wav"
+    ],
+    "40": [
+      "roomtones/ambroom_restaurant-storage-room-filtered-chatter-ventilation-noise-loop.wav"
+    ],
+    "41": [
+      "roomtones/ambroom_room-noise-outside-construction-filtered-loop.wav"
+    ],
+    "42": [
+      "roomtones/ambroom_small-room-electricty-noise-filtered-thunder-outside-rain-on-windows-loop.wav"
+    ],
+    "43": [
+      "roomtones/ambroom_soft-buzzing-luvght-constant-wind-outside-water-drip-loop.wav"
+    ],
+    "44": [
+      "roomtones/ambroom_soft-machine-noise-constant-loop.wav"
+    ],
+    "45": [
+      "roomtones/ambroom_soft-ticking-very-soft-ecterior-sound-loop.wav"
+    ],
+    "46": [
+      "roomtones/ambroom_storage-room-freezer-engine-noise-constant-loop.wav"
+    ],
+    "47": [
+      "roomtones/ambroom_ventilation-distant-fridge-loop.wav"
+    ],
+    "48": [
+      "roomtones/ambroom_very-soft-electricity-buzz-quiete-room-loop.wav"
+    ]
+  },
+  "skinny_love_bass": [
+    "skinny_love_bass/n0.wav",
+    "skinny_love_bass/n1.wav",
+    "skinny_love_bass/n2.wav",
+    "skinny_love_bass/n3.wav",
+    "skinny_love_bass/n4.wav",
+    "skinny_love_bass/n5.wav",
+    "skinny_love_bass/n6.wav",
+    "skinny_love_bass/n7.wav",
+    "skinny_love_bass/n8.wav",
+    "skinny_love_bass/n9.wav"
+  ],
+  "skinny_love_drums": [
+    "skinny_love_drums/n0.wav",
+    "skinny_love_drums/n1.wav",
+    "skinny_love_drums/n2.wav",
+    "skinny_love_drums/n3.wav",
+    "skinny_love_drums/n4.wav",
+    "skinny_love_drums/n5.wav",
+    "skinny_love_drums/n6.wav",
+    "skinny_love_drums/n7.wav",
+    "skinny_love_drums/n8.wav",
+    "skinny_love_drums/n9.wav"
+  ],
+  "skinny_love_other": [
+    "skinny_love_other/n0.wav",
+    "skinny_love_other/n1.wav",
+    "skinny_love_other/n2.wav",
+    "skinny_love_other/n3.wav",
+    "skinny_love_other/n4.wav",
+    "skinny_love_other/n5.wav",
+    "skinny_love_other/n6.wav",
+    "skinny_love_other/n7.wav",
+    "skinny_love_other/n8.wav",
+    "skinny_love_other/n9.wav"
+  ],
+  "skinny_love_vocals": [
+    "skinny_love_vocals/n0.wav",
+    "skinny_love_vocals/n1.wav",
+    "skinny_love_vocals/n2.wav",
+    "skinny_love_vocals/n3.wav",
+    "skinny_love_vocals/n4.wav",
+    "skinny_love_vocals/n5.wav",
+    "skinny_love_vocals/n6.wav",
+    "skinny_love_vocals/n7.wav",
+    "skinny_love_vocals/n8.wav",
+    "skinny_love_vocals/n9.wav"
+  ],
+  "solarbass8": [
+    "solarbass8/00.wav",
+    "solarbass8/01.wav",
+    "solarbass8/02.wav",
+    "solarbass8/03.wav",
+    "solarbass8/04.wav",
+    "solarbass8/05.wav",
+    "solarbass8/06.wav",
+    "solarbass8/07.wav",
+    "solarbass8/08.wav",
+    "solarbass8/09.wav",
+    "solarbass8/10.wav",
+    "solarbass8/11.wav",
+    "solarbass8/12.wav",
+    "solarbass8/13.wav",
+    "solarbass8/14.wav",
+    "solarbass8/15.wav",
+    "solarbass8/16.wav",
+    "solarbass8/17.wav",
+    "solarbass8/18.wav",
+    "solarbass8/19.wav",
+    "solarbass8/20.wav"
+  ],
+  "solardrum8": [
+    "solardrum8/00.wav",
+    "solardrum8/01.wav",
+    "solardrum8/02.wav",
+    "solardrum8/03.wav",
+    "solardrum8/04.wav",
+    "solardrum8/05.wav",
+    "solardrum8/06.wav",
+    "solardrum8/07.wav",
+    "solardrum8/08.wav",
+    "solardrum8/09.wav",
+    "solardrum8/10.wav",
+    "solardrum8/11.wav",
+    "solardrum8/12.wav",
+    "solardrum8/13.wav",
+    "solardrum8/14.wav",
+    "solardrum8/15.wav",
+    "solardrum8/16.wav",
+    "solardrum8/17.wav",
+    "solardrum8/18.wav",
+    "solardrum8/19.wav",
+    "solardrum8/20.wav"
+  ],
+  "solarother8": [
+    "solarother8/00.wav",
+    "solarother8/01.wav",
+    "solarother8/02.wav",
+    "solarother8/03.wav",
+    "solarother8/04.wav",
+    "solarother8/05.wav",
+    "solarother8/06.wav",
+    "solarother8/07.wav",
+    "solarother8/08.wav",
+    "solarother8/09.wav",
+    "solarother8/10.wav",
+    "solarother8/11.wav",
+    "solarother8/12.wav",
+    "solarother8/13.wav",
+    "solarother8/14.wav",
+    "solarother8/15.wav",
+    "solarother8/16.wav",
+    "solarother8/17.wav",
+    "solarother8/18.wav",
+    "solarother8/19.wav",
+    "solarother8/20.wav"
+  ],
+  "solarvox8": [
+    "solarvox8/00.wav",
+    "solarvox8/01.wav",
+    "solarvox8/02.wav",
+    "solarvox8/03.wav",
+    "solarvox8/04.wav",
+    "solarvox8/05.wav",
+    "solarvox8/06.wav",
+    "solarvox8/07.wav",
+    "solarvox8/08.wav",
+    "solarvox8/09.wav",
+    "solarvox8/10.wav",
+    "solarvox8/11.wav",
+    "solarvox8/12.wav",
+    "solarvox8/13.wav",
+    "solarvox8/14.wav",
+    "solarvox8/15.wav",
+    "solarvox8/16.wav",
+    "solarvox8/17.wav",
+    "solarvox8/18.wav",
+    "solarvox8/19.wav",
+    "solarvox8/20.wav"
+  ],
+  "suochr": [
+    "suochr/choir_00.wav",
+    "suochr/choir_01.wav",
+    "suochr/choir_02.wav",
+    "suochr/choir_03.wav"
+  ],
+  "suophr": [
+    "suophr/phrase_00.wav",
+    "suophr/phrase_01.wav",
+    "suophr/phrase_02.wav",
+    "suophr/phrase_03.wav",
+    "suophr/phrase_04.wav",
+    "suophr/phrase_05.wav",
+    "suophr/phrase_06.wav",
+    "suophr/phrase_07.wav"
+  ],
+  "synth_lead": {
+    "cs3": "synth_lead/synth_lead.wav"
+  },
+  "synth_lead_2": {
+    "cs4": "synth_lead_2/synth_lead_2.wav"
+  },
+  "synth_texture": [
+    "synth_texture/0.wav"
+  ],
+  "wind_air": {
+    "0": [
+      "wind_air/wind_air-dark-deep-loop.wav"
+    ],
+    "1": [
+      "wind_air/wind_air-hiss-constant-loop.wav"
+    ],
+    "2": [
+      "wind_air/wind_air-light-soft-loop.wav"
+    ],
+    "3": [
+      "wind_air/wind_autumn-wind-trees-small-bird-constant-loop.wav"
+    ],
+    "4": [
+      "wind_air/wind_breeze-foliage-soft-loop.wav"
+    ],
+    "5": [
+      "wind_air/wind_constant-noise-air-far-away-gusts-loop.wav"
+    ],
+    "6": [
+      "wind_air/wind_dark-airy-stormy-loop.wav"
+    ],
+    "7": [
+      "wind_air/wind_dark-eerie-scary-big-space-howling-loop.wav"
+    ],
+    "8": [
+      "wind_air/wind_dark-magical-loop.wav"
+    ],
+    "9": [
+      "wind_air/wind_dark-stormy-loop.wav"
+    ],
+    "10": [
+      "wind_air/wind_deep-airy-abstract-loop.wav"
+    ],
+    "11": [
+      "wind_air/wind_deep-gusts-soft-noise-loop.wav"
+    ],
+    "12": [
+      "wind_air/wind_ghostly-haunting-loop.wav"
+    ],
+    "13": [
+      "wind_air/wind_ghostly-howling-loop.wav"
+    ],
+    "14": [
+      "wind_air/wind_heavy-outside-wind-loop.wav"
+    ],
+    "15": [
+      "wind_air/wind_high-pitch-gusts-steady-wind-loop.wav"
+    ],
+    "16": [
+      "wind_air/wind_light-whispery-soft-fluttering-loop.wav"
+    ],
+    "17": [
+      "wind_air/wind_medium-airy-loop-1.wav"
+    ],
+    "18": [
+      "wind_air/wind_medium-airy-loop-2.wav"
+    ],
+    "19": [
+      "wind_air/wind_medium-breeze-loop.wav"
+    ],
+    "20": [
+      "wind_air/wind_medium-steady-loop.wav"
+    ],
+    "21": [
+      "wind_air/wind_medium-tree-loop.wav"
+    ],
+    "22": [
+      "wind_air/wind_mic-gusts-raw-beach-wind-loop.wav"
+    ],
+    "23": [
+      "wind_air/wind_mic-wind-noise-loop.wav"
+    ],
+    "24": [
+      "wind_air/wind_moderate-polar-loop.wav"
+    ],
+    "25": [
+      "wind_air/wind_noise-wind-high-pitch-loop.wav"
+    ],
+    "26": [
+      "wind_air/wind_noisey-mystical-loop.wav"
+    ],
+    "27": [
+      "wind_air/wind_ocean-wind-stady-grey-noise-loop.wav"
+    ],
+    "28": [
+      "wind_air/wind_soft-air-steady-breeze-loop.wav"
+    ],
+    "29": [
+      "wind_air/wind_soft-airy-light-loop.wav"
+    ],
+    "30": [
+      "wind_air/wind_soft-breeze-loop.wav"
+    ],
+    "31": [
+      "wind_air/wind_soft-cold-arctic-loop.wav"
+    ],
+    "32": [
+      "wind_air/wind_soft-gentle-hiss-loop.wav"
+    ],
+    "33": [
+      "wind_air/wind_soft-light-constant-loop.wav"
+    ],
+    "34": [
+      "wind_air/wind_steady-wind-deep-loop.wav"
+    ],
+    "35": [
+      "wind_air/wind_stormy-inside-interior-loop.wav"
+    ],
+    "36": [
+      "wind_air/wind_strong-gusts-loop.wav"
+    ],
+    "37": [
+      "wind_air/wind_strong-stormy-loop.wav"
+    ],
+    "38": [
+      "wind_air/wind_synthetic-mystical-loop.wav"
+    ],
+    "39": [
+      "wind_air/wind_whistling-eerie-loop.wav"
+    ],
+    "40": [
+      "wind_air/wind_whistling-strong-loop.wav"
+    ],
+    "41": [
+      "wind_air/winddsgn_airy-abstract-loop.wav"
+    ],
+    "42": [
+      "wind_air/winddsgn_big-cave-wind-mystical-loop.wav"
+    ],
+    "43": [
+      "wind_air/winddsgn_chilling-ghostly-loop.wav"
+    ],
+    "44": [
+      "wind_air/winddsgn_cold-airy-chilling-loop.wav"
+    ],
+    "45": [
+      "wind_air/winddsgn_constant-wind-heavy-wind-loop.wav"
+    ],
+    "46": [
+      "wind_air/winddsgn_deep-eerie-loop.wav"
+    ],
+    "47": [
+      "wind_air/winddsgn_deep-filtered-wind-loop.wav"
+    ],
+    "48": [
+      "wind_air/winddsgn_deep-heavy-winds-loop.wav"
+    ],
+    "49": [
+      "wind_air/winddsgn_deep-wind-filtered-loop.wav"
+    ],
+    "50": [
+      "wind_air/winddsgn_deep-winds-filtered-inside-interior-loop.wav"
+    ],
+    "51": [
+      "wind_air/winddsgn_dense-wind-small-gusts-loop.wav"
+    ],
+    "52": [
+      "wind_air/winddsgn_gentle-heavy-wind-loop.wav"
+    ],
+    "53": [
+      "wind_air/winddsgn_ghostly-alien-loop.wav"
+    ],
+    "54": [
+      "wind_air/winddsgn_heavy-wind-leaves-and-debris-autumn-loop.wav"
+    ],
+    "55": [
+      "wind_air/winddsgn_lfo-wind-volume-soft-loop.wav"
+    ],
+    "56": [
+      "wind_air/winddsgn_med-filtered-wid-medium-loop.wav"
+    ],
+    "57": [
+      "wind_air/winddsgn_panned-howling-wind-heavy-inside-interior-loop.wav"
+    ],
+    "58": [
+      "wind_air/winddsgn_steady-howling-wind-loop.wav"
+    ],
+    "59": [
+      "wind_air/winddsgn_underwater-wind-filtered-howling-inside-interior-loop.wav"
+    ],
+    "60": [
+      "wind_air/windturb_constant-wind-cave-underground-loop.wav"
+    ],
+    "61": [
+      "wind_air/windturb_dark-mystical-eerie-loop.wav"
+    ],
+    "62": [
+      "wind_air/windturb_deep-wind-howling-gusts-storm-loop.wav"
+    ],
+    "63": [
+      "wind_air/windturb_deep-wind-leaves-storm-loop.wav"
+    ],
+    "64": [
+      "wind_air/windturb_gusts-heavy-wind-storm-high-mountain-loop.wav"
+    ],
+    "65": [
+      "wind_air/windturb_medium-wind-leaves-blowing-outside-loop.wav"
+    ],
+    "66": [
+      "wind_air/windturb_multiple-gusts-heavy-wind-loop.wav"
+    ],
+    "67": [
+      "wind_air/windturb_quick-howling-winds-heavy-loop.wav"
+    ],
+    "68": [
+      "wind_air/windturb_steady-wind-with-gusts-high-pitched-loop.wav"
+    ],
+    "69": [
+      "wind_air/windturb_strong-polar-cold-loop.wav"
+    ],
+    "70": [
+      "wind_air/windturb_white-noise-wind-high-pitch-gusts-heavy-loop.wav"
+    ]
   }
 }

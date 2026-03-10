@@ -269,5 +269,62 @@
   },
   "dv_cinematic_water": {
     "0": "dv_cinematic_water/dv_cinematic_water.wav"
+  },
+  "says_other_piano_whisper_01": {
+    "0": "says_other_piano_whisper_01/says_other_piano_whisper_01.wav"
+  },
+  "says_other_piano_quiet_01": {
+    "0": "says_other_piano_quiet_01/says_other_piano_quiet_01.wav"
+  },
+  "says_other_piano_buildup_01": {
+    "0": "says_other_piano_buildup_01/says_other_piano_buildup_01.wav"
+  },
+  "says_other_piano_peak_01": {
+    "0": "says_other_piano_peak_01/says_other_piano_peak_01.wav"
+  },
+  "says_other_piano_climax_01": {
+    "0": "says_other_piano_climax_01/says_other_piano_climax_01.wav"
+  },
+  "says_bass_subtle_01": {
+    "0": "says_bass_subtle_01/says_bass_subtle_01.wav"
+  },
+  "says_bass_deep_pulse_01": {
+    "0": "says_bass_deep_pulse_01/says_bass_deep_pulse_01.wav"
+  },
+  "says_bass_building_01": {
+    "0": "says_bass_building_01/says_bass_building_01.wav"
+  },
+  "says_bass_peak_01": {
+    "0": "says_bass_peak_01/says_bass_peak_01.wav"
+  },
+  "says_drums_room_early_01": {
+    "0": "says_drums_room_early_01/says_drums_room_early_01.wav"
+  },
+  "says_drums_texture_mid_01": {
+    "0": "says_drums_texture_mid_01/says_drums_texture_mid_01.wav"
+  },
+  "says_drums_peak_01": {
+    "0": "says_drums_peak_01/says_drums_peak_01.wav"
+  },
+  "says_vocals_overtones_01": {
+    "0": "says_vocals_overtones_01/says_vocals_overtones_01.wav"
+  },
+  "says_kexp_room_ambience_01": {
+    "0": "says_kexp_room_ambience_01/says_kexp_room_ambience_01.wav"
+  },
+  "says_kexp_applause_01": {
+    "0": "says_kexp_applause_01/says_kexp_applause_01.wav"
+  },
+  "says_kexp_piano_mid_01": {
+    "0": "says_kexp_piano_mid_01/says_kexp_piano_mid_01.wav"
+  },
+  "says_kexp_piano_peak_01": {
+    "0": "says_kexp_piano_peak_01/says_kexp_piano_peak_01.wav"
+  },
+  "says_kexp_bass_throb_01": {
+    "0": "says_kexp_bass_throb_01/says_kexp_bass_throb_01.wav"
+  },
+  "says_kexp_drums_live_01": {
+    "0": "says_kexp_drums_live_01/says_kexp_drums_live_01.wav"
   }
 }

@@ -1,17 +1,6 @@
 # Changelog
 
-## 1.2.2
-
-### Security
-- **Shell injection fix in `scripts/dispatch.sh`** — All user-controlled arguments (composition names, channel IDs, BPM, cycles) are now validated before use. Composition names restricted to `[a-zA-Z0-9_-]`, channel IDs and numeric args validated as numeric-only, file paths checked for traversal and shell metacharacters. Resolves ClawHub scanner "suspicious" classification.
-
-### Fixed
-- **T9: graceful error on missing composition file** — `offline-render-v2.mjs` now checks `existsSync` before `readFileSync`, showing a clean filename-only error instead of a stack trace when a composition path doesn't exist.
-
-### Changed
-- **Doc cleanup** — Replaced internal jargon with general-audience language in `references/gain-calibration.md`, `references/composing.md`, and `docs/PROMOTION.md`.
-
-## 1.2.1
+## 1.2.1 (unreleased)
 
 ### Removed
 - **`scripts/render-pattern.sh`** — Browser-based renderer using Puppeteer with `--no-sandbox`. Superseded by `src/runtime/offline-render-v2.mjs` which runs entirely in Node.js with frozen `process.env` and blocked `child_process`. Retrievable from git history at commit prior to this removal.

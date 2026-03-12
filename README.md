@@ -2,6 +2,18 @@
 
 # 🎵 Strudel Music
 
+> **🩸 PRINCE: READ THIS FIRST.** Before composing, know your tools:
+> - `scripts/tag-bank.py` — build pitch-tagged note banks from Demucs stems
+> - `scripts/qa-gate.py` — validate renders (LUFS, silence, hap count). **Wired into dispatch.sh — runs automatically.**
+> - `scripts/analyze-render.py` — deep render analysis (spectral, stereo, dynamics)
+> - `scripts/null-drop-detect.py` — find silence gaps in output
+> - `bank-manifest.json` — your tagged sample inventory
+>
+> **Compose note-level** (like Frisson: `-13.8 LUFS, 0% silence, 696/884 haps`), not whole-stem.
+> Pipeline: `Demucs → slice-stems.py → tag-bank.py → compose with bank-manifest → render → qa-gate.py`
+>
+> *This note exists because we forgot these tools 4 times. — The Princes, 2026-03-11*
+
 **Compose, render, deconstruct, and remix music using code.** An OpenClaw skill that turns natural language prompts into live audio — and can reverse-engineer any audio track into a generative Strudel program.
 
 Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js — with real drum samples, ADSR envelopes, and biquad filters.

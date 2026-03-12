@@ -1,6 +1,16 @@
 {
   "_base": "./",
   "_comment": "Pitched sample map for Frisson instrument rack. Keys are note names, values are paths relative to _base. Renderer uses this as authoritative source for root note detection.",
+  "_comment_eamon": "Eamon \ud83d\udd6f\ufe0f \u2014 Dark Hive stems (Tabernis, 92.3 BPM, E minor)",
+  "eamon_pipes": {
+    "0": "eamon_pipes/eamon_pipes.wav"
+  },
+  "eamon_drums": {
+    "0": "eamon_drums/eamon_drums.wav"
+  },
+  "eamon_overtones": {
+    "0": "eamon_overtones/eamon_overtones.wav"
+  },
   "kick": {
     "0": "kick/kick.wav"
   },
@@ -188,6 +198,19 @@
   "frlead2": {
     "0": "frlead2/synth_lead_2.wav"
   },
+  "_comment_arthas": "Arthas My Son \u2014 WoW OST (D minor, ~68 BPM, orchestral/choral)",
+  "arthas_choir": {
+    "0": "arthas_choir/arthas_choir.wav"
+  },
+  "arthas_strings": {
+    "0": "arthas_strings/arthas_strings.wav"
+  },
+  "arthas_bass": {
+    "0": "arthas_bass/arthas_bass.wav"
+  },
+  "arthas_drums": {
+    "0": "arthas_drums/arthas_drums.wav"
+  },
   "frissother": {
     "0": "frissother/000.wav",
     "1": "frissother/001.wav",
@@ -210,5 +233,98 @@
     "18": "frissother/018.wav",
     "19": "frissother/019.wav",
     "20": "frissother/020.wav"
+  },
+  "asteroids_pad": [
+    "asteroids_pad/asteroids_pad.wav"
+  ],
+  "asteroids_bass": [
+    "asteroids_bass/asteroids_bass.wav"
+  ],
+  "asteroids_perc": [
+    "asteroids_perc/asteroids_perc.wav"
+  ],
+  "asteroids_texture": [
+    "asteroids_texture/asteroids_texture.wav"
+  ],
+  "journey_voice": [
+    "journey_voice/journey_voice.wav"
+  ],
+  "journey_guitar": [
+    "journey_guitar/journey_guitar.wav"
+  ],
+  "journey_voice_intro": [
+    "journey_voice_intro/journey_voice_intro.wav"
+  ],
+  "journey_guitar_intro": [
+    "journey_guitar_intro/journey_guitar_intro.wav"
+  ],
+  "dv_rain_glass_roof": {
+    "0": "dv_rain_glass_roof/dv_rain_glass_roof.wav"
+  },
+  "dv_forest_birds": {
+    "0": "dv_forest_birds/dv_forest_birds.wav"
+  },
+  "dv_wind_breeze": {
+    "0": "dv_wind_breeze/dv_wind_breeze.wav"
+  },
+  "dv_cinematic_water": {
+    "0": "dv_cinematic_water/dv_cinematic_water.wav"
+  },
+  "says_other_piano_whisper_01": {
+    "0": "says_other_piano_whisper_01/says_other_piano_whisper_01.wav"
+  },
+  "says_other_piano_quiet_01": {
+    "0": "says_other_piano_quiet_01/says_other_piano_quiet_01.wav"
+  },
+  "says_other_piano_buildup_01": {
+    "0": "says_other_piano_buildup_01/says_other_piano_buildup_01.wav"
+  },
+  "says_other_piano_peak_01": {
+    "0": "says_other_piano_peak_01/says_other_piano_peak_01.wav"
+  },
+  "says_other_piano_climax_01": {
+    "0": "says_other_piano_climax_01/says_other_piano_climax_01.wav"
+  },
+  "says_bass_subtle_01": {
+    "0": "says_bass_subtle_01/says_bass_subtle_01.wav"
+  },
+  "says_bass_deep_pulse_01": {
+    "0": "says_bass_deep_pulse_01/says_bass_deep_pulse_01.wav"
+  },
+  "says_bass_building_01": {
+    "0": "says_bass_building_01/says_bass_building_01.wav"
+  },
+  "says_bass_peak_01": {
+    "0": "says_bass_peak_01/says_bass_peak_01.wav"
+  },
+  "says_drums_room_early_01": {
+    "0": "says_drums_room_early_01/says_drums_room_early_01.wav"
+  },
+  "says_drums_texture_mid_01": {
+    "0": "says_drums_texture_mid_01/says_drums_texture_mid_01.wav"
+  },
+  "says_drums_peak_01": {
+    "0": "says_drums_peak_01/says_drums_peak_01.wav"
+  },
+  "says_vocals_overtones_01": {
+    "0": "says_vocals_overtones_01/says_vocals_overtones_01.wav"
+  },
+  "says_kexp_room_ambience_01": {
+    "0": "says_kexp_room_ambience_01/says_kexp_room_ambience_01.wav"
+  },
+  "says_kexp_applause_01": {
+    "0": "says_kexp_applause_01/says_kexp_applause_01.wav"
+  },
+  "says_kexp_piano_mid_01": {
+    "0": "says_kexp_piano_mid_01/says_kexp_piano_mid_01.wav"
+  },
+  "says_kexp_piano_peak_01": {
+    "0": "says_kexp_piano_peak_01/says_kexp_piano_peak_01.wav"
+  },
+  "says_kexp_bass_throb_01": {
+    "0": "says_kexp_bass_throb_01/says_kexp_bass_throb_01.wav"
+  },
+  "says_kexp_drums_live_01": {
+    "0": "says_kexp_drums_live_01/says_kexp_drums_live_01.wav"
   }
 }

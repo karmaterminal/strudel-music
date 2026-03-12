@@ -358,7 +358,7 @@ for (const hap of haps) {
   // producing multiple haps with the same whole arc but different part arcs.
   // hasOnset() is true only for the first fragment (part.begin === whole.begin).
   // Without this filter, samples get stacked N times at the same start time (#22 v7).
-  if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
+  if (typeof hap.hasOnset === 'function' && !hap.hasOnset() && !(hap.value?.clip || hap.value?.loopAt || hap.value?.unit === 'c')) continue;
 
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
   const endCycle = hap.whole?.end ?? hap.part?.end ?? startCycle + 0.25;

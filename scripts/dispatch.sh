@@ -36,6 +36,26 @@ _render() {
   else
     echo "✅ $WAV (ffmpeg not available for MP3 conversion)"
   fi
+
+  # ── QA GATE (mandatory — wired 2026-03-11 after 4th retrograde loop) ──
+  local QA_SCRIPT="$ROOT_DIR/scripts/qa-gate.py"
+  local ANALYZE_SCRIPT="$ROOT_DIR/scripts/analyze-render.py"
+  local QA_TARGET="${MP3:-$WAV}"
+  local AUDIO_VENV="${AUDIO_PIPELINE_VENV:-${HOME}/.openclaw/workspace/audio-pipeline/.venv}"
+
+  if [ -f "$QA_SCRIPT" ] && [ -d "$AUDIO_VENV" ]; then
+    echo ""
+    echo "═══ QA GATE ═══"
+    source "$AUDIO_VENV/bin/activate" 2>/dev/null
+    python3 "$QA_SCRIPT" "$QA_TARGET" 2>&1 || echo "⚠️  QA gate flagged issues — review before posting"
+    echo ""
+    echo "═══ SPECTRAL ANALYSIS ═══"
+    python3 "$ANALYZE_SCRIPT" "$QA_TARGET" --quiet 2>&1 || true
+    deactivate 2>/dev/null
+    echo "═══════════════"
+  else
+    echo "⚠️  QA gate not available (missing qa-gate.py or audio-pipeline venv)"
+  fi
 }
 
 _play() {

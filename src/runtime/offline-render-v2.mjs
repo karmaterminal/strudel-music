@@ -101,6 +101,53 @@ globalThis.setcps = (v) => { cpmValue = v * 60; };
 globalThis.samples = () => {};
 globalThis.hush = () => {};
 
+// ── Prebake compatibility shims ──
+// These globals exist in the Strudel REPL but not in headless Node.
+// Shimming them allows prebake.strudel files to load without errors.
+globalThis.strudelScope = globalThis;
+globalThis.setGainCurve = () => {};
+globalThis.setDefault = (key, val) => {};
+globalThis.registerFunc = (name, func) => {
+  globalThis[name] = func;
+};
+// setCpm (capital M) variant used by Switch Angel compositions
+globalThis.setCpm = (v) => { cpmValue = v; };
+// setScale shim — stores scale for .sc() usage
+let _currentScale = 'c:minor';
+globalThis.setScale = (s) => { _currentScale = s; };
+// getTime for prebake oneshot()
+globalThis.getTime = () => 0;
+
+// ── Pattern method shims for missing Strudel extensions ──
+// duck/diode/seg/beat/scale/o are from @strudel/superdough or newer builds.
+// Shim them as pass-throughs so compositions load without crashing.
+{
+  const P = core.Pattern.prototype;
+  const passthrough = function() { return this; };
+  const missingMethods = ['duck','duckattack','duckdepth','duckrelease','duckorbit',
+    'diode','seg','beat','o','sc','scale','slider','swingBy','postgain',
+    'rib','ribbon','ifit','fill','struct','keepif','filtval','fit',
+    'strum','humanize','glitch','glide','oneshot','vstruct','trancegate',
+    'sf','swap','over','stxt','comb','grab','up','acid','fxr','FX',
+    'compressor','phaser','wt','wtrate','wtdepth','wtenv','wtdecay',
+    'warp','warpmode','warpenv','warpdec','asym','lfo','scrub',
+    'dly','acidenv','rlpf','rhpf','colorparty','mpan','fmtime',
+    'sq','collect','K','S'];
+  for (const m of missingMethods) {
+    if (typeof P[m] !== 'function') {
+      P[m] = passthrough;
+    }
+  }
+  // 'o' as alias for orbit
+  if (typeof P.o !== 'function') {
+    P.o = function(...args) { return this.orbit(...args); };
+  }
+  // 'sc' as alias for scale
+  if (typeof P.sc !== 'function' && typeof P.scale === 'function') {
+    P.sc = function(...args) { return this.scale(...args); };
+  }
+}
+
 // Browser-only methods to strip from patterns before headless evaluation
 const vizMethods = ['pianoroll', '_pianoroll', 'spiral', '_spiral', 'scope', '_scope', 'draw', '_draw'];
 

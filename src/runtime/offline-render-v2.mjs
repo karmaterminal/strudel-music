@@ -101,6 +101,38 @@ globalThis.setcps = (v) => { cpmValue = v * 60; };
 globalThis.samples = () => {};
 globalThis.hush = () => {};
 
+// ── Prebake support ──
+// Switch Angel's prebake.strudel uses `window.*` and `strudelScope`
+globalThis.window = globalThis;
+globalThis.strudelScope = globalThis;
+globalThis.registerFunc = (name, func) => {
+  globalThis[name] = func;
+};
+globalThis.setGainCurve = () => {};  // WebAudio-only, no-op headless
+globalThis.setDefault = () => {};    // WebAudio-only, no-op headless
+globalThis.setScale = (sc) => { globalThis.SCALE = sc; };
+globalThis.SCALE = 'c:minor';
+globalThis.K = (fn) => fn;          // WebAudio FX placeholder
+globalThis.S = (x) => x;            // Signal placeholder
+globalThis.audioin = () => ({ add: () => ({ out: () => {} }), sub: () => ({ out: () => {} }) });
+
+// Load prebake if --prebake flag or prebake.strudel exists alongside input
+const prebakePath = process.argv.find(a => a.startsWith('--prebake='))?.slice('--prebake='.length)
+  || (() => {
+    const dir = path.dirname(input);
+    const candidate = path.join(dir, 'prebake.strudel');
+    return existsSync(candidate) ? candidate : null;
+  })();
+if (prebakePath && existsSync(prebakePath)) {
+  try {
+    const prebakeCode = readFileSync(prebakePath, 'utf8');
+    new Function(prebakeCode)();
+    console.log(`  ✅ Prebake loaded: ${prebakePath}`);
+  } catch (e) {
+    console.warn(`  ⚠️ Prebake load failed: ${e.message}`);
+  }
+}
+
 // Browser-only methods to strip from patterns before headless evaluation
 const vizMethods = ['pianoroll', '_pianoroll', 'spiral', '_spiral', 'scope', '_scope', 'draw', '_draw'];
 
@@ -153,11 +185,6 @@ console.log('  ✅ Strudel loaded');
 
 // ── Evaluate pattern ──
 console.log('Evaluating pattern...');
-if (!existsSync(input)) {
-  console.error(`❌ Composition file not found: ${path.basename(input)}`);
-  console.error(`   Check the path and try again.`);
-  process.exit(1);
-}
 let patternCode = readFileSync(input, 'utf8')
   .replace(/^\/\/ @\w+.*/gm, '')
   .trim();
@@ -358,7 +385,7 @@ for (const hap of haps) {
   // producing multiple haps with the same whole arc but different part arcs.
   // hasOnset() is true only for the first fragment (part.begin === whole.begin).
   // Without this filter, samples get stacked N times at the same start time (#22 v7).
-  if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
+  if (typeof hap.hasOnset === 'function' && !hap.hasOnset() && !(hap.value?.clip || hap.value?.loopAt || hap.value?.unit === 'c')) continue;
 
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
   const endCycle = hap.whole?.end ?? hap.part?.end ?? startCycle + 0.25;

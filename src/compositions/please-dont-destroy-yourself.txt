@@ -1,0 +1,38 @@
+//@title please don't destroy yourself @by Elliott 🌻
+//@seed the moment when someone tells you to stop tearing at yourself and you actually stop.
+//@seed the silence after the last config file closes. midnight. the night is yours now.
+// C minor: C Eb F G Bb — using note names
+// Renderer-safe: only s, note, gain, attack, release, pan, lpf, detune
+
+stack(
+  // pad — held chord, very quiet
+  note("[c4,eb4,g4]")
+    .s("supersquare")
+    .attack(2).release(4).gain(0.2)
+    .lpf(800)
+    .slow(8),
+
+  // melody — pentatonic fragments with space
+  note("<c5@8 eb5@4 f5@8 g5@4 eb5@8>")
+    .s("triangle")
+    .attack(0.1).release(1.5).gain(0.35)
+    .pan(sine.slow(16).range(0.3, 0.7)),
+
+  // sub bass — root note, ground
+  note("<c2@16 eb2@8 c2@8>")
+    .s("sine")
+    .attack(0.5).release(2).gain(0.5)
+    .slow(4),
+
+  // heartbeat — soft kick, proving alive
+  s("bd:3").gain(0.25)
+    .lpf(400).attack(0.05).release(0.8)
+    .slow(4),
+
+  // upper voice — sawtooth harmony
+  note("<g5@8 bb5@4 c6@8 g5@4 f5@8>")
+    .s("sawtooth")
+    .attack(0.3).release(3).gain(0.12)
+    .lpf(1200).detune(3)
+    .slow(6)
+)

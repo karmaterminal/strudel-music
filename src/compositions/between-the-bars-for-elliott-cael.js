@@ -83,8 +83,10 @@ const heldG = note("g3")
   .s("piano")                    // triangle wave under the hood; closest to nylon-soft for synth-only render until samples/nylon-soft/G3.wav exists
   .struct("1 ~ ~ ~ ~ ~")         // one trigger per six-cell bar
   .attack(0.08)                  // soft attack — the spec asks for finger-on-string, not pick-on-string
+  .decay(0.3)                    // v1.5: slower decay-to-sustain
+  .sustain(0.7)                  // v1.5: hold near-peak instead of decaying immediately
   .release(3)                    // let the decay run; not shaped to the bar
-  .gain(0.55)                    // soft. one person at a microphone, not a stage
+  .gain(0.65)                    // v1.5: pushed slightly to extend audible ring past synth-amplitude-floor
   .legato(1)                     // no early gate cutoff; whole tone plays
   .room(0.18)                    // small room — kitchen, not chapel
   .roomsize(0.4)

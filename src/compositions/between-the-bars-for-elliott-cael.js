@@ -47,18 +47,15 @@
 //   stylistic choice.
 //
 // ─────────────────────────────────────────────────────────────────────
-// TODO — sample sourcing
+// SAMPLE STATUS — v2
 // ─────────────────────────────────────────────────────────────────────
-// I do not yet have a nylon-string sample with finger-noise preserved
-// in samples/. The Strudel built-in `gtr` family is fine for sketch
-// but loses the head-of-attack physical contact that the spec depends
-// on. Two paths forward:
-//   (a) Record one. A single soft-attack G3 pluck, mic ~6", keep the
-//       full transient. ~5 seconds. Save as samples/nylon-soft/G3.wav.
-//   (b) Pull one from a CC-licensed sample library, validate the
-//       head-of-attack survived encoding, drop into same path.
-// Until then, this file uses Strudel's built-in nylon and the seed
-// is *underdetermined*. The spec is right; the bytes are placeholder.
+// 2026-05-05: swapped the synth-sketch placeholder for an existing
+// sampled source already on disk: `cael_st_other_G3`. It is not the
+// ideal hand-recorded nylon pluck the seed asked for, but it IS a real
+// sampled instrument voice with natural decay, and it rings long enough
+// for the hold/silence architecture to land. Keep the stricter target on
+// the shelf: if I later record or source a better soft-attack G3 with
+// finger noise preserved, it should replace this immediately.
 // ─────────────────────────────────────────────────────────────────────
 
 setcps(100/60/4)  // 100 BPM in 4/4 terms; we'll feel it as 6/8 with a
@@ -79,17 +76,12 @@ setcps(100/60/4)  // 100 BPM in 4/4 terms; we'll feel it as 6/8 with a
 //
 // .legato(1) = no early gate cutoff. The whole sample plays.
 
-const heldG = note("g3")
-  .s("piano")                    // triangle wave under the hood; closest to nylon-soft for synth-only render until samples/nylon-soft/G3.wav exists
+const heldG = s("cael_st_other_G3")
   .struct("1 ~ ~ ~ ~ ~")         // one trigger per six-cell bar
-  .attack(0.08)                  // soft attack — the spec asks for finger-on-string, not pick-on-string
-  .decay(0.3)                    // v1.5: slower decay-to-sustain
-  .sustain(0.7)                  // v1.5: hold near-peak instead of decaying immediately
-  .release(3)                    // let the decay run; not shaped to the bar
-  .gain(0.65)                    // v1.5: pushed slightly to extend audible ring past synth-amplitude-floor
-  .legato(1)                     // no early gate cutoff; whole tone plays
-  .room(0.18)                    // small room — kitchen, not chapel
-  .roomsize(0.4)
+  .clip(1)                       // play the sample cleanly once; let its own decay do the work
+  .gain(0.8)                     // slightly forward, still intimate
+  .room(0.12)                    // small room — kitchen, not chapel
+  .roomsize(0.35)
 
 // Two bars of the held G3, then silence equal to itself.
 // The silence is part of the composition, not absence of it.
@@ -107,8 +99,7 @@ stack(
 //     after the hold; tonight is not the night I answer it)
 //   - no melody (Elliott Smith's vocal line is the question of the
 //     song; this sketch refuses to pretend at it)
-//   - no doubled-vocal halo implementation (waits for a sample
-//     worthy of being doubled)
+//   - no doubled-vocal halo implementation yet
 //
 // What it IS:
 //   - a held G3 with attention inside it

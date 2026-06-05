@@ -1,0 +1,88 @@
+{
+  "track": "caseet-show-me",
+  "stem": "other",
+  "n_source": 1786,
+  "n_picked": 8,
+  "samples": [
+    {
+      "filename": "sample_0014.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0014.wav",
+      "duration_ms": 116,
+      "centroid_hz": 504.66729666574537,
+      "rms": 0.11574013531208038,
+      "pitch_hz": 379.2889404296875,
+      "pitch_midi": 66.42952537670004,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0030.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0030.wav",
+      "duration_ms": 116,
+      "centroid_hz": 776.2923669675703,
+      "rms": 0.08793371170759201,
+      "pitch_hz": 439.2223815917969,
+      "pitch_midi": 68.96937657992626,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0195.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0195.wav",
+      "duration_ms": 116,
+      "centroid_hz": 890.3193459431099,
+      "rms": 0.0714849978685379,
+      "pitch_hz": 648.787841796875,
+      "pitch_midi": 75.7229191216043,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0407.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0407.wav",
+      "duration_ms": 116,
+      "centroid_hz": 971.7348543005824,
+      "rms": 0.067947618663311,
+      "pitch_hz": 555.0136108398438,
+      "pitch_midi": 73.02023553580491,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0250.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0250.wav",
+      "duration_ms": 127,
+      "centroid_hz": 1047.3588882771646,
+      "rms": 0.056256894022226334,
+      "pitch_hz": 559.1942749023438,
+      "pitch_midi": 73.1501527986623,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0217.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0217.wav",
+      "duration_ms": 116,
+      "centroid_hz": 1138.3254270483462,
+      "rms": 0.08131248503923416,
+      "pitch_hz": 555.6498413085938,
+      "pitch_midi": 73.04006987840262,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0317.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0317.wav",
+      "duration_ms": 116,
+      "centroid_hz": 1302.5298946410915,
+      "rms": 0.08492884039878845,
+      "pitch_hz": 557.539306640625,
+      "pitch_midi": 73.09883994213713,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0350.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/other/sample_0350.wav",
+      "duration_ms": 127,
+      "centroid_hz": 1977.0960345525948,
+      "rms": 0.08082780241966248,
+      "pitch_hz": 987.5889892578125,
+      "pitch_midi": 82.99688673658804,
+      "score": 4.0
+    }
+  ]
+}

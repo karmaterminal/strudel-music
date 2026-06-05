@@ -1,0 +1,88 @@
+{
+  "track": "fiona-every-single-night",
+  "stem": "other",
+  "n_source": 164,
+  "n_picked": 8,
+  "samples": [
+    {
+      "filename": "sample_0004.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0004.wav",
+      "duration_ms": 500,
+      "centroid_hz": 669.8404635890107,
+      "rms": 0.044391319155693054,
+      "pitch_hz": 524.1806640625,
+      "pitch_midi": 72.0307273544417,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0009.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0009.wav",
+      "duration_ms": 500,
+      "centroid_hz": 764.9937681368351,
+      "rms": 0.04051298275589943,
+      "pitch_hz": 524.265380859375,
+      "pitch_midi": 72.03352510649212,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0021.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0021.wav",
+      "duration_ms": 500,
+      "centroid_hz": 923.2441972224659,
+      "rms": 0.047636643052101135,
+      "pitch_hz": 523.8555908203125,
+      "pitch_midi": 72.0199876900314,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0013.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0013.wav",
+      "duration_ms": 500,
+      "centroid_hz": 1048.678086264939,
+      "rms": 0.03828734531998634,
+      "pitch_hz": 624.0150756835938,
+      "pitch_midi": 75.04892832080549,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0060.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0060.wav",
+      "duration_ms": 500,
+      "centroid_hz": 1298.0697163982486,
+      "rms": 0.05218353122472763,
+      "pitch_hz": 1051.638916015625,
+      "pitch_midi": 84.08476807542095,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0141.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0141.wav",
+      "duration_ms": 243,
+      "centroid_hz": 2084.273518741257,
+      "rms": 0.042127106338739395,
+      "pitch_hz": 1181.5281982421875,
+      "pitch_midi": 86.10094358503015,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0142.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0142.wav",
+      "duration_ms": 267,
+      "centroid_hz": 2524.432112746107,
+      "rms": 0.03241652995347977,
+      "pitch_hz": 1220.2618408203125,
+      "pitch_midi": 86.65938386567464,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0106.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/other/sample_0106.wav",
+      "duration_ms": 243,
+      "centroid_hz": 4631.908824196006,
+      "rms": 0.031154729425907135,
+      "pitch_hz": 587.3929443359375,
+      "pitch_midi": 74.0018689513158,
+      "score": 3.5
+    }
+  ]
+}

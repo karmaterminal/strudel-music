@@ -1,0 +1,68 @@
+{
+  "track": "fiona-every-single-night",
+  "stem": "bass",
+  "n_source": 89,
+  "n_picked": 6,
+  "samples": [
+    {
+      "filename": "sample_0029.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0029.wav",
+      "duration_ms": 800,
+      "centroid_hz": 232.99989316622802,
+      "rms": 0.05914299190044403,
+      "pitch_hz": 171.19308471679688,
+      "pitch_midi": 52.657450824214195,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0009.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0009.wav",
+      "duration_ms": 800,
+      "centroid_hz": 362.8582902865136,
+      "rms": 0.052758146077394485,
+      "pitch_hz": 213.82577514648438,
+      "pitch_midi": 56.507186954584085,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0020.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0020.wav",
+      "duration_ms": 800,
+      "centroid_hz": 452.6209953678127,
+      "rms": 0.031888458877801895,
+      "pitch_hz": 195.60675048828125,
+      "pitch_midi": 54.96543162645297,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0021.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0021.wav",
+      "duration_ms": 800,
+      "centroid_hz": 521.0139551968906,
+      "rms": 0.03201014921069145,
+      "pitch_hz": 154.33377075195312,
+      "pitch_midi": 50.86260309553384,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0039.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0039.wav",
+      "duration_ms": 313,
+      "centroid_hz": 1053.283699549421,
+      "rms": 0.004742180462926626,
+      "pitch_hz": 236.2447052001953,
+      "pitch_midi": 58.233341661061345,
+      "score": 3.0
+    },
+    {
+      "filename": "sample_0008.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/fiona-every-single-night/bass/sample_0008.wav",
+      "duration_ms": 800,
+      "centroid_hz": 1727.288495305246,
+      "rms": 0.02214432880282402,
+      "pitch_hz": 201.54434204101562,
+      "pitch_midi": 55.48312511035468,
+      "score": 3.0
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "track": "caseet-show-me",
+  "stem": "bass",
+  "n_source": 429,
+  "n_picked": 6,
+  "samples": [
+    {
+      "filename": "sample_0007.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0007.wav",
+      "duration_ms": 800,
+      "centroid_hz": 190.06890796295792,
+      "rms": 0.3202840983867645,
+      "pitch_hz": 153.30206298828125,
+      "pitch_midi": 50.74648305296786,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0053.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0053.wav",
+      "duration_ms": 476,
+      "centroid_hz": 291.89897727260455,
+      "rms": 0.2120780646800995,
+      "pitch_hz": 218.01626586914062,
+      "pitch_midi": 56.843187031173024,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0054.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0054.wav",
+      "duration_ms": 487,
+      "centroid_hz": 350.60098380547447,
+      "rms": 0.209726482629776,
+      "pitch_hz": 168.083984375,
+      "pitch_midi": 52.34014490862694,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0027.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0027.wav",
+      "duration_ms": 487,
+      "centroid_hz": 400.9145555218149,
+      "rms": 0.21079190075397491,
+      "pitch_hz": 167.64389038085938,
+      "pitch_midi": 52.29475659260391,
+      "score": 3.5
+    },
+    {
+      "filename": "sample_0233.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0233.wav",
+      "duration_ms": 243,
+      "centroid_hz": 465.35782539811737,
+      "rms": 0.0998484343290329,
+      "pitch_hz": 213.2057342529297,
+      "pitch_midi": 56.45691260070322,
+      "score": 4.0
+    },
+    {
+      "filename": "sample_0076.wav",
+      "path": "/home/figs/caels_stuff/strudel-music/explorations/2026-06-04-every-single-night-show-me/samples/caseet-show-me/bass/sample_0076.wav",
+      "duration_ms": 243,
+      "centroid_hz": 846.1666592089082,
+      "rms": 0.05907673016190529,
+      "pitch_hz": 186.41436767578125,
+      "pitch_midi": 54.132114415321986,
+      "score": 4.0
+    }
+  ]
+}

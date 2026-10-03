@@ -8,7 +8,8 @@ tmp/
 .env
 *.local
 node_modules/
-samples/
+# samples/* (not samples/) so the re-include below can work.
+samples/*
 !samples/strudel.json
 
 # Python

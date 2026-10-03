@@ -32,6 +32,9 @@ jobs:
       - name: Smoke test (12 checks)
         run: npm test
 
+      - name: Unit tests (renderer pitch, dispatch)
+        run: npm run test:unit
+
       - name: Render test (fog-and-starlight)
         run: npm run test:render
 

@@ -32,6 +32,9 @@ jobs:
       - name: Smoke test (12 checks)
         run: npm test
 
+      - name: Unit tests (renderer pitch, dispatch, bundle rules)
+        run: npm run test:unit
+
       - name: Render test (fog-and-starlight)
         run: npm run test:render
 
@@ -70,10 +73,10 @@ jobs:
           if isinstance(meta, str):
               meta = json.loads(meta)
           oc = meta.get('openclaw', {})
-          print(f'✅ {data[\"name\"]} — user-invocable: {data.get(\"user-invocable\", False)}')
+          print(f'✅ {data[\"name\"]} — user-invocable: {data.get(\"user-invocable\", True)}')
           print(f'   requires: {oc.get(\"requires\", {}).get(\"bins\", [])}')
           print(f'   install steps: {len(oc.get(\"install\", []))}')
-          print(f'   security notes: {\"yes\" if oc.get(\"securityNotes\") else \"no\"}')
+          print(f'   env vars: {[e[\"name\"] for e in oc.get(\"envVars\", [])]}')
           "
 
       - name: Validate compositions syntax
@@ -111,10 +114,11 @@ jobs:
             echo "❌ Potential secrets detected!"
             exit 1
           fi
-          # Check for actual token assignments (not env reads)
+          # Check for actual token assignments (not env reads). -F: as a regex, '\$\{' made grep
+          # exit 2 ("Unmatched \{"), so this check could never fail.
           if grep -rn --include="*.js" --include="*.sh" --include="*.mjs" \
             -E "(DISCORD_TOKEN|BOT_TOKEN)\s*=\s*['\"][a-zA-Z0-9]" \
-            . 2>/dev/null | grep -v node_modules | grep -v '.git' | grep -v 'process\.env' | grep -v '\$\{'; then
+            . 2>/dev/null | grep -v node_modules | grep -v '.git' | grep -v 'process\.env' | grep -v -F '${'; then
             echo "❌ Hardcoded token values detected!"
             exit 1
           fi

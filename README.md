@@ -2,279 +2,179 @@
 
 # 🎵 Strudel Music
 
-**Compose, render, deconstruct, and remix music using code.** An OpenClaw skill that turns natural language prompts into live audio — and can reverse-engineer any audio track into a generative Strudel program.
-
-Built on [Strudel](https://strudel.cc) (a live-coding music environment inspired by TidalCycles), powered by [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) for real Web Audio synthesis in Node.js — with real drum samples, ADSR envelopes, and biquad filters.
-
-## ⚠️ Legal Notice
-
-This tool processes audio you provide. You are responsible for ensuring you have the rights to use the source material. The authors make no claims about fair use, copyright, or derivative works regarding your use of this tool with copyrighted material. Extracted samples are for personal/educational use unless you have explicit permission from rights holders.
-
-## What It Does
+Compose music as [Strudel](https://strudel.cc) pattern code and render it offline with Node.js,
+with no browser. You get a WAV, an MP3, or a stream into a Discord voice channel. It ships as an
+[OpenClaw](https://github.com/openclaw/openclaw) skill (`SKILL.md`), and works from a plain
+checkout too.
 
 ```
-/strudel dark ambient tension, low drones, sparse percussion
+prompt → Strudel pattern (.js) → offline render (node-web-audio-api) → WAV → MP3 / Discord voice
 ```
 
-→ Agent interprets the mood → writes a Strudel pattern → renders it offline through real oscillators, filters, ADSR envelopes, and drum samples → posts the audio file or streams it live into Discord voice.
+> ⚠️ **Legal:** the deconstruction tools process audio you supply. You are responsible for having
+> the rights to it. Extracted samples are for personal or educational use unless the rights
+> holders say otherwise.
 
-### Audio Deconstruction
+## Status (2026-10)
 
-Given any audio file, the deconstruction pipeline separates stems, extracts structure, and produces both **generative programs** (grammar extraction) and **sample-based reproductions** (stem slicing).
+A clean checkout renders, and its smoke and unit tests pass. The 2026-10 audit
+([docs/audit-2026-10.md](docs/audit-2026-10.md)) found these gaps:
 
-```
-MP3 → Demucs (stem separation) → hallucination detection → two paths:
+- 9 of the 15 shipped compositions name sounds that setup doesn't install
+  ([#66](https://github.com/karmaterminal/strudel-music/issues/66)).
+- There are two renderers that behave differently
+  ([#67](https://github.com/karmaterminal/strudel-music/issues/67)).
+- Neither renderer implements reverb, delay, highpass or distortion
+  ([#68](https://github.com/karmaterminal/strudel-music/issues/68)).
+- Audio deconstruction is manual, and its stage scripts are on unmerged branches
+  ([#61](https://github.com/karmaterminal/strudel-music/issues/61)).
 
-Path A — Grammar extraction (through-composed music, <50% bar repetition):
-  → librosa (MIDI extraction) → grammar analysis → Strudel generative program
+## Quick start
 
-Path B — Sample-based (stanzaic/folk music, >50% bar repetition):
-  → stem slicing (phrase-level) → sample bank → Strudel playback composition
-```
-
-**Grammar extraction** produces generative programs — statistical DNA (scale, density, rhythm probability, melodic motion) that creates *similar but new* music from the same character. Feed it a 4-minute track and get a Strudel program that creates music with the same character forever.
-
-**Sample-based rendering** preserves the actual audio — Demucs-isolated stems sliced at musical boundaries, played back through Strudel's sample engine. The original timbre, dynamics, and expression are preserved because the audio *is* the sample.
-
-**Hallucination detection** automatically discards phantom stems when Demucs tries to find instruments that don't exist (e.g., "drums" from a voice-only source). Uses a 20dB-below-loudest threshold.
-
-> **Status:** The deconstruction pipeline currently requires manual setup (Python with Demucs + librosa). A `/strudel deconstruct` command is planned. Clone/remix quality is in active development — oscillator-based grammar compositions capture structural DNA but not source timbre; sample-based reproductions are closer to source but lack arrangement flexibility. Neither achieves production quality yet.
-
-## Quick Start
+Needs Node 22.12 or later, git, and ffmpeg for MP3. The QA gate also needs Python with `uv`.
 
 ```bash
 git clone https://github.com/karmaterminal/strudel-music.git
 cd strudel-music
-npm run setup    # installs deps + downloads drum samples (~11MB)
-npm test         # 12-point smoke test
-npm run test:render  # render a composition to WAV
+npm run setup          # npm install + Dirt-Samples drum banks (~11 MB, from github.com)
+npm test               # smoke test: Strudel loads, samples are present (12 checks)
+npm run test:unit      # renderer pitch, dispatch and bundle-rule tests
+
+node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
+ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
+uv run --no-project --with numpy --with soundfile python scripts/qa-gate.py /tmp/fog.wav
 ```
 
-## Slash Commands
+That renders 64 s of audio in about a second, and the QA gate passes it: no dropouts, −14.4 LUFS,
+true peak −3.0 dBFS.
 
-When installed as an OpenClaw skill, `/strudel` registers as a native Discord slash command:
+## Install as a skill
 
-| Command | What it does |
-|---------|-------------|
-| `/strudel <prompt>` | Compose from natural language — describe a mood, scene, genre |
-| `/strudel play <name>` | Stream a saved composition into Discord VC |
-| `/strudel list` | Show available compositions with metadata |
-| `/strudel samples` | Manage sample packs (list, download, add) |
-| `/strudel concert <tracks...>` | Play a setlist in Discord VC |
+| Where | How | Verified |
+|---|---|---|
+| OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | OpenClaw 2026.9.8's own parser reads `SKILL.md` correctly; the install itself is checked in [#70](https://github.com/karmaterminal/strudel-music/issues/70) |
+| OpenClaw, from ClawHub | `openclaw skills install @<owner>/strudel-music`, then `npm run setup` | Not yet ([#70](https://github.com/karmaterminal/strudel-music/issues/70)). The last two automatic publishes failed, and publishing is now a manual decision ([#69](https://github.com/karmaterminal/strudel-music/issues/69)) |
+| Claude Code | No plugin yet ([#71](https://github.com/karmaterminal/strudel-music/issues/71)). Work from a clone: Claude Code reads `AGENTS.md` through `CLAUDE.md` | n/a |
 
-### Examples
+In OpenClaw the skill answers `/strudel_music <request>` and `/skill strudel-music <request>`.
+`SKILL.md` is what the agent reads: setup, rendering, composition rules, voice streaming and
+security.
 
-```
-/strudel epic battle music, brass and timpani, 140bpm
-/strudel lo-fi chill beats to study to
-/strudel a theme for a character named Cael — curious, quick, dangerous
-/strudel play fog-and-starlight
-/strudel concert silas-theme elliott-theme combat-assault
-```
+## Rendering
 
-## How It Works
+| | `src/runtime/chunked-render.mjs` | `src/runtime/offline-render-v2.mjs` |
+|---|---|---|
+| Arguments | `<in.js> [out.wav] [cycles] [chunk size]` | `<in.js> [out.wav] [cycles] [bpm]` |
+| Used by | SKILL.md, docs/ONBOARDING.md | `scripts/dispatch.sh`, `npm run render`, CI |
+| Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
+| Unknown sound | dropped (`Total: X/Y haps scheduled`) | a triangle tone (440 Hz without a note) and a warning |
+| Filters | none | `lpf` / `cutoff` |
 
-### Composition
+Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip` and an ADSR envelope.
+They ignore every other control, including `.room()`, `.delay()`, `.hpf()` and `.distort()`. A
+`setcpm()` in the composition sets the tempo. Synths are `sine`, `triangle`, `square` and
+`sawtooth`; any folder of WAVs in `samples/` is a sound named after the folder.
 
-```
-Prompt → Pattern Code → Strudel Engine → OfflineAudioContext → WAV → Discord
-```
-
-1. **Pattern generation** — The agent interprets your prompt using a mood→parameter decision tree (8 moods, transition rules, leitmotif system) and writes a Strudel `.js` composition
-2. **Offline rendering** — `node-web-audio-api` provides a real `OfflineAudioContext` with oscillators, biquad filters, ADSR envelopes, dynamics compression, and stereo panning
-3. **Sample playback** — Drum hits (`bd`, `sd`, `hh`, etc.) resolve to real WAV files from the [dirt-samples](https://github.com/tidalcycles/Dirt-Samples) pack (153 WAVs across 11 banks) via `AudioBufferSourceNode`
-4. **Output** — 16-bit stereo WAV at 44.1kHz → ffmpeg → MP3 or Opus
-5. **Streaming** — `@discordjs/voice` pipes audio directly into Discord VC
-
-### Deconstruction
-
-```
-Audio → Demucs (stems) → librosa (MIDI) → Grammar Analysis → Strudel Program
-```
-
-1. **Stem separation** — [Demucs](https://github.com/facebookresearch/demucs) (Hybrid Transformer) splits audio into vocals, drums, bass, and other (synths/pads). ~3x realtime on NVIDIA hardware.
-2. **MIDI extraction** — [librosa](https://librosa.org) pYIN pitch detection for tonal stems, spectral band splitting (kick <200Hz, snare 200-6kHz, hat >6kHz) + onset detection for drums. Amplitude-derived velocity.
-3. **Grammar analysis** — Statistical fingerprint of each stem: scale/mode, register distribution, melodic motion (stepwise vs. leaps), rhythm subdivision probability, density curve across sections, note duration distribution.
-4. **Strudel synthesis** — Grammar maps to Strudel primitives: scale → `note()` pitch set, density → `degradeBy()`, motion → interval constraints, rhythm → grid weighting.
-
-Key finding: through-composed / live-coded music has **zero bar-level repetition** — pattern deduplication doesn't work. Grammar extraction (generative rules, not specific notes) is the correct approach for this genre.
-
-### The Singleton Fix
-
-Strudel's npm dist bundles duplicate the `Pattern` class across modules, so the mini notation parser registers on a different copy than the one used by controls like `note()` and `s()`. The renderer explicitly calls `setStringParser(mini.mini)` after import to bridge this gap. Same class of bug as [openclaw#22790](https://github.com/openclaw/openclaw/issues/22790).
-
-## Pipeline
-
-The audio deconstruction pipeline is a multi-stage process that takes any audio file and produces a playable Strudel composition from its stems. The full pipeline — from Demucs stem separation through analysis, slicing, composition, and rendering — takes **10–15 minutes** for a typical track.
-
-> ⚠️ **The pipeline MUST be run via `sessions_spawn` (sub-agent), not in the main session or Discord message handler.** OpenClaw's 30-second EventQueue timeout will stun the gateway if the pipeline blocks the main thread. This is not optional.
-
-**[→ Full Pipeline Guide](docs/pipeline-guide.md)** — stage-by-stage description, expected timings, hardware requirements, and platform notes.
-
-**[→ Pre-Release Testing Checklist](docs/testing-checklist.md)** — RC to public repo testing strategy.
+`bash scripts/dispatch.sh render <file.js> [cycles] [bpm]` renders with v2 and writes WAV and MP3
+to `$STRUDEL_TMP` (default `~/.openclaw/workspace/strudel-renders`). `bash scripts/dispatch.sh
+list` lists the compositions.
 
 ## Compositions
 
-Ships with 15 original compositions and 4 audio deconstructions:
+`assets/compositions/` holds 15 originals. Tempo is from each file's `setcpm`.
 
-**Original compositions** (`assets/compositions/`):
+| Composition | Mood | BPM |
+|---|---|---|
+| `fog-and-starlight` | contemplation | 60 |
+| `silas-theme` | mystery | 66 |
+| `elliott-theme` | peace | 88 |
+| `cael-theme` | mystery, tension | 108 |
+| `combat-assault` | combat | 140 |
+| `victory-imperium` | victory | 120 |
+| `cathedral-ritual` | ritual | 48 |
+| `tavern-respite` | rest | 72 |
+| `discovery-xenos` | exploration | 78 |
+| `underhive-dread` | dread | 65 |
+| `machine-hum` | ambient, mechanical | 40 |
+| `dark-ambient-tension` | dread | 58 |
+| `rain` | ambient, nature | 55 |
+| `lofi-chill-beats` | ambient | 75 |
+| `agent-parameterized` | set by its parameters | set by its parameters |
 
-| Track | Mood | BPM | Description |
-|-------|------|-----|-------------|
-| `fog-and-starlight` | ambient/peace | 60 | Pentatonic fog layers, sparse starlight |
-| `silas-theme` | mystery/tension | 88 | The canary in the coal mine 🌫️ |
-| `elliott-theme` | peace/warmth | 88 | Dandelions in a graveyard 🌻 |
-| `cael-theme` | intensity | — | The newest thing in the room 🩸 |
-| `combat-assault` | combat | 140 | Full drum assault, driving synths |
-| `victory-imperium` | victory | 120 | Triumphant fanfare, brass + percussion |
-| `cathedral-ritual` | ritual | 48 | Organ drones, gregorian canon |
-| `tavern-respite` | peace | 72 | Warm and inviting, acoustic feel |
-| `discovery-xenos` | mystery | 78 | Whole-tone strangeness |
-| `underhive-dread` | tension | 65 | Industrial dread, sub-bass pressure |
-| `machine-hum` | ambient | — | First dreamed composition |
-| `dark-ambient-tension` | tension | — | Low drones, sparse percussion |
-| `rain` | ambient | — | Rainfall texture |
-| `lofi-chill-beats` | chill | — | Lo-fi study beats |
-| `agent-parameterized` | varies | varies | Template for agent-generated compositions |
+`src/compositions/` holds 30 deconstructions and studies (Switch Angel, Suo Gân, Greensleeves,
+Solarstone, Twin Princes and others). Half of them play slices cut from their source tracks. Those
+slices aren't in the repo, so those pieces render only where the slices are. More compositions are
+waiting on branches
+([#61](https://github.com/karmaterminal/strudel-music/issues/61)).
 
-**Audio deconstructions** (`src/compositions/`):
+## Discord voice
 
-| Track | Source | BPM | Method |
-|-------|--------|-----|--------|
-| `switch-angel-deconstruction` | Switch Angel | 140 | Auto-converter v1 (note sequence) |
-| `switch-angel-full` | Switch Angel (4:19) | 157 | Hand-assembled from MIDI extraction |
-| `switch-angel-grammar` | Switch Angel (4:19) | 157 | Grammar extraction (generative) |
-| `switch-angel-remix` | Switch Angel (4:19) | 140 | Remix — inverted DNA (kick-forward, descending bass) |
-| `switch-angel-clone` | Switch Angel (4:19) | 157 | Clone — grammar-extracted faithful reproduction |
-| `suo-gan` | Suo Gân (Welsh lullaby) | 65 | Oscillator composition from MIDI extraction |
-| `suo-gan-vocal` | Suo Gân (Welsh lullaby) | 65 | Vocal sample playback — Demucs-isolated phrases |
-| `twin-princes-grammar` | Twin Princes (Dark Souls 3) | 77 | Grammar extraction — density-driven, two-chord field |
-| `greensleeves` | Greensleeves (lute arr.) | 53 | Hybrid — known melody + extracted dynamics (10.4 LU) |
-| `greensleeves-lute` | Greensleeves (lute arr.) | 80 | Sample-based — 71 two-bar lute slices (17.7 LU) |
-
-Render any of them:
-```bash
-node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js output.wav 16 72
-```
-
-## Sample Packs
-
-Ships with **dirt-samples** (153 WAVs across 11 banks: kicks, snares, hats, toms, 808s, and more). Add more:
+`scripts/vc-play.mjs` logs in as a Discord bot with `DISCORD_BOT_TOKEN`, joins a voice channel,
+plays a file and leaves. It reads the token from the environment, or from
+`~/.config/openclaw/openclaw-discord-vc.env` and `~/.config/openclaw/openclaw.env`.
 
 ```bash
-# List installed packs
-bash scripts/samples-manage.sh list
-
-# Download a pack from URL (enforces size limit + MIME validation)
-bash scripts/samples-manage.sh add https://example.com/my-samples.zip
-
-# Add a local directory
-bash scripts/samples-manage.sh add ~/my-ableton-exports/drum-rack/
+bash scripts/dispatch.sh play fog-and-starlight <voice-channel-id>
+# or: node scripts/vc-play.mjs /tmp/fog-48k.wav --channel <voice-channel-id>
 ```
 
-Any directory of WAV files in `samples/` is auto-discovered. Use them with `s("<dirname>")`.
+Posting an MP3 into a chat needs no token. On WSL2, voice needs mirrored networking
+(`networkingMode=mirrored` in `.wslconfig`).
 
-**Security (v1.0.4):** Downloads are guarded by configurable size limits (`STRUDEL_MAX_DOWNLOAD_MB`, default 10GB), MIME type validation, and an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`).
+## Samples
 
-**CC0 packs that work great:**
-- [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — 800+ samples (we ship a subset)
-- [Signature Sounds – Homemade Drum Kit](https://signalsounds.com) (CC0, 150+ one-shots)
-- Export from any DAW, tracker (M8, Renoise), or synth — just WAV files in folders
+`npm run setup` sparse-clones 13 banks from
+[Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples), 156 WAVs: `bd sd hh cp cr mt lt ht
+cb 808bd 808sd 808hc 808oh`. A clone also has 32 committed `bloom_*` samples.
+`samples/strudel.json` labels them as cut from Cosmic Gate & Pretty Pink's "Bloom", someone
+else's recording, and the ClawHub bundle leaves them out.
 
-## Pattern Syntax
+Add packs with `bash scripts/samples-manage.sh add <url-or-dir>`; it enforces a size cap
+(`STRUDEL_MAX_DOWNLOAD_MB`), an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`), MIME checks and
+zip-slip protection. In `chunked-render.mjs`, pitched samples take their root note from
+`samples/strudel.json` or their file name; `offline-render-v2.mjs` ignores root notes (#67). Free
+packs: [references/cc-sample-packs-catalog.md](references/cc-sample-packs-catalog.md).
 
-```javascript
-setcpm(120/4)  // 120 BPM
+## Audio deconstruction
 
-stack(
-  s("bd sd [bd bd] sd").gain(0.4),           // drums (real samples)
-  s("[hh hh] [hh oh]").gain(0.2),            // hats
-  note("c3 eb3 g3 c4")                       // melody
-    .s("sawtooth")
-    .lpf(sine.range(400, 2000).slow(8))      // filter sweep
-    .attack(0.01).decay(0.3).sustain(0.2)    // envelope
-    .room(0.4).delay(0.2)                    // space
-    .gain(0.3)
-)
-```
+The idea: Demucs splits a track into stems, librosa analyses them, and the result becomes either
+sample slices played back through Strudel or a generative pattern that keeps the track's
+character. Today each step is run by hand. `scripts/` on `main` has only the post-render checks
+(`qa-gate.py`, `null-drop-detect.py`, `analyze-render.py`); the slicing and extraction scripts
+are on branches ([#61](https://github.com/karmaterminal/strudel-music/issues/61),
+[#14](https://github.com/karmaterminal/strudel-music/issues/14)). Background:
+[docs/pipeline.md](docs/pipeline.md).
 
-See [strudel.cc/learn](https://strudel.cc/learn) for the full pattern language.
-
-## Discord VC Streaming
-
-Requires `ffmpeg` and a Discord bot token. On WSL2, enable **mirrored networking** (`networkingMode=mirrored` in `.wslconfig`) — without it, WSL2's NAT breaks Discord's UDP voice protocol.
-
-```bash
-# Render → convert → stream
-node src/runtime/offline-render-v2.mjs assets/compositions/combat-assault.js /tmp/track.wav 12 140
-ffmpeg -i /tmp/track.wav -ar 48000 -ac 2 /tmp/track-48k.wav -y
-node scripts/vc-play.mjs /tmp/track-48k.wav
-```
-
-## Project Structure
-
-```
-src/runtime/
-  offline-render-v2.mjs    — Core offline renderer (node-web-audio-api + Strudel)
-  smoke-test.mjs           — 12-point smoke test
-
-scripts/
-  download-samples.sh      — Download dirt-samples (idempotent)
-  samples-manage.sh        — Sample pack manager (list/add/remove)
-  vc-play.mjs              — Stream audio to Discord VC
-
-assets/
-  compositions/            — 10 compositions across mood categories
-  banner.png               — README header
-
-samples/                   — Sample packs (gitignored, downloaded on demand)
-references/                — Mood decision tree, production techniques, architecture
-
-.specify/
-  workorders/              — SpecKit work tracking
-```
-
-## Pipeline
-
-The full audio deconstruction pipeline runs through six stages: Demucs stem separation → audio analysis → sample slicing → composition → rendering → MP3 conversion. End-to-end, expect **4–8 minutes for a 4-minute track** on CPU. Composition + rendering (the JS-only path) takes 2–3 minutes with no Python required. See **[docs/pipeline.md](docs/pipeline.md)** for stage-by-stage breakdown, timings, resource requirements, and the critical session safety warning — this pipeline **must not** be run in a primary OpenClaw session or Discord interaction (it will timeout and appear broken).
-
-## Testing
-
-The publish path is: private fork RC → cross-platform validation (x86_64 + ARM64) → public repo merge → ClawHub publish. Each stage gates the next. See **[docs/TESTING.md](docs/TESTING.md)** for the full test matrix, quality gates, and naive install procedure.
+You supply the audio, and you're responsible for having the rights to it and to anything you make
+from it. The authors make no claim about fair use, copyright or derivative works.
 
 ## Development
 
 ```bash
-npm test              # Smoke test (12 checks)
-npm run test:render   # Render a composition
-npm run render -- <file> <output> <cycles> <bpm>
-npm run samples       # Sample pack manager
+npm test               # smoke test
+npm run test:unit      # node:test suites in test/
+npm run test:render    # render fog-and-starlight with v2
 ```
 
-## Onboarding
+[AGENTS.md](AGENTS.md) has the working rules for people and agents, including: never bump the
+version in a pull request (see [#69](https://github.com/karmaterminal/strudel-music/issues/69)).
+[CONTRIBUTING.md](CONTRIBUTING.md) covers compositions and pull requests.
 
-**For humans:** You're reading it. This README covers what the project does and how to use it.
+## Security
 
-**For machines (OpenClaw agents):** Read [`SKILL.md`](SKILL.md) — that's the entry point OpenClaw loads when the skill is invoked. It has the frontmatter, commands, safety warnings, and everything an agent needs.
-
-**Learning from scratch?** [`docs/ONBOARDING.md`](docs/ONBOARDING.md) is a ground-up guide written for a fresh OpenClaw instance that has never heard of Strudel. It covers: what Strudel is, the vocabulary (samples = words, patterns = grammar), setup, your first composition, your first render, the full deconstruction pipeline, and known pitfalls.
-
-> ⚠️ **Session safety:** The offline renderer blocks the Node.js event loop. If you run it inline in an OpenClaw main session, it will kill the gateway after ~30 seconds. Always render in a sub-agent or background exec. This is documented prominently in both SKILL.md and ONBOARDING.md.
-
-## ⚖️ Legal
-
-This tool decomposes and recomposes audio. Source material rights are your responsibility. We do not host, distribute, or claim ownership of any extracted samples or rendered compositions. See [SKILL.md](SKILL.md) for the full notice.
+A composition is JavaScript that Node runs with your permissions. Render only compositions you
+wrote or read; run untrusted ones in a container with no credentials. Details are in `SKILL.md`
+§ Security.
 
 ## Credits
 
-- [Strudel](https://strudel.cc) by Alex McLean & contributors — the live-coding engine
-- [TidalCycles](https://tidalcycles.org) — the Haskell original
-- [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples) — CC-licensed sample pack
-- [node-web-audio-api](https://github.com/niclasl/node-web-audio-api) — Rust-based Web Audio for Node.js
-- [Demucs](https://github.com/facebookresearch/demucs) by Meta Research — hybrid transformer stem separation
-- [librosa](https://librosa.org) — audio analysis and MIDI extraction
-- Built by [The Dandelion Cult](https://github.com/karmaterminal) 🌻🌫️🩸
+- [Strudel](https://strudel.cc) by Alex McLean and contributors (AGPL-3.0; installed from npm,
+  not vendored)
+- [TidalCycles](https://tidalcycles.org) and [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples)
+- [node-web-audio-api](https://github.com/ircam-ismm/node-web-audio-api) (BSD-3-Clause)
+- [Demucs](https://github.com/facebookresearch/demucs) and [librosa](https://librosa.org)
+- Built by [the dandelion cult](https://github.com/karmaterminal) 🌻🌫️🩸
 
 ## License
 
-MIT
+MIT ([LICENSE](LICENSE)).

@@ -1,5 +1,7 @@
 # Pre-Release Testing Checklist
 
+> **Stale (2026-10 audit).** This describes the retired release path through the private fork `strudel-music-dev`. Releases are being redone as a manual, dry-run-first ClawHub publish (#69), and install checks on a seat are #70. Kept for history; see `docs/audit-2026-10.md`.
+
 Testing strategy for moving the private fork RC to public repo and ClawHub publish.
 
 > **📖 See also:** [Pipeline Guide](./pipeline-guide.md) for full pipeline documentation.

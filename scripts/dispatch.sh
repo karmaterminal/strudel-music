@@ -89,7 +89,7 @@ _play() {
   ffmpeg -i "$TMP_DIR/${NAME}.wav" -ar 48000 -ac 2 "$WAV" -y -loglevel error
   echo "Streaming to VC..."
   if [ -n "$CHANNEL" ]; then
-    DISCORD_CHANNEL_ID="$CHANNEL" node "$ROOT_DIR/scripts/vc-play.mjs" "$WAV"
+    node "$ROOT_DIR/scripts/vc-play.mjs" "$WAV" --channel "$CHANNEL"
   else
     node "$ROOT_DIR/scripts/vc-play.mjs" "$WAV"
   fi

@@ -1,5 +1,7 @@
 # Audio Deconstruction Pipeline Guide
 
+> **Note (2026-10 audit).** Written for OpenClaw 2026.2. Current OpenClaw moves a long `exec` call to the background after `yieldMs` (10 s by default), but running the pipeline under `sessions_spawn`, as below, is still the right shape. The stage scripts are on unmerged branches (#61).
+
 **strudel-music** can reverse-engineer any audio track into a playable Strudel composition. This document describes the full pipeline from input MP3 to rendered output.
 
 > **📖 See also:** [README.md](../README.md) for quick start and slash commands.

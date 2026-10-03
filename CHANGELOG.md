@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- **Numeric notes render at the right pitch.** Both renderers treated a number in `note()`, such as `note(57)` or the result of `.add(note(12))`, as Hz instead of a MIDI note number. `note(57)` played at 57 Hz, not A3 (220 Hz). The echo voices in `elliott-theme` and `silas-theme` were affected. `note(0)` played 440 Hz in both; it now plays MIDI note 0. `test/render-pitch.test.mjs` covers both renderers.
+- **`dispatch.sh play <name> <channel-id>` streams to that channel.** It set `DISCORD_CHANNEL_ID`, which `vc-play.mjs` never reads, so the channel was ignored. It now passes `--channel`. Covered by `test/dispatch-play.test.mjs`.
+- **`samples/strudel.json` reaches the ClawHub bundle.** `.clawhubignore` and `.gitignore` ignored `samples/`, which made the `!samples/strudel.json` re-include impossible. Both now use `samples/*`. Covered by `test/bundle-ignore.test.mjs`. None of its entries resolves in a ClawHub install yet: the `bloom_*` WAVs stay out of the bundle, and the other 28 samples it names were never committed.
+- `package-lock.json` carries the package version (it said 1.0.4), so `npm install` no longer rewrites it.
+- CI's check for hardcoded token assignments can fail again. Its last `grep` treated `\$\{` as a broken regex and exited 2, so the check always passed.
+
+### Changed
+- **SKILL.md rewritten against OpenClaw 2026.9.8 and ClawHub CLI 0.23.3.**
+  - The frontmatter is `name`, `description` and one-line JSON `metadata`.
+  - Installers are `brew` (ffmpeg) and `uv` (demucs). OpenClaw silently dropped the old `script` and `apt` kinds.
+  - Every environment variable the scripts read is declared in `envVars`.
+  - Corrected: voice streaming needs `DISCORD_BOT_TOKEN`.
+  - Corrected: the command is `/strudel_music`, not `/strudel`.
+  - Paths use `{baseDir}`, and the exec parameters are OpenClaw's current ones.
+  - New: which sounds and controls each renderer actually implements.
+  - Corrected: `offline-render-v2.mjs`'s environment scrub covers only the file's top level, not `import()` or callbacks that run during the render.
+- README, docs/ONBOARDING.md and CONTRIBUTING.md match the code. The onboarding example used a sound that doesn't ship and effects neither renderer implements; it now renders cleanly and passes the QA gate.
+- Added AGENTS.md and CLAUDE.md for coding agents.
+- Added `docs/audit-2026-10.md`, the resurrection audit (#65).
+- CI runs `npm run test:unit`.
+- Stale release and integration docs are marked as such.
+
 ## 1.2.2
 
 ### Security

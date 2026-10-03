@@ -1,3 +1,5 @@
+# Files left out of the ClawHub skill bundle. ClawHub also honours .gitignore
+# and skips dot paths. Check the result with a publish --dry-run.
 output/
 node_modules/
 .git/
@@ -5,7 +7,13 @@ node_modules/
 *.mp3
 *.opus
 *.pcm
-samples/
+# samples/* (not samples/) so the re-include below can work.
+samples/*
 !samples/strudel.json
 .venv/
 __pycache__/
+# Contributor-only files: tests, agent guidance, the audit record.
+test/
+AGENTS.md
+CLAUDE.md
+docs/audit-2026-10.md

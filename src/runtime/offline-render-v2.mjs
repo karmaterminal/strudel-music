@@ -417,7 +417,7 @@ for (const hap of haps) {
   // Resolve note → frequency (for synth sounds)
   let freq = null;
   if (v.freq) freq = v.freq;
-  else if (v.note) freq = noteToFreq(v.note);
+  else if (v.note !== undefined) freq = noteToFreq(v.note); // note 0 is MIDI note 0
   // TODO: resolve scale degree to freq using tonal's Scale.get() + degree mapping
   // Currently falls through to 440Hz for unresolved scale degrees
   else if (v.n !== undefined && isSynthSound) freq = 440;
@@ -593,7 +593,9 @@ function noteToSemitones(note) {
 }
 
 function noteToFreq(note) {
-  if (typeof note === 'number') return note;
+  // A number is a MIDI note number, as in note(57) or after .add(note(5)),
+  // not a frequency (use .freq() for Hz).
+  if (typeof note === 'number') return 440 * Math.pow(2, (note - 69) / 12);
   const m = String(note).match(/^([a-gA-G])(#|b|s)?(\d+)?$/);
   if (!m) return 440;
   const map = { c:0, d:2, e:4, f:5, g:7, a:9, b:11 };

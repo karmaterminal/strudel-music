@@ -1,5 +1,7 @@
 # Testing Strategy
 
+> **Stale (2026-10 audit).** This describes the retired release path through the private fork `strudel-music-dev`. Releases are being redone as a manual, dry-run-first ClawHub publish (#69), and install checks on a seat are #70. Kept for history; see `docs/audit-2026-10.md`.
+
 Release path: **private fork (strudel-music-dev)** → **public repo** → **ClawHub publish**.
 
 Each stage gates the next. Don't skip ahead.

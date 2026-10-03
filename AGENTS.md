@@ -37,7 +37,7 @@ resurrection sequence (#65).
 npm ci                              # npm run setup also works; it runs npm install
 bash scripts/download-samples.sh    # Dirt-Samples banks into samples/
 npm test                            # smoke test
-npm run test:unit                   # renderer pitch and dispatch tests (a few seconds)
+npm run test:unit                   # renderer pitch, dispatch, bundle rules (a few seconds)
 npm run test:render                 # one v2 render
 git status --porcelain              # tests must leave the tree clean
 ```
@@ -53,13 +53,15 @@ frontmatter check and a secret scan. The render-all step doesn't fail on missing
   `.claude-plugin/plugin.json`, `openclaw.plugin.json`, `.codex-plugin`, `.cursor-plugin`, or a
   `package.json` with an `openclaw` key. A Claude Code plugin goes under `plugins/` (#71).
 - **SKILL.md frontmatter** is `name`, `description` and `metadata`, with `metadata` as one line of
-  JSON. Installer kinds are `brew`, `node`, `go` or `uv`; OpenClaw drops any other kind silently,
-  and ClawHub's schema rejects it. Declare every environment variable the scripts read in
-  `metadata.openclaw.envVars`. When SKILL.md states a command, flag or default, check it against
-  the code.
+  JSON. Installer kinds are `brew`, `node`, `go` or `uv`: ClawHub's schema rejects any other kind,
+  and OpenClaw silently drops anything but those and `download`. Declare every environment
+  variable the scripts read in `metadata.openclaw.envVars`. When SKILL.md states a command, flag
+  or default, check it against the code.
 - **Keep `.clawhubignore` in step.** Contributor-only files (tests, this file, the audit) stay out
   of the bundle. `samples/*`, not `samples/`, so `!samples/strudel.json` can re-include the
-  manifest; the same goes for `.gitignore`.
+  manifest; the same goes for `.gitignore`. WAVs stay out too: `samples/strudel.json` labels the
+  committed `bloom_*` set as cut from someone else's recording, and ClawHub publishes every file
+  as MIT-0. `test/bundle-ignore.test.mjs` checks these rules.
 - **Renderer changes** go into both renderers until #67 picks one, or the pull request says why
   not. A behaviour fix comes with a test in `test/` that fails without it.
 - **Compositions are code.** Node runs them with full access, and the renderers' environment

@@ -66,9 +66,10 @@ Strudel's website plays far more than these headless renderers do. What they don
 drop without failing:
 
 - **Unknown sound names.** `chunked-render.mjs` drops the events; the only sign is
-  `Total: X/Y haps scheduled` with X below Y. `offline-render-v2.mjs` plays them as a 440 Hz sine
-  and warns once per name. `oh`, `rim`, `white`, `metal`, `bell` and other Strudel names aren't
-  installed (#66). Check with `bash scripts/samples-manage.sh list`.
+  `Total: X/Y haps scheduled` with X below Y. `offline-render-v2.mjs` plays them as a triangle
+  tone, at 440 Hz unless the event has a note, and warns once per name. `oh`, `rim`, `white`,
+  `metal`, `bell` and other Strudel names aren't installed (#66). Check with
+  `bash scripts/samples-manage.sh list`.
 - **Effects.** `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect are ignored by
   both renderers. `.lpf()` works only in `offline-render-v2.mjs` (#68).
 - **Octave-less note names.** `note("c e g")` renders an octave above Strudel (#67). Write `c3`.
@@ -76,5 +77,5 @@ drop without failing:
 **Fix:** use the sounds and controls listed in `SKILL.md` § Write a composition, and read the
 renderer's last lines before posting.
 
-**Discovered:** 2026-10 audit. 10 of the 15 shipped compositions name missing sounds, and all 15
+**Discovered:** 2026-10 audit. 9 of the 15 shipped compositions name missing sounds, and all 15
 use `.room()`.

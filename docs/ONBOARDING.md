@@ -189,11 +189,11 @@ The renderers evaluate the file and keep the **last top-level expression that st
 
 - **Synths:** `.s("sine")`, `.s("triangle")`, `.s("square")`, `.s("sawtooth")`.
 - **Samples:** a folder of WAVs in `samples/` is a sound named after the folder. After setup:
-  `bd sd hh cp cr mt lt ht cb 808bd 808sd 808hc 808oh`, plus the committed `bloom_*` set.
-  `s("bd:3")` picks the fourth file. `oh`, `rim`, `white` and other Strudel names aren't
-  installed (#66).
-- **Pitched samples:** `note("c3").s("bloom_lead_C3")` shifts a sample from its root note, taken
-  from `samples/strudel.json` or the file name.
+  `bd sd hh cp cr mt lt ht cb 808bd 808sd 808hc 808oh`. A clone or `git:` install also has the
+  committed `bloom_*` set; a ClawHub install leaves it out. `s("bd:3")` picks the fourth file.
+  `oh`, `rim`, `white` and other Strudel names aren't installed (#66).
+- **Pitched samples:** `note("c3").s("bloom_lead_C3")` (where the bloom set is installed) shifts
+  a sample from its root note, taken from `samples/strudel.json` or the file name.
 - **Pitch:** give note names an octave (`c3`). The renderers play `c` as C4, an octave above
   Strudel (#67). A number in `note()` is a MIDI note number.
 
@@ -202,7 +202,8 @@ The renderers evaluate the file and keep the **last top-level expression that st
 ## Audio deconstruction (manual, partial)
 
 With the Python tools installed you can take a track apart. Each step is done by hand today, and
-the slicing and extraction scripts are on unmerged branches (#61, #14).
+the slicing and extraction scripts are on unmerged branches (#61, #14). You supply the audio, and
+you're responsible for having the rights to it and to anything you make from it.
 
 1. **Separate stems.** `demucs input.mp3` writes `separated/htdemucs/input/{vocals,drums,bass,other}.wav`.
    `demucs --two-stems=vocals input.mp3` splits only vocals from the rest.

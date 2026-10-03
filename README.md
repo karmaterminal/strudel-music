@@ -20,7 +20,7 @@ prompt → Strudel pattern (.js) → offline render (node-web-audio-api) → WAV
 A clean checkout renders, and its smoke and unit tests pass. The 2026-10 audit
 ([docs/audit-2026-10.md](docs/audit-2026-10.md)) found these gaps:
 
-- 10 of the 15 shipped compositions name sounds that setup doesn't install
+- 9 of the 15 shipped compositions name sounds that setup doesn't install
   ([#66](https://github.com/karmaterminal/strudel-music/issues/66)).
 - There are two renderers that behave differently
   ([#67](https://github.com/karmaterminal/strudel-music/issues/67)).
@@ -38,7 +38,7 @@ git clone https://github.com/karmaterminal/strudel-music.git
 cd strudel-music
 npm run setup          # npm install + Dirt-Samples drum banks (~11 MB, from github.com)
 npm test               # smoke test: Strudel loads, samples are present (12 checks)
-npm run test:unit      # renderer pitch and dispatch tests
+npm run test:unit      # renderer pitch, dispatch and bundle-rule tests
 
 node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
@@ -67,7 +67,7 @@ security.
 | Arguments | `<in.js> [out.wav] [cycles] [chunk size]` | `<in.js> [out.wav] [cycles] [bpm]` |
 | Used by | SKILL.md, docs/ONBOARDING.md | `scripts/dispatch.sh`, `npm run render`, CI |
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
-| Unknown sound | dropped (`Total: X/Y haps scheduled`) | 440 Hz sine and a warning |
+| Unknown sound | dropped (`Total: X/Y haps scheduled`) | a triangle tone (440 Hz without a note) and a warning |
 | Filters | none | `lpf` / `cutoff` |
 
 Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip` and an ADSR envelope.
@@ -125,11 +125,14 @@ Posting an MP3 into a chat needs no token. On WSL2, voice needs mirrored network
 
 `npm run setup` sparse-clones 13 banks from
 [Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples), 156 WAVs: `bd sd hh cp cr mt lt ht
-cb 808bd 808sd 808hc 808oh`. The repo also carries 32 `bloom_*` samples cut from a
-deconstruction. Add packs with `bash scripts/samples-manage.sh add <url-or-dir>`; it enforces a
-size cap (`STRUDEL_MAX_DOWNLOAD_MB`), an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`), MIME
-checks and zip-slip protection. Pitched samples take their root note from `samples/strudel.json`
-or their file name. Free packs: [references/cc-sample-packs-catalog.md](references/cc-sample-packs-catalog.md).
+cb 808bd 808sd 808hc 808oh`. A clone also has 32 committed `bloom_*` samples.
+`samples/strudel.json` labels them as cut from Cosmic Gate & Pretty Pink's "Bloom", someone
+else's recording, and the ClawHub bundle leaves them out.
+
+Add packs with `bash scripts/samples-manage.sh add <url-or-dir>`; it enforces a size cap
+(`STRUDEL_MAX_DOWNLOAD_MB`), an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`), MIME checks and
+zip-slip protection. Pitched samples take their root note from `samples/strudel.json` or their
+file name. Free packs: [references/cc-sample-packs-catalog.md](references/cc-sample-packs-catalog.md).
 
 ## Audio deconstruction
 
@@ -140,6 +143,9 @@ character. Today each step is run by hand. `scripts/` on `main` has only the pos
 are on branches ([#61](https://github.com/karmaterminal/strudel-music/issues/61),
 [#14](https://github.com/karmaterminal/strudel-music/issues/14)). Background:
 [docs/pipeline.md](docs/pipeline.md).
+
+You supply the audio, and you're responsible for having the rights to it and to anything you make
+from it. The authors make no claim about fair use, copyright or derivative works.
 
 ## Development
 

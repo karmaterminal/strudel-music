@@ -34,7 +34,7 @@ Two renderers ship, and they differ (#67 picks one):
 | | `chunked-render.mjs` (use this to compose) | `offline-render-v2.mjs` (`dispatch.sh`, `npm run render`, CI) |
 |---|---|---|
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
-| Unknown sound name | dropped; `Total: X/Y haps scheduled` shows X below Y | played as a 440 Hz sine, with one warning |
+| Unknown sound name | dropped; `Total: X/Y haps scheduled` shows X below Y | played as a triangle tone (440 Hz unless the event has a note), with one warning |
 | `.lpf()` / `.cutoff()` | ignored | works |
 | `note()` on a sample | pitch-shifted from its root note (`samples/strudel.json`, or the file name) | shifted relative to C4 |
 | Level | peak-normalized | compressor, 2 s fade-out |
@@ -44,7 +44,8 @@ Two renderers ship, and they differ (#67 picks one):
 node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
 
-# Filter-heavy pieces: input, output, cycles, BPM. A setcpm() in the file wins over the BPM.
+# Filter-heavy pieces, through offline-render-v2.mjs: input, cycles, BPM. A setcpm() in the
+# file wins over the BPM.
 bash scripts/dispatch.sh render assets/compositions/fog-and-starlight.js 16 72
 # → fog-and-starlight.wav and .mp3 in $STRUDEL_TMP (default ~/.openclaw/workspace/strudel-renders)
 ```
@@ -99,10 +100,11 @@ Rules that keep a render honest:
   or `fastcat(`. Lines before it are setup.
 - **Use only sounds that exist.** Synths: `sine`, `triangle`/`tri`, `square`, `sawtooth`/`saw`.
   (`offline-render-v2.mjs` also maps `piano`, `pluck`, `organ`, `bass`, `supersaw` and
-  `supersquare` onto those; `chunked-render.mjs` drops them.) Samples: any folder in `samples/` holding WAVs. After setup that's `bd sd hh cp cr mt lt ht cb
-  808bd 808sd 808hc 808oh` plus the committed `bloom_*` set. `oh`, `rim`, `white`, `metal` and
-  other Strudel names aren't installed (#66). `bash scripts/samples-manage.sh list` shows what's
-  there.
+  `supersquare` onto those; `chunked-render.mjs` drops them.) Samples: any folder in `samples/`
+  holding WAVs. After setup that's `bd sd hh cp cr mt lt ht cb 808bd 808sd 808hc 808oh`. A clone
+  or `git:` install also has the committed `bloom_*` set; a ClawHub install leaves it out. `oh`,
+  `rim`, `white`, `metal` and other Strudel names aren't installed (#66).
+  `bash scripts/samples-manage.sh list` shows what's there.
 - **Use only controls that render:** `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip`,
   `attack`, `decay`, `sustain`, `release`; also `lpf`/`cutoff` and `loopAt` in
   `offline-render-v2.mjs`. `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect
@@ -173,6 +175,9 @@ today. Demucs (`uv tool install demucs`), librosa analysis, slicing, then a comp
 the slices. The stage scripts live on unmerged branches (#61, #14). Read `docs/pipeline.md`
 before promising one. Expect minutes per track; run it with `sessions_spawn`, never in the
 request's own turn.
+
+The person asking supplies the audio and is responsible for having the rights to it, and to
+anything made from it. The authors make no claim about fair use, copyright or derivative works.
 
 ## Security
 

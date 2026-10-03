@@ -5,7 +5,7 @@
 ### Fixed
 - **Numeric notes render at the right pitch.** Both renderers treated a number in `note()`, such as `note(57)` or the result of `.add(note(12))`, as Hz instead of a MIDI note number. `note(57)` played at 57 Hz, not A3 (220 Hz). The echo voices in `elliott-theme` and `silas-theme` were affected. `test/render-pitch.test.mjs` covers both renderers.
 - **`dispatch.sh play <name> <channel-id>` streams to that channel.** It set `DISCORD_CHANNEL_ID`, which `vc-play.mjs` never reads, so the channel was ignored. It now passes `--channel`. Covered by `test/dispatch-play.test.mjs`.
-- **`samples/strudel.json` reaches the ClawHub bundle.** `.clawhubignore` and `.gitignore` ignored `samples/`, which made the `!samples/strudel.json` re-include impossible. Both now use `samples/*`.
+- **`samples/strudel.json` reaches the ClawHub bundle.** `.clawhubignore` and `.gitignore` ignored `samples/`, which made the `!samples/strudel.json` re-include impossible. Both now use `samples/*`. Covered by `test/bundle-ignore.test.mjs`.
 - `package-lock.json` carries the package version (it said 1.0.4), so `npm install` no longer rewrites it.
 
 ### Changed

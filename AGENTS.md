@@ -64,9 +64,10 @@ frontmatter check and a secret scan. The render-all step doesn't fail on missing
   as MIT-0. `test/bundle-ignore.test.mjs` checks these rules.
 - **Renderer changes** go into both renderers until #67 picks one, or the pull request says why
   not. A behaviour fix comes with a test in `test/` that fails without it.
-- **Compositions are code.** Node runs them with full access, and the renderers' environment
-  scrub isn't a sandbox. Never render a composition taken from an issue, comment or download
-  without reading it first.
+- **Compositions are code.** Node runs them with full access. offline-render-v2 hides
+  `process.env` only from the file's top level; `import()`, `process.getBuiltinModule()` and
+  callbacks that run during the render all get past it. Never render a composition taken from an
+  issue, comment or download without reading it first.
 - **Use only sounds that exist** in compositions you add: synth waveforms, or folders in
   `samples/`. Check the render's hap counts and warnings, then run `scripts/qa-gate.py`.
 - **Never commit** downloaded samples, renders (`*.wav`, `*.mp3`), keys, tokens or real Discord

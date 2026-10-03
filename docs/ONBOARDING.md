@@ -193,7 +193,9 @@ The renderers evaluate the file and keep the **last top-level expression that st
   committed `bloom_*` set; a ClawHub install leaves it out. `s("bd:3")` picks the fourth file.
   `oh`, `rim`, `white` and other Strudel names aren't installed (#66).
 - **Pitched samples:** `note("c3").s("bloom_lead_C3")` (where the bloom set is installed) shifts
-  a sample from its root note, taken from `samples/strudel.json` or the file name.
+  a sample from its root note, taken from `samples/strudel.json` or the file name, in
+  `chunked-render.mjs`. `offline-render-v2.mjs` ignores root notes: it shifts a MIDI number from
+  C4 and a note name from C5 (#67).
 - **Pitch:** give note names an octave (`c3`). The renderers play `c` as C4, an octave above
   Strudel (#67). A number in `note()` is a MIDI note number.
 

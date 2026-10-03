@@ -36,7 +36,7 @@ Two renderers ship, and they differ (#67 picks one):
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
 | Unknown sound name | dropped; `Total: X/Y haps scheduled` shows X below Y | played as a triangle tone (440 Hz unless the event has a note), with one warning |
 | `.lpf()` / `.cutoff()` | ignored | works |
-| `note()` on a sample | pitch-shifted from its root note (`samples/strudel.json`, or the file name) | shifted relative to C4 |
+| `note()` on a sample | shifted from the sample's root note (`samples/strudel.json`, the file name, or else C4) | root notes ignored: a MIDI number shifts from C4, a note name from C5 (`note("c4")` plays an octave down) |
 | Level | peak-normalized | compressor, 2 s fade-out |
 
 ```bash
@@ -156,9 +156,9 @@ In OpenClaw the skill answers `/strudel_music <request>` or `/skill strudel-musi
 ## Sample packs
 
 Any folder of WAV files under `samples/` becomes a sound named after the folder:
-`samples/kick/kick.wav` plays as `s("kick")`. Pitched samples need a root note, from
-`samples/strudel.json` or the file name (`bass_Cs1.wav` is C♯1); otherwise `chunked-render.mjs`
-assumes MIDI 60 (C4).
+`samples/kick/kick.wav` plays as `s("kick")`. In `chunked-render.mjs`, pitched samples need a
+root note, from `samples/strudel.json` or the file name (`bass_Cs1.wav` is C♯1); otherwise it
+assumes MIDI 60 (C4). `offline-render-v2.mjs` ignores root notes (the table under Render).
 
 ```json
 { "_base": "./", "kick": { "0": "kick/kick.wav" }, "bass_Cs1": { "cs1": "bass_Cs1/bass_Cs1.wav" } }
@@ -182,9 +182,11 @@ anything made from it. The authors make no claim about fair use, copyright or de
 ## Security
 
 - A composition is JavaScript that Node runs with your permissions: files, network, everything.
-  `offline-render-v2.mjs` hides `process.env` and blocks `require('child_process')` while it
-  evaluates the file. That is not a sandbox; its own comments say so. `chunked-render.mjs` does
-  neither. Render only compositions you wrote or read first. For untrusted ones, use a container
+  `offline-render-v2.mjs` hides `process.env` while the file's top level runs, and that's all it
+  does. Its `child_process` block hooks `require`, which a composition can't call anyway;
+  `import('node:child_process')` and `process.getBuiltinModule()` still work, and callbacks that
+  run during the render, such as `.fmap()`, see the whole environment. `chunked-render.mjs` hides
+  nothing. Render only compositions you wrote or read first. For untrusted ones, use a container
   or VM with no credentials.
 - `npm run setup` runs `npm install` (no lifecycle scripts in this package) and sparse-clones
   `github.com/tidalcycles/Dirt-Samples`.

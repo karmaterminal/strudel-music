@@ -131,8 +131,9 @@ else's recording, and the ClawHub bundle leaves them out.
 
 Add packs with `bash scripts/samples-manage.sh add <url-or-dir>`; it enforces a size cap
 (`STRUDEL_MAX_DOWNLOAD_MB`), an optional host allowlist (`STRUDEL_ALLOWED_HOSTS`), MIME checks and
-zip-slip protection. Pitched samples take their root note from `samples/strudel.json` or their
-file name. Free packs: [references/cc-sample-packs-catalog.md](references/cc-sample-packs-catalog.md).
+zip-slip protection. In `chunked-render.mjs`, pitched samples take their root note from
+`samples/strudel.json` or their file name; `offline-render-v2.mjs` ignores root notes (#67). Free
+packs: [references/cc-sample-packs-catalog.md](references/cc-sample-packs-catalog.md).
 
 ## Audio deconstruction
 

@@ -644,7 +644,9 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
       scheduled++;
     } else if (waveMap[sound]) {
       // Synth oscillator
-      let freq = v.freq || (v.note ? noteToFreq(v.note) : 440);
+      // note 0 is MIDI note 0, so test for presence, not truthiness.
+      let freq = v.freq || (v.note !== undefined ? noteToFreq(v.note) : 440);
+      if (!freq) freq = 440; // a NaN note falls back, as in offline-render-v2
       const oscType = waveMap[sound];
       const attack = v.attack ?? 0.005;
       const decay = v.decay ?? 0.1;

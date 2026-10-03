@@ -417,7 +417,7 @@ for (const hap of haps) {
   // Resolve note → frequency (for synth sounds)
   let freq = null;
   if (v.freq) freq = v.freq;
-  else if (v.note) freq = noteToFreq(v.note);
+  else if (v.note !== undefined) freq = noteToFreq(v.note); // note 0 is MIDI note 0
   // TODO: resolve scale degree to freq using tonal's Scale.get() + degree mapping
   // Currently falls through to 440Hz for unresolved scale degrees
   else if (v.n !== undefined && isSynthSound) freq = 440;

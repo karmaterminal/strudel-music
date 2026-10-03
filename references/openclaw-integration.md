@@ -1,5 +1,7 @@
 # OpenClaw 2026.2.21+ Integration Guide
 
+> **Stale (2026-10 audit).** Written for OpenClaw 2026.2.21. There is no `/strudel` command: OpenClaw 2026.9 names the skill's command `/strudel_music` (or `/skill strudel-music`). Check any config key here against the current OpenClaw docs before using it.
+
 Configuration recommendations for running strudel-music as an OpenClaw skill with full Discord integration.
 
 ## Thread-Bound Subagent Sessions

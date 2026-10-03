@@ -54,12 +54,12 @@ ffmpeg -i output.wav -ar 48000 -ac 2 output-48k.wav
 
 ### 3. Discord VC Streaming — `scripts/vc-play.mjs`
 
-Streams a rendered WAV file into a Discord voice channel using the platform
-gateway's existing authenticated connection. No separate bot token required.
+Streams a rendered WAV file into a Discord voice channel. It logs in as a Discord
+bot with `DISCORD_BOT_TOKEN`, from the environment or the env files `SKILL.md` names.
 
 ### 4. Command Dispatcher — `scripts/dispatch.sh`
 
-Routes `/strudel` subcommands (render, play, list, samples, concert).
+Runs the skill's helper subcommands (render, play, list, samples, concert).
 All user inputs are validated before use — composition names restricted to
 `[a-zA-Z0-9_-]`, channel IDs and numeric args validated as numeric-only.
 

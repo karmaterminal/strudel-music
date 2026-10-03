@@ -50,11 +50,22 @@ true peak −3.0 dBFS.
 
 ## Install as a skill
 
-| Where | How | Verified |
+| Where | How | Verified (2026-10-03, OpenClaw 2026.9.8) |
 |---|---|---|
-| OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | OpenClaw 2026.9.8's own parser reads `SKILL.md` correctly; the install itself is checked in [#70](https://github.com/karmaterminal/strudel-music/issues/70) |
-| OpenClaw, from ClawHub | `openclaw skills install @<owner>/strudel-music`, then `npm run setup` | Not yet ([#70](https://github.com/karmaterminal/strudel-music/issues/70)). The last two automatic publishes failed, and publishing is now a manual decision ([#69](https://github.com/karmaterminal/strudel-music/issues/69)) |
+| OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | Yes, at `main` 264c7fb: install, setup, smoke test, render and QA gate |
+| OpenClaw, from ClawHub | `openclaw skills install @karmafeast/strudel-music`, then `npm run setup` | Yes, for 1.2.2, the live version. It predates the 2026-10 fixes, and ClawHub's scan rates it "suspicious" (review before installing). See [#70](https://github.com/karmaterminal/strudel-music/issues/70); publishing is a manual decision ([#69](https://github.com/karmaterminal/strudel-music/issues/69)) |
 | Claude Code | No plugin yet ([#71](https://github.com/karmaterminal/strudel-music/issues/71)). Work from a clone: Claude Code reads `AGENTS.md` through `CLAUDE.md` | n/a |
+
+**Updating.** Setup writes `node_modules/` and `samples/` into the skill folder, and OpenClaw
+treats them as local changes. Once setup has run,
+`openclaw skills update @karmafeast/strudel-music` refuses until you add `--force`. `--force`
+replaces the whole folder, so run `npm run setup` again afterwards. A Git install updates by
+running its install again with `--force`, with the same result.
+
+**Removing.** For a ClawHub install, run
+`npx -y clawhub@0.23.3 --workdir <agent workspace> uninstall @karmafeast/strudel-music`. That
+deletes the folder and its `.clawhub/lock.json` entry. For a Git install, delete
+`<agent workspace>/skills/strudel-music`.
 
 In OpenClaw the skill answers `/strudel_music <request>` and `/skill strudel-music <request>`.
 `SKILL.md` is what the agent reads: setup, rendering, composition rules, voice streaming and

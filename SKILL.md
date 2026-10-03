@@ -27,6 +27,9 @@ npm test          # 12 checks: Strudel loads, samples are present
 Node 22.12 or later (`@discordjs/voice` needs it; CI runs 22). `ffmpeg` is needed for MP3 and
 voice, not for WAV.
 
+Updating the skill replaces this folder. Once setup has run, `openclaw skills update` needs
+`--force`, and `npm run setup` has to run again afterwards.
+
 ## Render
 
 Two renderers ship, and they differ (#67 picks one):

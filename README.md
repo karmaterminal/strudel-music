@@ -4,8 +4,8 @@
 
 Compose music as [Strudel](https://strudel.cc) pattern code and render it offline with Node.js,
 with no browser. You get a WAV, an MP3, or a stream into a Discord voice channel. It ships as an
-[OpenClaw](https://github.com/openclaw/openclaw) skill (`SKILL.md`), and works from a plain
-checkout too.
+[OpenClaw](https://github.com/openclaw/openclaw) skill (`SKILL.md`) and a Claude Code plugin, and
+works from a plain checkout too.
 
 ```
 prompt → Strudel pattern (.js) → offline render (node-web-audio-api) → WAV → MP3 / Discord voice
@@ -51,26 +51,35 @@ true peak −3.0 dBFS.
 
 ## Install as a skill
 
-| Where | How | Verified (2026-10-03, OpenClaw 2026.9.8) |
+| Where | How | Verified |
 |---|---|---|
-| OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | Yes, at `main` 264c7fb: install, setup, smoke test, render and QA gate |
-| OpenClaw, from ClawHub | `openclaw skills install @karmafeast/strudel-music`, then `npm run setup` | Yes (rated "suspicious" by ClawHub's scan), for 1.2.2, the live version. It predates the 2026-10 fixes; review it before installing. See [#70](https://github.com/karmaterminal/strudel-music/issues/70). Releases are published by hand ([CONTRIBUTING.md](CONTRIBUTING.md#releasing)) |
-| Claude Code | No plugin yet ([#71](https://github.com/karmaterminal/strudel-music/issues/71)). Work from a clone: Claude Code reads `AGENTS.md` through `CLAUDE.md` | n/a |
+| OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | Yes, at `main` 264c7fb with OpenClaw 2026.9.8 (2026-10-03): install, setup, smoke test, render and QA gate |
+| OpenClaw, from ClawHub | `openclaw skills install @karmafeast/strudel-music`, then `npm run setup` | Yes (rated "suspicious" by ClawHub's scan), for 1.2.2, the live version, with OpenClaw 2026.9.8 (2026-10-03). It predates the 2026-10 fixes; review it before installing. See [#70](https://github.com/karmaterminal/strudel-music/issues/70). Releases are published by hand ([CONTRIBUTING.md](CONTRIBUTING.md#releasing)) |
+| Claude Code | `claude plugin marketplace add karmaterminal/strudel-music`, then `claude plugin install strudel-music@strudel-music`. The plugin's skill sets up a working copy the first time you ask for music, after asking you ([plugins/strudel-music](plugins/strudel-music/README.md)) | Yes, with Claude Code 2.1.289 (2026-10-05): marketplace add and install from this repository's #71 branch, the skill's setup of `main` and a render of fog-and-starlight that passes the QA gate, update, and uninstall. See [#71](https://github.com/karmaterminal/strudel-music/issues/71) |
 
-**Updating.** Setup writes `node_modules/` and `samples/` into the skill folder, and OpenClaw
-treats them as local changes. Once setup has run,
+Nothing else is tested. Copilot CLI and other tools that read `.claude-plugin/marketplace.json`
+may install the plugin, but this README doesn't say they do.
+
+**Updating in OpenClaw.** Setup writes `node_modules/` and `samples/` into the skill folder, and
+OpenClaw treats them as local changes. Once setup has run,
 `openclaw skills update @karmafeast/strudel-music` refuses until you add `--force`. `--force`
 replaces the whole folder, so run `npm run setup` again afterwards. A Git install updates by
 running its install again with `--force`, with the same result.
 
-**Removing.** For a ClawHub install, run
+**Removing from OpenClaw.** For a ClawHub install, run
 `npx -y clawhub@0.23.3 --workdir <agent workspace> uninstall @karmafeast/strudel-music`. That
 deletes the folder and its `.clawhub/lock.json` entry. For a Git install, delete
 `<agent workspace>/skills/strudel-music`.
 
-In OpenClaw the skill answers `/strudel_music <request>` and `/skill strudel-music <request>`.
-`SKILL.md` is what the agent reads: setup, rendering, composition rules, voice streaming and
-security.
+**Updating and removing in Claude Code.** The working copy lives in the plugin's data folder, so
+a plugin update leaves it alone; ask the skill to update it.
+`claude plugin uninstall strudel-music@strudel-music` removes the plugin, the working copy and any
+renders the skill left in its data folder. The [plugin README](plugins/strudel-music/README.md)
+has the details.
+
+In OpenClaw the skill answers `/strudel_music <request>` and `/skill strudel-music <request>`; in
+Claude Code it's `/strudel-music:strudel-music`. `SKILL.md` is what the agent reads: setup,
+rendering, composition rules, voice streaming and security.
 
 ## Rendering
 

@@ -5,8 +5,9 @@ Instructions for coding agents working in this repository. People should start a
 
 ## What this repository is
 
-An OpenClaw skill that renders Strudel compositions offline with Node.js. `SKILL.md` is the file
-the skill's agent reads at run time; everything else supports it. The 2026-10 audit
+An OpenClaw skill that renders Strudel compositions offline with Node.js, also packaged as a
+Claude Code plugin. `SKILL.md` is the file the skill's agent reads at run time; everything else
+supports it. The 2026-10 audit
 ([docs/audit-2026-10.md](docs/audit-2026-10.md)) records what works, what is stale, and the
 resurrection sequence (#65).
 
@@ -31,6 +32,7 @@ resurrection sequence (#65).
 | `test/` | `node:test` suites (`npm run test:unit`) |
 | `references/`, `docs/` | Composition and pipeline guides |
 | `.clawhubignore` | What the ClawHub bundle leaves out (ClawHub also honours `.gitignore`) |
+| `.claude-plugin/marketplace.json`, `plugins/strudel-music/` | The Claude Code plugin: a skill that sets up a working copy of this repo and follows its `SKILL.md` |
 
 ## Set up and test
 
@@ -38,7 +40,7 @@ resurrection sequence (#65).
 npm ci                              # npm run setup also works; it runs npm install
 bash scripts/download-samples.sh    # Dirt-Samples banks into samples/
 npm test                            # smoke test
-npm run test:unit                   # renderers, WAV decoding, sample setup, dispatch, bundle rules (a few seconds)
+npm run test:unit                   # renderers, WAV decoding, sample setup, dispatch, bundle, plugin (a few seconds)
 npm run test:render                 # one v2 render
 git status --porcelain              # tests must leave the tree clean
 ```
@@ -54,7 +56,13 @@ no sample or synth, a dropped event or a warning from Strudel.
   Never publish to ClawHub yourself.
 - **No plugin manifest at the repo root.** ClawHub refuses to publish a skill folder holding
   `.claude-plugin/plugin.json`, `openclaw.plugin.json`, `.codex-plugin`, `.cursor-plugin`, or a
-  `package.json` with an `openclaw` key. A Claude Code plugin goes under `plugins/` (#71).
+  `package.json` with an `openclaw` key. The Claude Code plugin lives in `plugins/strudel-music/`,
+  which `.clawhubignore` leaves out of the bundle; the root holds only its `marketplace.json`.
+- **Bump the plugin's `version`** in `plugins/strudel-music/.claude-plugin/plugin.json` with every
+  change under `plugins/`, or installed copies won't update. Check with
+  `claude plugin validate --strict .` and `claude plugin validate --strict plugins/strudel-music`.
+  The plugin's skill only sets up a working copy and points at its `SKILL.md`: no copy of
+  `SKILL.md`, no symlinks (`test/plugin.test.mjs`).
 - **SKILL.md frontmatter** is `name`, `description` and `metadata`, with `metadata` as one line of
   JSON. Installer kinds are `brew`, `node`, `go` or `uv`: ClawHub's schema rejects any other kind,
   and OpenClaw silently drops anything but those and `download`. Declare every environment

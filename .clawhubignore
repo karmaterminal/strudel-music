@@ -12,6 +12,8 @@ samples/*
 !samples/strudel.json
 .venv/
 __pycache__/
+# The Claude Code plugin, which installs from GitHub (#71).
+plugins/
 # Contributor-only files: tests, agent guidance, the audit record.
 test/
 AGENTS.md

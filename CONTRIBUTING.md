@@ -19,6 +19,7 @@ Agents: read [AGENTS.md](AGENTS.md) first.
 - `scripts/`: dispatch, voice playback, sample management, post-render QA
 - `test/`: `node:test` suites
 - `references/`, `docs/`: guides
+- `plugins/strudel-music/`: the Claude Code plugin, listed in `.claude-plugin/marketplace.json`
 
 ## Compositions
 
@@ -60,6 +61,11 @@ Every pull request and every push to `main` runs:
 
 CI never publishes. A release is figs's decision, and figs publishes it to ClawHub from the
 `karmafeast` account. Run the ClawHub CLI through `npx`, pinned: `npx -y clawhub@0.23.3`.
+
+These steps are for ClawHub. The Claude Code plugin has no release of its own: Claude Code
+installs it from this repository, and its skill clones `main`. A change under `plugins/` reaches
+plugin users once its `version` in `plugin.json` is bumped and they update the plugin; a change
+anywhere else reaches them when they ask the skill to update its working copy.
 
 1. **Bump the version** in a pull request for that release:
    `npm version <version> --no-git-tag-version` sets it in `package.json` and

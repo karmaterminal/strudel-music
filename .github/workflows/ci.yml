@@ -32,20 +32,29 @@ jobs:
       - name: Smoke test (12 checks)
         run: npm test
 
-      - name: Unit tests (renderer pitch, dispatch, bundle rules)
+      - name: Unit tests (renderers, WAV decoding, sample setup, dispatch, bundle rules)
         run: npm run test:unit
 
       - name: Render test (fog-and-starlight)
         run: npm run test:render
 
-      - name: Render all compositions
+      # --strict fails a render that names a sound with no sample or synth, drops an event, or
+      # draws a warning from Strudel. offline-render-v2 is slow, so it renders 2 cycles;
+      # chunked-render renders 32.
+      - name: Render all compositions (strict, both renderers)
         run: |
           set -euo pipefail
+          failed=()
           for f in assets/compositions/*.js; do
             name=$(basename "$f" .js)
-            echo "=== Rendering $name ==="
-            node src/runtime/offline-render-v2.mjs "$f" "/tmp/${name}.wav" 2 120 2>&1 | grep -E "haps|Scheduled|✅|❌"
+            echo "=== $name ==="
+            node src/runtime/offline-render-v2.mjs "$f" "/tmp/${name}-v2.wav" 2 120 --strict || failed+=("$name (offline-render-v2)")
+            node src/runtime/chunked-render.mjs "$f" "/tmp/${name}-chunked.wav" 32 --strict || failed+=("$name (chunked-render)")
           done
+          if [ "${#failed[@]}" -gt 0 ]; then
+            printf '❌ %s\n' "${failed[@]}"
+            exit 1
+          fi
 
   validate:
     name: Validate skill metadata

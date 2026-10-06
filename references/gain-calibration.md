@@ -29,7 +29,7 @@ These are starting points. The actual max depends on the samples and how much th
 
 **Bloom samples** (bloom_*): Similar to Hallur — produced stems, already loud. Keep gains conservative.
 
-**Dirt-Samples** (bd, sd, hh, cp): Standard drum one-shots. These can handle 0.3-0.5 without issues in sparse patterns.
+**Dirt-Samples** (bd, sd, hh, cp): Standard drum one-shots. These can handle 0.3-0.5 without issues in sparse patterns. `bd` and `sd` peak at full scale, `hh` at about 0.2. Until #66 neither renderer could read `sd` or `cb`, which are 32-bit float files, and both played them silent, so a gain set by ear before then never heard the snare. The five-voice examples in SKILL.md and docs/ONBOARDING.md had the snare at 0.55 and 0.5; once it sounded, offline-render-v2.mjs peaked above the QA gate's −1 dBFS limit, and at 0.25 both renderers pass.
 
 **Synthesized voices** (sine, sawtooth, square, triangle): These are generated at full scale. The 300× lesson applies here most acutely — a sine wave at gain 1.0 is LOUD.
 

@@ -17,13 +17,14 @@ prompt → Strudel pattern (.js) → offline render (node-web-audio-api) → WAV
 
 ## Status (2026-10)
 
-A clean checkout renders, and its smoke and unit tests pass. The 2026-10 audit
-([docs/audit-2026-10.md](docs/audit-2026-10.md)) found these gaps:
+A clean checkout renders every shipped composition with all its sounds, and its smoke and unit
+tests pass. The 2026-10 audit ([docs/audit-2026-10.md](docs/audit-2026-10.md)) found these gaps:
 
-- 9 of the 15 shipped compositions name sounds that setup doesn't install
-  ([#66](https://github.com/karmaterminal/strudel-music/issues/66)).
 - There are two renderers that behave differently
   ([#67](https://github.com/karmaterminal/strudel-music/issues/67)).
+- Samples don't always last as long as they would in Strudel: `offline-render-v2.mjs` loops a
+  sample shorter than its event, and both renderers cut a longer one at the event's end
+  ([#75](https://github.com/karmaterminal/strudel-music/issues/75)).
 - Neither renderer implements reverb, delay, highpass or distortion
   ([#68](https://github.com/karmaterminal/strudel-music/issues/68)).
 - Audio deconstruction is manual, and its stage scripts are on unmerged branches
@@ -36,9 +37,9 @@ Needs Node 22.12 or later, git, and ffmpeg for MP3. The QA gate also needs Pytho
 ```bash
 git clone https://github.com/karmaterminal/strudel-music.git
 cd strudel-music
-npm run setup          # npm install + Dirt-Samples drum banks (~11 MB, from github.com)
+npm run setup          # npm install + 21 Dirt-Samples banks (~14 MB, from github.com)
 npm test               # smoke test: Strudel loads, samples are present (12 checks)
-npm run test:unit      # renderer pitch, dispatch and bundle-rule tests
+npm run test:unit      # renderers, WAV decoding, sample setup, dispatch, bundle rules
 
 node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
@@ -76,15 +77,30 @@ security.
 | | `src/runtime/chunked-render.mjs` | `src/runtime/offline-render-v2.mjs` |
 |---|---|---|
 | Arguments | `<in.js> [out.wav] [cycles] [chunk size]` | `<in.js> [out.wav] [cycles] [bpm]` |
+| Flags | `--strict`, `--samples=<dir>` | `--strict`, `--samples=<dir>`, `--prebake=<file>` |
 | Used by | SKILL.md, docs/ONBOARDING.md | `scripts/dispatch.sh`, `npm run render`, CI |
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
-| Unknown sound | dropped (`Total: X/Y haps scheduled`) | a triangle tone (440 Hz without a note) and a warning |
+| Unknown sound | dropped, and listed after the render | a triangle tone (440 Hz without a note), listed after the render |
 | Filters | none | `lpf` / `cutoff` |
+| Sample shorter than its event | plays once | loops to fill the event |
+| Sample longer than its event | cut at the event's end, unless `clip` is 1 or more | the same |
 
-Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip` and an ADSR envelope.
-They ignore every other control, including `.room()`, `.delay()`, `.hpf()` and `.distort()`. A
-`setcpm()` in the composition sets the tempo. Synths are `sine`, `triangle`, `square` and
-`sawtooth`; any folder of WAVs in `samples/` is a sound named after the folder.
+Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip` and, on synths, an
+ADSR envelope. They ignore every other control, including `.room()`, `.delay()`, `.hpf()` and
+`.distort()`. A `setcpm()` in the composition sets the tempo. Synths are `sine`, `triangle`,
+`square` and `sawtooth`, and noise is `white`, `pink` or `brown`. Any folder of WAVs in
+`samples/` (PCM at 8 to 32 bits, or float) is a sound named after the folder, and `n` picks a
+file, wrapping around as in Strudel. Strudel itself plays a sample once and to its end unless
+`clip`, `release` or `loop` says otherwise, so the table's last two rows differ from it
+([#75](https://github.com/karmaterminal/strudel-music/issues/75)).
+
+After each render, both list what they couldn't play as written: sound names with no sample or
+synth, dropped events (an event that picks a WAV they can't read is one), and Strudel's own
+warnings (such as `Can't do arithmetic on control pattern`). With `--strict` the render then
+exits with status 2. CI renders every shipped composition that way with both renderers.
+`--samples=<dir>` reads banks from another folder. An unknown option, a cycle count that isn't a
+positive number, or a `--samples` folder that doesn't exist stops a render before it starts, with
+status 1.
 
 `bash scripts/dispatch.sh render <file.js> [cycles] [bpm]` renders with v2 and writes WAV and MP3
 to `$STRUDEL_TMP` (default `~/.openclaw/workspace/strudel-renders`). `bash scripts/dispatch.sh
@@ -134,9 +150,11 @@ Posting an MP3 into a chat needs no token. On WSL2, voice needs mirrored network
 
 ## Samples
 
-`npm run setup` sparse-clones 13 banks from
-[Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples), 156 WAVs: `bd sd hh cp cr mt lt ht
-cb 808bd 808sd 808hc 808oh`. A clone also has 32 committed `bloom_*` samples.
+`npm run setup` fetches 21 banks from
+[Dirt-Samples](https://github.com/tidalcycles/Dirt-Samples), pinned to commit c74fc80: 231 WAVs
+in `bd sd hh ho cp cr rm mt lt ht cb 808bd 808sd 808hc 808oh metal chin insect wind industrial
+glitch`. Strudel's `oh` and `rim` play `ho` and `rm`. Run it again after an update: it fetches
+only the banks that are missing. A clone also has 32 committed `bloom_*` samples.
 `samples/strudel.json` labels them as cut from Cosmic Gate & Pretty Pink's "Bloom", someone
 else's recording, and the ClawHub bundle leaves them out.
 

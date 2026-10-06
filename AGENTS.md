@@ -19,6 +19,7 @@ resurrection sequence (#65).
 | `src/runtime/offline-render-v2.mjs` | `OfflineAudioContext` renderer. Used by `dispatch.sh`, `npm run render` and CI |
 | `src/runtime/smoke-test.mjs` | `npm test`: Strudel loads, samples are present |
 | `src/runtime/synth.mjs` | Imported by nothing (#72) |
+| `src/runtime/sounds.mjs` | What both renderers share: drum-name aliases, sample picking, WAV decoding, noise, the problem report behind `--strict` |
 | `src/stream/pipe-to-vc.mjs` | WAV to Opus on stdout |
 | `scripts/dispatch.sh` | render, play, list, samples, concert |
 | `scripts/vc-play.mjs` | Discord voice playback (needs `DISCORD_BOT_TOKEN`) |
@@ -37,13 +38,14 @@ resurrection sequence (#65).
 npm ci                              # npm run setup also works; it runs npm install
 bash scripts/download-samples.sh    # Dirt-Samples banks into samples/
 npm test                            # smoke test
-npm run test:unit                   # renderer pitch, dispatch, bundle rules (a few seconds)
+npm run test:unit                   # renderers, WAV decoding, sample setup, dispatch, bundle rules (a few seconds)
 npm run test:render                 # one v2 render
 git status --porcelain              # tests must leave the tree clean
 ```
 
-CI (`.github/workflows/ci.yml`) runs these plus a render of every shipped composition, a
-frontmatter check and a secret scan. The render-all step doesn't fail on missing sounds yet (#66).
+CI (`.github/workflows/ci.yml`) runs these plus a strict render of every shipped composition
+with both renderers, a frontmatter check and a secret scan. A strict render fails on a sound with
+no sample or synth, a dropped event or a warning from Strudel.
 
 ## Rules
 
@@ -68,8 +70,9 @@ frontmatter check and a secret scan. The render-all step doesn't fail on missing
   `process.env` only from the file's top level; `import()`, `process.getBuiltinModule()` and
   callbacks that run during the render all get past it. Never render a composition taken from an
   issue, comment or download without reading it first.
-- **Use only sounds that exist** in compositions you add: synth waveforms, or folders in
-  `samples/`. Check the render's hap counts and warnings, then run `scripts/qa-gate.py`.
+- **Use only sounds that exist** in compositions you add: synth waveforms, noise, or folders in
+  `samples/`. Render with `--strict`, which fails on anything that can't play as written, then
+  run `scripts/qa-gate.py`.
 - **Never commit** downloaded samples, renders (`*.wav`, `*.mp3`), keys, tokens or real Discord
   IDs. Tests use placeholder IDs.
 - **Pull requests** start as drafts and merge with merge commits. Record the exact commands,

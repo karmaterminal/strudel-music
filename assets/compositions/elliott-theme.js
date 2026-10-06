@@ -72,12 +72,12 @@ stack(
   // Sunlight through leaves — bright pentatonic fragments
   // v2: octave shimmer via superimpose for "dappled light"
   n("<~ 4 ~ ~ 7 ~ ~ ~ 9 ~ ~ 4 ~ ~ ~ ~>")
-    .scale("g5:major pentatonic")
+    .scale("g5:major:pentatonic")
     .s("sine")
     .decay(0.4)
     .sustain(0)
     .gain(0.05)
-    .superimpose(x => x.add(12).gain(0.015))
+    .superimpose(x => x.add(note(12)).gain(0.015))
     .room(0.7)
     .delay(0.4)
     .delaytime(perlin.range(0.2, 0.5))

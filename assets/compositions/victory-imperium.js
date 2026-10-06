@@ -11,7 +11,7 @@ stack(
   // Triumphant fanfare — ascending fifths, brass-like
   note("<[d4 ~ a4 ~ d5 ~ a5 d6] ~>")
     .s("sawtooth")
-    .superimpose(add(0.03))
+    .superimpose(add(note(0.03)))
     .decay(0.3)
     .sustain(0.1)
     .gain(0.25)
@@ -34,7 +34,7 @@ stack(
   // Power chord progression — D major glory
   note("<d3,a3,d4 g3,b3,d4 a3,c#4,e4 d3,a3,d4>")
     .s("sawtooth")
-    .superimpose(add(0.02))
+    .superimpose(add(note(0.02)))
     .attack(0.05)
     .decay(0.8)
     .sustain(0.4)

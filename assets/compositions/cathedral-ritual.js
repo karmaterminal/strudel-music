@@ -43,7 +43,7 @@ stack(
     .late(0.5),
 
   // Ritual bells — sparse, deliberate, marking time
-  s("~ ~ ~ bell:1 ~ ~ ~ ~ ~ ~ ~ bell:3")
+  s("~ ~ ~ metal:1 ~ ~ ~ ~ ~ ~ ~ metal:3")
     .speed(0.5)
     .gain(0.15)
     .room(0.9)

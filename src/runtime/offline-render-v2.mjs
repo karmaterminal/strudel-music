@@ -6,13 +6,20 @@
  * with proper oscillators, ADSR, filters, panning.
  *
  * Usage: node src/runtime/offline-render-v2.mjs <input.js> [output.wav] [cycles] [bpm]
+ *          [--strict] [--samples=<dir>] [--prebake=<file>]
+ *
+ * --strict exits with status 2, after writing the file, if any event names a sound with no
+ * sample or synth, any event is dropped, or Strudel logs a warning or error for the pattern.
+ * --samples reads sample banks from <dir> instead of the repo's samples/.
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync } from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
+import { findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems } from './sounds.mjs';
 
 const require = createRequire(import.meta.url);
+const problems = trackProblems({ unplayable: 'played as a triangle tone' });
 
 // ── Polyfill Web Audio for Node.js ──
 const nwa = require('node-web-audio-api');
@@ -52,7 +59,9 @@ globalThis.window = {
 globalThis.document = {
   createElement: () => ({ getContext: () => null, style: {}, setAttribute: () => {}, appendChild: () => {} }),
   body: { appendChild: () => {}, removeChild: () => {} },
-  addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true,
+  addEventListener: () => {}, removeEventListener: () => {},
+  // Strudel's logger reports warnings as events on document; collect them for the report.
+  dispatchEvent: (event) => { problems.strudelEvent(event); return true; },
   createEvent: () => ({ initEvent: () => {} }),
   head: { appendChild: () => {} }, querySelectorAll: () => [], querySelector: () => null,
 };
@@ -60,13 +69,31 @@ globalThis.addEventListener = () => {};
 globalThis.removeEventListener = () => {};
 
 // ── Parse args ──
-const input = process.argv[2];
-const output = process.argv[3] || 'output.wav';
-const cycles = parseInt(process.argv[4] || '8');
-const bpm = parseInt(process.argv[5] || '120');
+const argv = process.argv.slice(2);
+const args = argv.filter(a => !a.startsWith('--'));
+const input = args[0];
+const output = args[1] || 'output.wav';
+const cycles = Number(args[2] || '8');
+const bpm = Number(args[3] || '120');
+const strict = argv.includes('--strict');
+const option = (name) => argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+const samplesOption = option('samples');
+const prebakeOption = option('prebake');
+const isFolder = (p) => { try { return statSync(p).isDirectory(); } catch { return false; } };
 
-if (!input) {
-  console.error('Usage: node src/runtime/offline-render-v2.mjs <input.js> [output.wav] [cycles] [bpm]');
+// A mistyped flag, number or path must not pass for a clean render.
+const argErrors = [
+  ...argv.filter(a => a.startsWith('--') && a !== '--strict' && !/^--(samples|prebake)=./.test(a))
+    .map(a => `unknown option ${a}`),
+  ...(args.length > 4 ? [`too many arguments: ${args.slice(4).join(' ')}`] : []),
+  ...(cycles > 0 && Number.isFinite(cycles) ? [] : [`cycles must be a positive number, not ${args[2]}`]),
+  ...(bpm > 0 && Number.isFinite(bpm) ? [] : [`bpm must be a positive number, not ${args[3]}`]),
+  ...(samplesOption && !isFolder(samplesOption) ? [`no samples folder at ${samplesOption}`] : []),
+  ...(prebakeOption && !existsSync(prebakeOption) ? [`no prebake file at ${prebakeOption}`] : []),
+];
+if (!input || argErrors.length) {
+  for (const e of argErrors) console.error(`❌ ${e}`);
+  console.error('Usage: node src/runtime/offline-render-v2.mjs <input.js> [output.wav] [cycles] [bpm] [--strict] [--samples=<dir>] [--prebake=<file>]');
   process.exit(1);
 }
 
@@ -117,7 +144,7 @@ globalThis.S = (x) => x;            // Signal placeholder
 globalThis.audioin = () => ({ add: () => ({ out: () => {} }), sub: () => ({ out: () => {} }) });
 
 // Load prebake if --prebake flag or prebake.strudel exists alongside input
-const prebakePath = process.argv.find(a => a.startsWith('--prebake='))?.slice('--prebake='.length)
+const prebakePath = prebakeOption
   || (() => {
     const dir = path.dirname(input);
     const candidate = path.join(dir, 'prebake.strudel');
@@ -287,74 +314,55 @@ if (haps.length === 0) {
 }
 
 // ── Load samples ──
-const SAMPLES_DIR = path.resolve(
-  import.meta.dirname || path.dirname(new URL(import.meta.url).pathname),
-  '../../samples'
-);
-const sampleBuffers = new Map(); // "bd:0" → AudioBuffer
+const SAMPLES_DIR = samplesOption
+  || path.resolve(import.meta.dirname || path.dirname(new URL(import.meta.url).pathname), '../../samples');
+const banks = new Map(); // "bd" → [AudioBuffer, ...], in file-name order
 
 function loadWavToBuffer(filePath, ctx) {
-  const raw = readFileSync(filePath);
-  // Parse WAV header
-  const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
-  if (raw.toString('ascii', 0, 4) !== 'RIFF') return null;
-  
-  const channels = view.getUint16(22, true);
-  const sr = view.getUint32(24, true);
-  const bitsPerSample = view.getUint16(34, true);
-  
-  // Find data chunk
-  let dataOffset = 12;
-  while (dataOffset < raw.length - 8) {
-    const chunkId = raw.toString('ascii', dataOffset, dataOffset + 4);
-    const chunkSize = view.getUint32(dataOffset + 4, true);
-    if (chunkId === 'data') {
-      dataOffset += 8;
-      const numSamples = chunkSize / (bitsPerSample / 8) / channels;
-      const audioBuffer = ctx.createBuffer(channels, numSamples, sr);
-      
-      for (let ch = 0; ch < channels; ch++) {
-        const channelData = audioBuffer.getChannelData(ch);
-        for (let i = 0; i < numSamples; i++) {
-          const byteIndex = dataOffset + (i * channels + ch) * (bitsPerSample / 8);
-          if (bitsPerSample === 16) {
-            channelData[i] = view.getInt16(byteIndex, true) / 32768;
-          } else if (bitsPerSample === 24) {
-            const s = (view.getUint8(byteIndex) | (view.getUint8(byteIndex+1) << 8) | (view.getInt8(byteIndex+2) << 16));
-            channelData[i] = s / 8388608;
-          }
-        }
-      }
-      return audioBuffer;
-    }
-    dataOffset += 8 + chunkSize;
-  }
-  return null;
+  const wav = decodeWav(readFileSync(filePath));
+  const buffer = ctx.createBuffer(wav.channels, wav.length, wav.sampleRate);
+  wav.data.forEach((samples, ch) => buffer.copyToChannel(samples, ch));
+  return buffer;
 }
 
 if (existsSync(SAMPLES_DIR)) {
   console.log('Loading samples...');
   let sampleCount = 0;
+  const unreadable = [];
   // Preload a temporary OfflineAudioContext for buffer creation
   const tmpCtx = new nwa.OfflineAudioContext(2, 1, sampleRate);
   
   for (const dir of readdirSync(SAMPLES_DIR)) {
+    // Hidden folders aren't banks: a setup run that stops early leaves `.<bank>.partial`.
+    if (dir.startsWith('.')) continue;
     const dirPath = path.join(SAMPLES_DIR, dir);
+    let files;
     try {
-      const files = readdirSync(dirPath).filter(f => f.endsWith('.wav') || f.endsWith('.WAV')).sort();
-      for (let i = 0; i < files.length; i++) {
-        const buf = loadWavToBuffer(path.join(dirPath, files[i]), tmpCtx);
-        if (buf) {
-          sampleBuffers.set(`${dir}:${i}`, buf);
-          if (i === 0) sampleBuffers.set(dir, buf); // default (index 0)
-          sampleCount++;
-        }
+      // Nor are dot-files samples: macOS leaves `._<name>.wav` beside files it copies.
+      files = readdirSync(dirPath).filter(f => /\.wav$/i.test(f) && !f.startsWith('.')).sort();
+    } catch (e) {
+      if (e.code === 'ENOTDIR') continue; // a file, such as strudel.json
+      // A folder it can't open is still a bank, so the events that name it say why they're lost.
+      unreadable.push(`${dir}/`);
+      banks.set(dir, [{ unreadable: `${dir}/ (${e.code})` }]);
+      continue;
+    }
+    // A file that can't be read keeps its place in the bank, so n still picks the same files.
+    const bank = files.map((file) => {
+      try {
+        return loadWavToBuffer(path.join(dirPath, file), tmpCtx);
+      } catch (e) {
+        unreadable.push(`${dir}/${file}`);
+        return { unreadable: `${dir}/${file} (${e.message})` };
       }
-    } catch { /* not a directory */ }
+    });
+    if (bank.length) banks.set(dir, bank);
+    sampleCount += bank.filter(b => !b.unreadable).length;
   }
-  console.log(`  ✅ ${sampleCount} samples loaded from ${sampleBuffers.size} entries`);
+  console.log(`  ✅ ${sampleCount} samples loaded from ${banks.size} banks`);
+  if (unreadable.length) console.warn(`  ⚠️ Can't read ${unreadable.join(', ')}`);
 } else {
-  console.log('  ⚠️ No samples directory found. Sample-based sounds will be silent.');
+  console.warn(`  ⚠️ No samples folder at ${SAMPLES_DIR}: run npm run setup`);
 }
 
 // ── Render to OfflineAudioContext ──
@@ -377,7 +385,17 @@ const waveMap = {
   supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
 };
 
-const warnedSounds = new Set(); // track warned sound names to avoid spam
+// Noise sources, made once per render and looped like superdough's.
+const noiseBuffers = new Map();
+function noiseBuffer(type) {
+  if (!noiseBuffers.has(type)) {
+    const buf = offCtx.createBuffer(1, 2 * sampleRate, sampleRate);
+    buf.copyToChannel(makeNoise(type, buf.length), 0);
+    noiseBuffers.set(type, buf);
+  }
+  return noiseBuffers.get(type);
+}
+
 let scheduled = 0;
 for (const hap of haps) {
   // Skip continuation fragments — only schedule onset haps.
@@ -395,12 +413,14 @@ for (const hap of haps) {
   if (hapStart >= actualDuration || hapStart < 0) continue;
 
   const v = hap.value;
-  if (typeof v !== 'object' || v === null) continue;
+  if (typeof v !== 'object' || v === null) {
+    problems.dropped(`no controls such as s() or note() (a bare ${v === null ? 'null' : typeof v})`);
+    continue;
+  }
 
   const gain = Math.min(v.gain ?? 0.3, 1.0);
   if (gain <= 0.001) continue; // Skip silent haps (saves memory on masked layers)
   const sound = v.s || '';
-  const nVal = v.n !== undefined ? Math.round(Number(v.n)) : 0;
   const lpf = v.lpf ?? v.cutoff ?? 6000;
   const attack = v.attack ?? 0.005;
   const decay = v.decay ?? 0.1;
@@ -409,10 +429,15 @@ for (const hap of haps) {
   const pan = v.pan ?? 0.5;
 
   // Check if this is a sample-based sound
-  const sampleKey = `${sound}:${nVal}`;
-  const sampleBuf = sampleBuffers.get(sampleKey) || sampleBuffers.get(sound);
-  
+  const bank = sound ? findBank(banks, sound) : undefined;
+  const sampleBuf = bank ? pickSample(bank, v.n, problems.strudelWarning) : undefined;
+  if (sampleBuf?.unreadable) {
+    problems.dropped(`couldn't read ${sampleBuf.unreadable}`);
+    continue;
+  }
+
   const isSynthSound = waveMap[sound] !== undefined;
+  const isNoise = NOISES.includes(sound);
 
   // Resolve note → frequency (for synth sounds)
   let freq = null;
@@ -422,16 +447,9 @@ for (const hap of haps) {
   // Currently falls through to 440Hz for unresolved scale degrees
   else if (v.n !== undefined && isSynthSound) freq = 440;
 
-  // Skip if neither sample nor synth — warn on unrecognized sounds
-  if (!sampleBuf && !isSynthSound && sound) {
-    if (!warnedSounds.has(sound)) {
-      console.warn(`  ⚠️ Unrecognized sound "${sound}" — falling back to 440Hz synth`);
-      warnedSounds.add(sound);
-    }
-    if (!freq) freq = 440;
-  } else if (!sampleBuf && !freq && !isSynthSound) {
-    if (!freq) freq = 440; // last resort fallback
-  }
+  // An unknown sound plays as a triangle tone (440 Hz unless the event has a note) and goes in
+  // the report.
+  if (!sampleBuf && !isSynthSound && !isNoise && sound) problems.unknownSound(sound);
 
   try {
     const endTime = hapStart + hapDur;
@@ -501,17 +519,24 @@ for (const hap of haps) {
       src.start(hapStart);
       src.stop(sampleEnd + 0.05);
     } else {
-      // ── Oscillator synth ──
-      if (!freq) freq = 440;
-      const oscType = waveMap[sound] || 'triangle';
-      
-      const osc = offCtx.createOscillator();
-      osc.type = oscType;
-      osc.frequency.setValueAtTime(freq, hapStart);
+      // ── Oscillator synth, or noise ──
+      let osc;
+      if (isNoise) {
+        osc = offCtx.createBufferSource();
+        osc.buffer = noiseBuffer(sound);
+        osc.loop = true;
+      } else {
+        if (!freq) freq = 440;
+        const oscType = waveMap[sound] || 'triangle';
 
-      // Slight detune for richness on saw/square
-      if (oscType === 'sawtooth' || oscType === 'square') {
-        osc.detune.setValueAtTime(Math.random() * 10 - 5, hapStart);
+        osc = offCtx.createOscillator();
+        osc.type = oscType;
+        osc.frequency.setValueAtTime(freq, hapStart);
+
+        // Slight detune for richness on saw/square
+        if (oscType === 'sawtooth' || oscType === 'square') {
+          osc.detune.setValueAtTime(Math.random() * 10 - 5, hapStart);
+        }
       }
 
       // ADSR envelope
@@ -534,11 +559,12 @@ for (const hap of haps) {
     
     scheduled++;
   } catch (e) {
-    // Skip problematic haps
+    problems.dropped(`couldn't schedule it (${e.message})`);
   }
 }
 
 console.log(`  Scheduled ${scheduled}/${haps.length} haps`);
+const problemCount = problems.report();
 
 if (scheduled === 0) {
   console.error('  ❌ Nothing to render.');
@@ -576,6 +602,10 @@ for (let i = 0; i < buf.length; i++) {
 const wav = makeWav(pcm, sampleRate, 2, 16);
 writeFileSync(output, wav);
 console.log(`✅ ${output} (${(wav.length / 1024 / 1024).toFixed(1)}MB)`);
+if (strict && problemCount > 0) {
+  console.error(`❌ --strict: ${problemCount} problem${problemCount === 1 ? '' : 's'} listed above`);
+  process.exit(2);
+}
 process.exit(0);
 
 // ── Helpers ──

@@ -20,7 +20,7 @@ Write a [Strudel](https://strudel.cc) pattern as a `.js` file, render it offline
 Installing the skill copies files only. Before the first render, in `{baseDir}`:
 
 ```bash
-npm run setup     # npm install + download the drum samples (Dirt-Samples, ~11 MB, from github.com)
+npm run setup     # npm install + download 21 sample banks (Dirt-Samples, ~14 MB, from github.com)
 npm test          # 12 checks: Strudel loads, samples are present
 ```
 
@@ -37,14 +37,16 @@ Two renderers ship, and they differ (#67 picks one):
 | | `chunked-render.mjs` (use this to compose) | `offline-render-v2.mjs` (`dispatch.sh`, `npm run render`, CI) |
 |---|---|---|
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
-| Unknown sound name | dropped; `Total: X/Y haps scheduled` shows X below Y | played as a triangle tone (440 Hz unless the event has a note), with one warning |
+| Unknown sound name | dropped, and listed after the render | played as a triangle tone (440 Hz unless the event has a note), and listed after the render |
 | `.lpf()` / `.cutoff()` | ignored | works |
 | `note()` on a sample | shifted from the sample's root note (`samples/strudel.json`, the file name, or else C4) | root notes ignored: a MIDI number shifts from C4, a note name from C5 (`note("c4")` plays an octave down) |
 | Level | peak-normalized | compressor, 2 s fade-out |
+| Sample shorter than its event | plays once, as in Strudel | loops to fill the event (#75) |
+| Sample longer than its event | cut at the event's end unless `clip` is 1 or more. Strudel lets it ring unless `clip`, `release` or `loop` is set (#75) | the same |
 
 ```bash
 # Compose and iterate: argument order is input, output, cycles, chunk size.
-node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
+node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16 --strict
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
 
 # Filter-heavy pieces, through offline-render-v2.mjs: input, cycles, BPM. A setcpm() in the
@@ -52,6 +54,12 @@ ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
 bash scripts/dispatch.sh render assets/compositions/fog-and-starlight.js 16 72
 # → fog-and-starlight.wav and .mp3 in $STRUDEL_TMP (default ~/.openclaw/workspace/strudel-renders)
 ```
+
+`--strict` (either renderer) still writes the file, then exits with status 2 if anything didn't
+play as written. The list it prints after the render names each sound with no sample or synth,
+each kind of dropped event, and every warning Strudel logged, such as `[warn]: Can't do arithmetic
+on control pattern.` (write `.add(note(12))`, not `.add(12)`) or `[tonal] incomplete scale`
+(write `"c:major:pentatonic"`, with colons). Fix those before you post.
 
 Length is cycles divided by cycles per second: `setcpm(30)` makes a cycle 2 s, so 16 cycles is
 32 s. A check before posting:
@@ -86,7 +94,7 @@ setcpm(90/4)                       // 90 BPM, 4 beats per cycle
 stack(
   s("bd ~ ~ bd ~ ~ bd ~").gain(0.35),
   s("hh*8").gain("<0.35 0.4>"),
-  s("~ sd ~ sd").gain(0.55),
+  s("~ sd ~ sd").gain(0.25),
   note("<c2 c2 eb2 g1>").s("sawtooth")
     .attack(0.01).decay(0.2).sustain(0.3).release(0.2).gain(0.1),
   note("<[c4 eb4 g4] [bb3 d4 f4]>").s("triangle")
@@ -101,15 +109,19 @@ Rules that keep a render honest:
 - **End the file with the pattern.** Both renderers return the last top-level expression that
   starts with `stack(`, `note(`, `s(`, `n(`, `seq(`, `cat(`, `sequence(`, `arrange(`, `slowcat(`
   or `fastcat(`. Lines before it are setup.
-- **Use only sounds that exist.** Synths: `sine`, `triangle`/`tri`, `square`, `sawtooth`/`saw`.
+- **Use only sounds that exist.** Synths: `sine`, `triangle`/`tri`, `square`, `sawtooth`/`saw`;
+  a note with no `.s()` plays `triangle`, as in Strudel. Noise: `white`, `pink`, `brown`.
   (`offline-render-v2.mjs` also maps `piano`, `pluck`, `organ`, `bass`, `supersaw` and
-  `supersquare` onto those; `chunked-render.mjs` drops them.) Samples: any folder in `samples/`
-  holding WAVs. After setup that's `bd sd hh cp cr mt lt ht cb 808bd 808sd 808hc 808oh`. A clone
-  or `git:` install also has the committed `bloom_*` set; a ClawHub install leaves it out. `oh`,
-  `rim`, `white`, `metal` and other Strudel names aren't installed (#66).
-  `bash scripts/samples-manage.sh list` shows what's there.
+  `supersquare` onto the synths; `chunked-render.mjs` drops them.) Samples: any folder in
+  `samples/` holding WAVs. After setup that's `bd sd hh ho cp cr rm mt lt ht cb 808bd 808sd 808hc
+  808oh metal chin insect wind industrial glitch`, and Strudel's `oh` and `rim` play `ho` and
+  `rm`. `n` picks a file and wraps around: `insect:4` of three files plays `insect:1`. A clone or
+  `git:` install also has the committed `bloom_*` set; a ClawHub install leaves it out. Other
+  Strudel names (`rd`, `sh`, `bell` and so on) have no bank. `bash scripts/samples-manage.sh list`
+  shows what's there.
 - **Use only controls that render:** `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip`,
-  `attack`, `decay`, `sustain`, `release`; also `lpf`/`cutoff` and `loopAt` in
+  and `attack`, `decay`, `sustain`, `release` on synths (samples get short fixed fades); also
+  `lpf`/`cutoff` and `loopAt` in
   `offline-render-v2.mjs`. `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect
   are silently ignored (#68). `.bank()` and `samples()` do nothing.
 - **Pitch synths with `note()`**, or `n()` followed by `.scale()`. A bare `n()` on a synth plays
@@ -191,6 +203,6 @@ anything made from it. The authors make no claim about fair use, copyright or de
   run during the render, such as `.fmap()`, see the whole environment. `chunked-render.mjs` hides
   nothing. Render only compositions you wrote or read first. For untrusted ones, use a container
   or VM with no credentials.
-- `npm run setup` runs `npm install` (no lifecycle scripts in this package) and sparse-clones
-  `github.com/tidalcycles/Dirt-Samples`.
+- `npm run setup` runs `npm install` (no lifecycle scripts in this package) and fetches 21
+  folders of `github.com/tidalcycles/Dirt-Samples` at a pinned commit.
 - Voice streaming is the only part that holds a credential (above).

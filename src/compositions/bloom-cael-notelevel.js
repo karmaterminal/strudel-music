@@ -18,7 +18,7 @@
 //
 // Lessons from Frisson:
 //   - angle-bracket gains (<>), not space-separated
-//   - .clip(1) for sustained tones
+//   - let samples ring to their end (no .clip(1) since #75: it cuts them)
 //   - per-bar gain automation
 //   - separate voice per distinct sound
 //
@@ -180,7 +180,7 @@ stack(
   // ═══════════════════════════════════════════════════════════════════════
 
   // BASS D1 — sub drone (breakdowns + outro)
-  s("bloom_bass_D1").struct("t ~ t ~ t ~ t ~").clip(1).gain(
+  s("bloom_bass_D1").struct("t ~ t ~ t ~ t ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0.2 0.23 0.25 0.28 0.3 0.33 0.35 0.38 " + // [B:ROOTS] 008-015
@@ -201,7 +201,7 @@ stack(
   ),
 
   // BASS D2 — driving 8ths, home position
-  s("bloom_bass_D2").struct("t t t t t t t t").clip(1).gain(
+  s("bloom_bass_D2").struct("t t t t t t t t").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -222,7 +222,7 @@ stack(
   ),
 
   // BASS C1 — VII (brightness, lift)
-  s("bloom_bass_C1").struct("t t t t t t t t").clip(1).gain(
+  s("bloom_bass_C1").struct("t t t t t t t t").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -243,7 +243,7 @@ stack(
   ),
 
   // BASS As1 (Bb) — bVI (dark warmth)
-  s("bloom_bass_As1").struct("t t t t t t t t").clip(1).gain(
+  s("bloom_bass_As1").struct("t t t t t t t t").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -264,7 +264,7 @@ stack(
   ),
 
   // BASS G1 — iv (tension, yearning)
-  s("bloom_bass_G1").struct("t t t t t t t t").clip(1).gain(
+  s("bloom_bass_G1").struct("t t t t t t t t").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -291,7 +291,7 @@ stack(
   // ═══════════════════════════════════════════════════════════════════════
 
   // LEAD D3 — home, dominant melody note
-  s("bloom_lead_D3").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_D3").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -312,7 +312,7 @@ stack(
   ),
 
   // LEAD C3 — descending step
-  s("bloom_lead_C3").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_C3").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -333,7 +333,7 @@ stack(
   ),
 
   // LEAD As2 (Bb2) — the dark turn
-  s("bloom_lead_As2").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_As2").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -354,7 +354,7 @@ stack(
   ),
 
   // LEAD A2 — longing
-  s("bloom_lead_A2").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_A2").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -375,7 +375,7 @@ stack(
   ),
 
   // LEAD G2 — gravity, resolution
-  s("bloom_lead_G2").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_G2").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -396,7 +396,7 @@ stack(
   ),
 
   // LEAD F3 — upper brightness (peak color)
-  s("bloom_lead_F3").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_F3").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015
@@ -417,7 +417,7 @@ stack(
   ),
 
   // LEAD E3 — upper brightness (riser + peak)
-  s("bloom_lead_E3").struct("t ~ ~ ~").clip(1).gain(
+  s("bloom_lead_E3").struct("t ~ ~ ~").gain(
     "<" +
     "0 0 0 0 0 0 0 0 " + // [A:SEED] 000-007
     "0 0 0 0 0 0 0 0 " + // [B:ROOTS] 008-015

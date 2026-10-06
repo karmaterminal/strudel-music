@@ -66,7 +66,7 @@ stack(
     " bloom_lead_D3 bloom_lead_C3 bloom_lead_D3 bloom_lead_D3" +
     " bloom_lead_D3 bloom_lead_D3>"
   )
-    .clip(3)
+    .loop(1) // sustain each note through its two bars (#75)
     .slow(2)
     .gain(
       // [A] SUBMERGED 000-015: lead sustains longer, always present
@@ -104,7 +104,7 @@ stack(
     " bloom_lead_C3 bloom_lead_As2 bloom_lead_A2 bloom_lead_G2" +
     " bloom_lead_D3>"
   )
-    .clip(6)
+    .loop(1) // sustain each note through its four bars (#75)
     .slow(4)
     .gain(
       // [A] SUBMERGED: counter present from the start, quiet
@@ -289,6 +289,7 @@ stack(
   // ═══════════════ PAD — sustained D3 atmosphere ══════════════════════
   // The water the seal moves through. Present throughout, varying depth.
   s("bloom_lead_D3")
+    .loop(1) // sustain the sample through its eight bars (#75)
     .slow(8)
     .gain(
       // [A] SUBMERGED: pad is the water

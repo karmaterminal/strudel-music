@@ -24,7 +24,7 @@
   - An unknown option, an extra argument, a cycle count or BPM that isn't a positive number, a chunk size that isn't a whole number of cycles, or a `--samples` folder or `--prebake` file that doesn't exist stops the render with exit status 1. A misspelt `--strict` used to render without it, a cycle count of `abc` crashed `offline-render-v2.mjs` and gave an empty file from `chunked-render.mjs`, and a chunk size of 0 made `chunked-render.mjs` loop forever.
   - `chunked-render.mjs` fails with exit status 1 when nothing plays, as `offline-render-v2.mjs` does. It wrote a silent file.
   - An `n` that isn't a number plays the bank's first file with Strudel's own warning, which fails `--strict`.
-  - `download-samples.sh` refuses any argument but `--force`. It copies each bank beside the old one and swaps it in with two renames, so a run that stops partway leaves the old bank or the new one. A misspelt `--force` ran as a plain update, and an interrupted run could leave part of a bank that later runs took as present.
+  - `download-samples.sh` refuses any argument but `--force`. It copies each bank beside the old one and swaps it in with two renames, so a run that stops partway leaves the old bank or the new one. A run after one killed between the two renames puts the old bank back before it starts. A misspelt `--force` ran as a plain update, and an interrupted run could leave part of a bank that later runs took as present.
   - Covered by `test/render-sounds.test.mjs`, `test/sounds.test.mjs` and `test/download-samples.test.mjs`.
 
 ### Changed

@@ -23,6 +23,17 @@ count_wavs() {
   echo "$n"
 }
 
+# A run killed partway through a swap (below) can leave a bank moved aside as .<bank>.old, and a
+# copy that may be incomplete as .<bank>.partial. Before counting what's missing, put each bank
+# that was moved aside back, unless its replacement made it in, and drop the copies.
+for bank in "${BANKS[@]}"; do
+  old="${SAMPLES_DIR:?}/.$bank.old"
+  if [ -e "$old" ]; then
+    if [ -e "$SAMPLES_DIR/$bank" ]; then rm -rf "$old"; else mv "$old" "$SAMPLES_DIR/$bank"; fi
+  fi
+  rm -rf "${SAMPLES_DIR:?}/.$bank.partial"
+done
+
 bank_dirs=("${BANKS[@]/#/$SAMPLES_DIR/}")
 missing=()
 for bank in "${BANKS[@]}"; do
@@ -60,10 +71,9 @@ for bank in "${missing[@]}"; do
     exit 1
   fi
   # Copy beside the bank, then swap it in with two renames, so a run that stops partway leaves
-  # the old bank or the new one, never part of either.
+  # the old bank or the new one, never part of either. The pass above left neither path behind.
   partial="${SAMPLES_DIR:?}/.$bank.partial"
   old="${SAMPLES_DIR:?}/.$bank.old"
-  rm -rf "$partial" "$old"
   cp -r "$TMP/$bank" "$partial"
   if [ -e "$SAMPLES_DIR/$bank" ]; then mv "$SAMPLES_DIR/$bank" "$old"; fi
   mv "$partial" "$SAMPLES_DIR/$bank"

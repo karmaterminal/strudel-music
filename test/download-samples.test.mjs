@@ -1,5 +1,6 @@
-// `download-samples.sh` must refuse arguments it doesn't know, and a run that stops partway must
-// leave each bank whole: the old one or the new one.
+// `download-samples.sh` must refuse arguments it doesn't know, a run that stops partway must leave
+// each bank whole (the old one or the new one), and the run after one that was killed must put
+// back a bank it left moved aside.
 // Run with: npm run test:unit
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -116,4 +117,35 @@ test('a swap that fails puts the old bank back', () => {
     { banks: { bd: ['old.wav'], hh: ['old.wav'] }, failSwap: 'hh' });
   assert.notEqual(status, 0, output);
   assert.deepEqual(samples, { bd: ['new.wav'], hh: ['old.wav'], sd: ['new.wav'] });
+});
+
+const hidden = (samples) => Object.keys(samples).filter((name) => name.startsWith('.'));
+
+// A run killed between the two renames leaves bd moved aside as .bd.old, its copy beside it, and
+// no bd. The next run must put the old bank back before anything can fail.
+test('a run after one killed mid-swap puts the old bank back first', () => {
+  const { status, output, git, samples } = download([],
+    { banks: { '.bd.old': ['old.wav'], '.bd.partial': ['new.wav'] }, failBank: 'bd' });
+  assert.equal(status, 0, output);
+  assert.deepEqual(samples.bd, ['old.wav']);
+  const sparse = git.find((line) => line.includes('sparse-checkout set'));
+  assert.ok(sparse && !/ bd( |$)/.test(sparse), sparse);
+  assert.deepEqual(hidden(samples), []);
+});
+
+test('with --force, a copy that fails after such a run still leaves the old bank', () => {
+  const { status, output, samples } = download(['--force'],
+    { banks: { '.bd.old': ['old.wav'] }, failBank: 'bd' });
+  assert.notEqual(status, 0, output);
+  assert.deepEqual(samples, { bd: ['old.wav'] });
+});
+
+// Killed after the second rename, or partway through copying a bank that was present.
+test('what a killed run leaves beside whole banks goes, and the banks stay as they are', () => {
+  const { status, output, samples } = download([],
+    { banks: { bd: ['new.wav'], '.bd.old': ['old.wav'], sd: ['old.wav'], '.sd.partial': ['half.wav'] } });
+  assert.equal(status, 0, output);
+  assert.deepEqual(samples.bd, ['new.wav']);
+  assert.deepEqual(samples.sd, ['old.wav']);
+  assert.deepEqual(hidden(samples), []);
 });

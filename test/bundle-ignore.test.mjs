@@ -39,7 +39,8 @@ test('samples/strudel.json reaches the bundle', { skip }, () => {
 
 test('the skill itself reaches the bundle', { skip }, () => {
   for (const file of ['SKILL.md', 'README.md', 'package.json', 'src/runtime/chunked-render.mjs',
-    'scripts/dispatch.sh', 'assets/compositions/fog-and-starlight.js']) published(file);
+    'src/runtime/sounds.mjs', 'scripts/dispatch.sh', 'scripts/download-samples.sh',
+    'assets/compositions/fog-and-starlight.js']) published(file);
 });
 
 test('samples, renders and dependencies stay out', { skip }, () => {

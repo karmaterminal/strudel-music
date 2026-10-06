@@ -6,7 +6,7 @@ Agents: read [AGENTS.md](AGENTS.md) first.
 ## What we're looking for
 
 - **Compositions** that render cleanly (below)
-- **Renderer work:** missing sounds (#66), one canonical renderer (#67), effects (#68)
+- **Renderer work:** one canonical renderer (#67), how long samples sound (#75), effects (#68)
 - **Rescued work** from old branches (#61)
 - **Documentation** that matches what the code does
 
@@ -29,11 +29,11 @@ Agents: read [AGENTS.md](AGENTS.md) first.
    // @mood   tension|combat|exploration|peace|mystery|victory|sorrow|ritual
    // @tempo  120
    ```
-2. Use only sounds that exist (synth waveforms, or folders in `samples/`) and controls the
-   renderers implement. `SKILL.md` § Write a composition lists both.
-3. Render it, check that every event was scheduled, and run the QA gate:
+2. Use only sounds that exist (synth waveforms, noise, or folders in `samples/`) and controls
+   the renderers implement. `SKILL.md` § Write a composition lists both.
+3. Render it with `--strict`, which fails if anything can't play as written, and run the QA gate:
    ```bash
-   node src/runtime/chunked-render.mjs my-pattern.js /tmp/my-pattern.wav 16
+   node src/runtime/chunked-render.mjs my-pattern.js /tmp/my-pattern.wav 16 --strict
    uv run --no-project --with numpy --with soundfile python scripts/qa-gate.py /tmp/my-pattern.wav
    ```
 4. Never commit renders or downloaded samples.
@@ -51,8 +51,8 @@ Agents: read [AGENTS.md](AGENTS.md) first.
 
 Every pull request and every push to `main` runs:
 
-- the smoke test (`npm test`), the unit tests (`npm run test:unit`) and a render of every shipped
-  composition
+- the smoke test (`npm test`), the unit tests (`npm run test:unit`) and a strict render of every
+  shipped composition with both renderers
 - a `SKILL.md` frontmatter check and a composition readability check
 - a scan for secrets and hardcoded paths
 

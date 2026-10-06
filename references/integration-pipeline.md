@@ -77,8 +77,8 @@ Chunked rendering handles long pieces without OOM on constrained hardware.
 
 ## Sample Management
 
-Default samples: `github:tidalcycles/dirt-samples` (CC-licensed, ~11MB).
-Downloaded automatically by `scripts/download-samples.sh`.
+Default samples: 21 banks of `github:tidalcycles/dirt-samples` at a pinned commit (~14 MB).
+Downloaded by `scripts/download-samples.sh`, which `npm run setup` runs.
 
 Custom samples:
 ```javascript

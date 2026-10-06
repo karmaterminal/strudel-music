@@ -3,10 +3,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { measureHz, readLeftChannel } from './wav-helpers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const renderers = ['src/runtime/offline-render-v2.mjs', 'src/runtime/chunked-render.mjs'];
@@ -20,44 +21,6 @@ const cases = [
   ['note name note("a3")', 'note("a3")', 220],
   ['MIDI note number note("0")', 'note("0")', 440 * Math.pow(2, -69 / 12)],
 ];
-
-// Left channel of the 16-bit PCM WAV the renderers write, as floats.
-function readLeftChannel(file) {
-  const buf = readFileSync(file);
-  assert.equal(buf.toString('ascii', 0, 4), 'RIFF', 'not a WAV file');
-  let channels = 0, sampleRate = 0, bits = 0;
-  let offset = 12;
-  while (offset + 8 <= buf.length) {
-    const id = buf.toString('ascii', offset, offset + 4);
-    const size = buf.readUInt32LE(offset + 4);
-    if (id === 'fmt ') {
-      channels = buf.readUInt16LE(offset + 10);
-      sampleRate = buf.readUInt32LE(offset + 12);
-      bits = buf.readUInt16LE(offset + 22);
-    } else if (id === 'data') {
-      assert.equal(bits, 16, 'expected 16-bit PCM');
-      const frames = Math.floor(size / (channels * 2));
-      const left = new Float32Array(frames);
-      for (let i = 0; i < frames; i++) {
-        left[i] = buf.readInt16LE(offset + 8 + i * channels * 2) / 32768;
-      }
-      return { left, sampleRate };
-    }
-    offset += 8 + size + (size % 2);
-  }
-  throw new Error(`no data chunk in ${file}`);
-}
-
-// Frequency from rising zero crossings between two times, in seconds.
-function measureHz(samples, sampleRate, from, to) {
-  const start = Math.floor(from * sampleRate);
-  const end = Math.floor(to * sampleRate);
-  let crossings = 0;
-  for (let i = start + 1; i < end; i++) {
-    if (samples[i - 1] < 0 && samples[i] >= 0) crossings++;
-  }
-  return crossings / (to - from);
-}
 
 for (const renderer of renderers) {
   for (const [label, expr, expected] of cases) {

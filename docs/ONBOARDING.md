@@ -44,7 +44,7 @@ Work in the skill folder: `{baseDir}` in OpenClaw (where `openclaw skills instal
 your clone of the repo.
 
 ```bash
-npm run setup     # npm install + Dirt-Samples drum banks (~11 MB, from github.com)
+npm run setup     # npm install + 21 Dirt-Samples banks (~14 MB, from github.com)
 npm test          # 12 checks; all should pass
 ```
 
@@ -77,7 +77,7 @@ setcpm(120/4)  // 120 BPM: 4 beats per cycle, 30 cycles per minute
 stack(
   // Drums: samples from samples/bd, samples/sd, samples/hh
   s("bd ~ ~ ~ bd ~ ~ ~").gain(0.4),
-  s("~ sd ~ sd").gain(0.5),
+  s("~ sd ~ sd").gain(0.25),
   s("hh*8").gain("<0.3 0.35>"),
 
   // Bass: a synthesized sawtooth
@@ -99,13 +99,13 @@ stack(
 
 ```bash
 # 20 cycles at 30 per minute = 40 seconds
-node src/runtime/chunked-render.mjs output/my-first-track.js output/my-first-track.wav 20
+node src/runtime/chunked-render.mjs output/my-first-track.js output/my-first-track.wav 20 --strict
 ffmpeg -i output/my-first-track.wav -codec:a libmp3lame -b:a 192k output/my-first-track.mp3 -y
 ```
 
-Read the renderer's last lines. `Total: 380/380 haps scheduled` means every event played. A
-smaller first number means some sound names weren't found, and those events were dropped. To see
-which names, render once with `offline-render-v2.mjs`, which warns about each one.
+Read the renderer's last lines. Any `⚠️` line after `Total: ... haps scheduled` names something
+that didn't play as written: a sound with no sample or synth, a dropped event, or a warning from
+Strudel. With `--strict` the renderer then exits with status 2, so a script can stop there.
 
 ### Check it
 
@@ -156,9 +156,9 @@ What the renderers implement today:
 ```js
 .gain(0.4)                                          // volume
 .pan(0.3)                                           // 0 left, 1 right
-.attack(0.01).decay(0.2).sustain(0.5).release(0.3)  // envelope
+.attack(0.01).decay(0.2).sustain(0.5).release(0.3)  // envelope, on synths only
 .speed(2)                                           // sample playback rate
-.clip(1)                                            // let a sample ring out
+.clip(1)                                            // let a sample ring out (Strudel cuts it: #75)
 .lpf(800)                                           // low-pass: offline-render-v2.mjs only
 ```
 
@@ -170,7 +170,7 @@ every other effect (#68). Strudel's own site plays them; these renderers don't.
 ```js
 setcpm(120/4)
 
-const drums = stack(s("bd ~ ~ ~ bd ~ ~ ~").gain(0.4), s("~ sd ~ sd").gain(0.5), s("hh*8").gain(0.3))
+const drums = stack(s("bd ~ ~ ~ bd ~ ~ ~").gain(0.4), s("~ sd ~ sd").gain(0.25), s("hh*8").gain(0.3))
 const bass = note("c2 ~ eb2 ~ g1 ~ c2 ~").s("sawtooth").gain(0.1)
 const pad = note("<[c5,eb5,g5] [ab4,c5,eb5]>").s("triangle").attack(0.5).release(1).gain(0.2)
 
@@ -187,11 +187,14 @@ The renderers evaluate the file and keep the **last top-level expression that st
 
 ### Sound sources
 
-- **Synths:** `.s("sine")`, `.s("triangle")`, `.s("square")`, `.s("sawtooth")`.
+- **Synths:** `.s("sine")`, `.s("triangle")`, `.s("square")`, `.s("sawtooth")`. A note with no
+  `.s()` plays `triangle`.
+- **Noise:** `.s("white")`, `.s("pink")`, `.s("brown")`.
 - **Samples:** a folder of WAVs in `samples/` is a sound named after the folder. After setup:
-  `bd sd hh cp cr mt lt ht cb 808bd 808sd 808hc 808oh`. A clone or `git:` install also has the
-  committed `bloom_*` set; a ClawHub install leaves it out. `s("bd:3")` picks the fourth file.
-  `oh`, `rim`, `white` and other Strudel names aren't installed (#66).
+  `bd sd hh ho cp cr rm mt lt ht cb 808bd 808sd 808hc 808oh metal chin insect wind industrial
+  glitch`; Strudel's `oh` and `rim` play `ho` and `rm`. A clone or `git:` install also has the
+  committed `bloom_*` set; a ClawHub install leaves it out. `s("bd:3")` picks the fourth file,
+  and a number past the last file wraps around, as in Strudel.
 - **Pitched samples:** `note("c3").s("bloom_lead_C3")` (where the bloom set is installed) shifts
   a sample from its root note, taken from `samples/strudel.json` or the file name, in
   `chunked-render.mjs`. `offline-render-v2.mjs` ignores root notes: it shifts a MIDI number from
@@ -243,8 +246,9 @@ Read [KNOWN-PITFALLS.md](KNOWN-PITFALLS.md). The short version:
 2. **DJ voice-over in stems** gets into pad slices.
 3. **Root notes:** an undeclared pitched sample is assumed to be C4.
 4. **Loudness:** check every render.
-5. **Missing sounds and effects:** a sound or effect the renderers don't know is dropped, or
-   replaced by a 440 Hz tone.
+5. **Missing sounds and effects:** a sound the renderers don't know is dropped, or replaced by a
+   440 Hz tone, and listed after the render (`--strict` fails it). Effects they don't know are
+   ignored without a word (#68).
 
 ## Where to learn more
 

@@ -63,19 +63,22 @@ ffmpeg -i output.wav -af loudnorm=print_format=json -f null - 2>&1 | grep -E "in
 ## 5. Sounds and effects the renderers don't implement
 
 Strudel's website plays far more than these headless renderers do. What they don't know, they
-drop without failing:
+skip or replace, and the render still succeeds unless you pass `--strict`:
 
-- **Unknown sound names.** `chunked-render.mjs` drops the events; the only sign is
-  `Total: X/Y haps scheduled` with X below Y. `offline-render-v2.mjs` plays them as a triangle
-  tone, at 440 Hz unless the event has a note, and warns once per name. `oh`, `rim`, `white`,
-  `metal`, `bell` and other Strudel names aren't installed (#66). Check with
+- **Unknown sound names.** `chunked-render.mjs` drops the events. `offline-render-v2.mjs` plays
+  them as a triangle tone, at 440 Hz unless the event has a note. Both list each name after the
+  render, and `--strict` turns the list into exit status 2. Strudel names such as `rd`, `sh` and
+  `bell` have no bank here; `oh` and `rim` play Dirt-Samples' `ho` and `rm`. Check with
   `bash scripts/samples-manage.sh list`.
 - **Effects.** `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect are ignored by
   both renderers. `.lpf()` works only in `offline-render-v2.mjs` (#68).
 - **Octave-less note names.** `note("c e g")` renders an octave above Strudel (#67). Write `c3`.
+- **Sample length.** `offline-render-v2.mjs` loops a sample that is shorter than its event, so a
+  slow `s("bd")` becomes a roll. Both renderers cut a longer sample at the event's end unless
+  `clip` is 1 or more. Strudel plays a sample once, to its end, and `clip` cuts it (#75).
 
-**Fix:** use the sounds and controls listed in `SKILL.md` § Write a composition, and read the
-renderer's last lines before posting.
+**Fix:** use the sounds and controls listed in `SKILL.md` § Write a composition, and render with
+`--strict` before posting.
 
-**Discovered:** 2026-10 audit. 9 of the 15 shipped compositions name missing sounds, and all 15
-use `.room()`.
+**Discovered:** 2026-10 audit. 9 of the 15 shipped compositions named missing sounds (fixed in
+#66), and all 15 use `.room()`.

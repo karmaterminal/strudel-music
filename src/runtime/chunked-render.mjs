@@ -4,13 +4,20 @@
  * to avoid OOM on long/dense compositions.
  *
  * Usage: node src/runtime/chunked-render.mjs <input.js> [output.wav] [totalCycles] [chunkSize]
+ *          [--strict] [--samples=<dir>]
+ *
+ * --strict exits with status 2, after writing the file, if any event names a sound with no
+ * sample or synth, any event is dropped, or Strudel logs a warning or error for the pattern.
+ * --samples reads sample banks from <dir> instead of the repo's samples/.
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, appendFileSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, appendFileSync, unlinkSync } from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
+import { findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems } from './sounds.mjs';
 
 const require = createRequire(import.meta.url);
+const problems = trackProblems({ unplayable: 'dropped' });
 
 // ── Polyfill Web Audio for Node.js ──
 const nwa = require('node-web-audio-api');
@@ -26,7 +33,9 @@ globalThis.window = {
 globalThis.document = {
   createElement: () => ({ getContext: () => null, style: {}, setAttribute: () => {}, appendChild: () => {} }),
   body: { appendChild: () => {}, removeChild: () => {} },
-  addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true,
+  addEventListener: () => {}, removeEventListener: () => {},
+  // Strudel's logger reports warnings as events on document; collect them for the report.
+  dispatchEvent: (event) => { problems.strudelEvent(event); return true; },
   createEvent: () => ({ initEvent: () => {} }),
   head: { appendChild: () => {} }, querySelectorAll: () => [], querySelector: () => null,
 };
@@ -59,13 +68,28 @@ globalThis.WaveShaperNode = nwa.WaveShaperNode;
 globalThis.AnalyserNode = nwa.AnalyserNode;
 
 // ── Parse args ──
-const input = process.argv[2];
-const output = process.argv[3] || 'output.wav';
-const totalCycles = parseInt(process.argv[4] || '175');
-const chunkSize = parseInt(process.argv[5] || '8');
+const argv = process.argv.slice(2);
+const args = argv.filter(a => !a.startsWith('--'));
+const input = args[0];
+const output = args[1] || 'output.wav';
+const totalCycles = Number(args[2] || '175');
+const chunkSize = Number(args[3] || '8');
+const strict = argv.includes('--strict');
+const samplesOption = argv.find(a => a.startsWith('--samples='))?.slice('--samples='.length);
+const isFolder = (p) => { try { return statSync(p).isDirectory(); } catch { return false; } };
 
-if (!input) {
-  console.error('Usage: node src/runtime/chunked-render.mjs <input.js> [output.wav] [totalCycles] [chunkSize]');
+// A mistyped flag, number or path must not pass for a clean render.
+const argErrors = [
+  ...argv.filter(a => a.startsWith('--') && a !== '--strict' && !/^--samples=./.test(a))
+    .map(a => `unknown option ${a}`),
+  ...(args.length > 4 ? [`too many arguments: ${args.slice(4).join(' ')}`] : []),
+  ...(totalCycles > 0 && Number.isFinite(totalCycles) ? [] : [`totalCycles must be a positive number, not ${args[2]}`]),
+  ...(Number.isInteger(chunkSize) && chunkSize > 0 ? [] : [`chunkSize must be a whole number of cycles, not ${args[3]}`]),
+  ...(samplesOption && !isFolder(samplesOption) ? [`no samples folder at ${samplesOption}`] : []),
+];
+if (!input || argErrors.length) {
+  for (const e of argErrors) console.error(`❌ ${e}`);
+  console.error('Usage: node src/runtime/chunked-render.mjs <input.js> [output.wav] [totalCycles] [chunkSize] [--strict] [--samples=<dir>]');
   process.exit(1);
 }
 
@@ -156,47 +180,10 @@ const totalDuration = totalCycles / actualCps;
 console.log(`  CPS: ${actualCps.toFixed(3)} (${(cpmValue * 4).toFixed(1)} BPM), Total: ${totalCycles} cycles, Duration: ${totalDuration.toFixed(1)}s`);
 
 // ── Load samples ──
-const SAMPLES_DIR = path.resolve(
-  import.meta.dirname || path.dirname(new URL(import.meta.url).pathname),
-  '../../samples'
-);
-const sampleBufferData = new Map(); // sound → {channels, sampleRate, data[]}
-
-function loadWavRaw(filePath) {
-  const raw = readFileSync(filePath);
-  const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
-  if (raw.toString('ascii', 0, 4) !== 'RIFF') return null;
-  const channels = view.getUint16(22, true);
-  const sr = view.getUint32(24, true);
-  const bitsPerSample = view.getUint16(34, true);
-  let dataOffset = 12;
-  while (dataOffset < raw.length - 8) {
-    const chunkId = raw.toString('ascii', dataOffset, dataOffset + 4);
-    const chunkSize = view.getUint32(dataOffset + 4, true);
-    if (chunkId === 'data') {
-      dataOffset += 8;
-      const numSamples = Math.floor(chunkSize / (bitsPerSample / 8) / channels);
-      const channelData = [];
-      for (let ch = 0; ch < channels; ch++) {
-        channelData.push(new Float32Array(numSamples));
-      }
-      for (let ch = 0; ch < channels; ch++) {
-        for (let i = 0; i < numSamples; i++) {
-          const byteIndex = dataOffset + (i * channels + ch) * (bitsPerSample / 8);
-          if (bitsPerSample === 16) {
-            channelData[ch][i] = view.getInt16(byteIndex, true) / 32768;
-          } else if (bitsPerSample === 24) {
-            const s = (view.getUint8(byteIndex) | (view.getUint8(byteIndex+1) << 8) | (view.getInt8(byteIndex+2) << 16));
-            channelData[ch][i] = s / 8388608;
-          }
-        }
-      }
-      return { channels, sampleRate: sr, data: channelData, length: numSamples };
-    }
-    dataOffset += 8 + chunkSize;
-  }
-  return null;
-}
+const SAMPLES_DIR = samplesOption
+  || path.resolve(import.meta.dirname || path.dirname(new URL(import.meta.url).pathname), '../../samples');
+const banks = new Map(); // "bd" → [{channels, sampleRate, data[], length, key}, ...], in file-name order
+const pitchShifted = new Map(); // "bd:0:ps:<semitones>" → shifted copy
 
 // ── strudel.json root note manifest ──
 // Maps bank name → MIDI root note (authoritative when present)
@@ -250,21 +237,45 @@ if (existsSync(SAMPLES_DIR)) {
     }
   }
 
+  const unreadable = [];
   for (const dir of readdirSync(SAMPLES_DIR)) {
+    // Hidden folders aren't banks: a setup run that stops early leaves `.<bank>.partial`.
+    if (dir.startsWith('.')) continue;
     const dirPath = path.join(SAMPLES_DIR, dir);
+    let files;
     try {
-      const files = readdirSync(dirPath).filter(f => f.endsWith('.wav') || f.endsWith('.WAV')).sort();
-      for (let i = 0; i < files.length; i++) {
-        const buf = loadWavRaw(path.join(dirPath, files[i]));
-        if (buf) {
-          sampleBufferData.set(`${dir}:${i}`, buf);
-          if (i === 0) sampleBufferData.set(dir, buf);
-          sampleCount++;
-        }
+      // Nor are dot-files samples: macOS leaves `._<name>.wav` beside files it copies.
+      files = readdirSync(dirPath).filter(f => /\.wav$/i.test(f) && !f.startsWith('.')).sort();
+    } catch (e) {
+      if (e.code === 'ENOTDIR') continue; // a file, such as strudel.json
+      // A folder it can't open is still a bank, so the events that name it say why they're lost.
+      unreadable.push(`${dir}/`);
+      banks.set(dir, [{ unreadable: `${dir}/ (${e.code})` }]);
+      continue;
+    }
+    // A file that can't be read keeps its place in the bank, so n still picks the same files.
+    const bank = files.map((file, i) => {
+      try {
+        return { ...decodeWav(readFileSync(path.join(dirPath, file))), key: `${dir}:${i}` };
+      } catch (e) {
+        unreadable.push(`${dir}/${file}`);
+        return { unreadable: `${dir}/${file} (${e.message})` };
       }
-    } catch { /* not a directory */ }
+    });
+    if (bank.length) banks.set(dir, bank);
+    sampleCount += bank.filter(b => !b.unreadable).length;
   }
-  console.log(`  ✅ ${sampleCount} samples loaded`);
+  console.log(`  ✅ ${sampleCount} samples loaded from ${banks.size} banks`);
+  if (unreadable.length) console.warn(`  ⚠️ Can't read ${unreadable.join(', ')}`);
+} else {
+  console.warn(`  ⚠️ No samples folder at ${SAMPLES_DIR}: run npm run setup`);
+}
+
+// Noise sources, two seconds each, looped like superdough's.
+const noiseData = new Map();
+function noiseSamples(type) {
+  if (!noiseData.has(type)) noiseData.set(type, makeNoise(type, 2 * sampleRate));
+  return noiseData.get(type);
 }
 
 // ── Waveform generators ──
@@ -545,22 +556,30 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
     const relEnd = hapEndSec - chunkStart;
     
     if (relStart >= chunkDur || relEnd <= 0) continue;
-    
+
+    // A long event comes back once per chunk; report it only where it starts.
+    const onset = typeof hap.hasOnset !== 'function' || hap.hasOnset();
     const v = hap.value;
-    if (typeof v !== 'object' || v === null) continue;
-    
+    if (typeof v !== 'object' || v === null) {
+      if (onset) problems.dropped(`no controls such as s() or note() (a bare ${v === null ? 'null' : typeof v})`);
+      continue;
+    }
+
     const gain = Math.min(v.gain ?? 0.3, 1.0);
     if (gain <= 0.001) continue;
-    
-    const sound = v.s || '';
-    const nVal = v.n !== undefined ? Math.round(Number(v.n)) : 0;
+
+    const sound = v.s || 'triangle'; // Strudel's default sound
     const pan = v.pan ?? 0.5;
     const panL = Math.cos(pan * Math.PI / 2);
     const panR = Math.sin(pan * Math.PI / 2);
-    
-    const sampleKey = `${sound}:${nVal}`;
-    const sampleBuf = sampleBufferData.get(sampleKey) || sampleBufferData.get(sound);
-    
+
+    const bank = findBank(banks, sound);
+    const sampleBuf = bank ? pickSample(bank, v.n, problems.strudelWarning) : undefined;
+    if (sampleBuf?.unreadable) {
+      if (onset) problems.dropped(`couldn't read ${sampleBuf.unreadable}`);
+      continue;
+    }
+
     if (sampleBuf) {
       // ── Pitch-shift logic ──
       // Determine if we need to pitch-shift this sample
@@ -579,11 +598,11 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
             playbackRate = Math.pow(2, semitoneOffset / 12);
           } else {
             // Tonal mode: duration-preserving pitch shift via resample + WSOLA
-            const cacheKey = `${sound}:${nVal}:ps:${semitoneOffset.toFixed(2)}`;
-            let cached = sampleBufferData.get(cacheKey);
+            const cacheKey = `${sampleBuf.key}:ps:${semitoneOffset.toFixed(2)}`;
+            let cached = pitchShifted.get(cacheKey);
             if (!cached) {
               cached = pitchShiftBuffer(sampleBuf, semitoneOffset, false);
-              sampleBufferData.set(cacheKey, cached);
+              pitchShifted.set(cacheKey, cached);
               if (!renderChunk._loggedTonal) { renderChunk._loggedTonal = {}; }
               const lk = `${sound}:${v.note}`;
               if (!renderChunk._loggedTonal[lk]) {
@@ -642,12 +661,13 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
         }
       }
       scheduled++;
-    } else if (waveMap[sound]) {
-      // Synth oscillator
+    } else if (waveMap[sound] || NOISES.includes(sound)) {
+      // Synth oscillator, or noise
       // note 0 is MIDI note 0, so test for presence, not truthiness.
       let freq = v.freq || (v.note !== undefined ? noteToFreq(v.note) : 440);
       if (!freq) freq = 440; // a NaN note falls back, as in offline-render-v2
       const oscType = waveMap[sound];
+      const noise = oscType ? null : noiseSamples(sound);
       const attack = v.attack ?? 0.005;
       const decay = v.decay ?? 0.1;
       const sustain = v.sustain ?? 0.7;
@@ -669,24 +689,29 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
         else if (relT < hapDur - release) env = gain * sustain;
         else env = gain * sustain * Math.max(0, (hapDur - relT) / release);
         
-        // Oscillator
+        // Oscillator, or the looped noise buffer
         let sample;
-        const phase = relT * freq;
-        const frac = phase - Math.floor(phase);
-        switch (oscType) {
-          case 'sine': sample = Math.sin(2 * Math.PI * phase); break;
-          case 'triangle': sample = 4 * Math.abs(frac - 0.5) - 1; break;
-          case 'sawtooth': sample = 2 * frac - 1; break;
-          case 'square': sample = frac < 0.5 ? 1 : -1; break;
-          default: sample = Math.sin(2 * Math.PI * phase);
+        if (noise) {
+          sample = noise[Math.floor(relT * sampleRate) % noise.length];
+        } else {
+          const phase = relT * freq;
+          const frac = phase - Math.floor(phase);
+          switch (oscType) {
+            case 'sine': sample = Math.sin(2 * Math.PI * phase); break;
+            case 'triangle': sample = 4 * Math.abs(frac - 0.5) - 1; break;
+            case 'sawtooth': sample = 2 * frac - 1; break;
+            case 'square': sample = frac < 0.5 ? 1 : -1; break;
+            default: sample = Math.sin(2 * Math.PI * phase);
+          }
         }
-        
+
         left[i] += sample * env * panL;
         right[i] += sample * env * panR;
       }
       scheduled++;
+    } else if (onset) {
+      problems.unknownSound(sound);
     }
-    // else: unrecognized sound, skip
   }
   
   return { left, right, scheduled, haps: haps.length };
@@ -725,6 +750,12 @@ for (let c = 0; c < totalCycles; c += chunkSize) {
 }
 
 console.log(`  Total: ${totalScheduled}/${totalHaps} haps scheduled`);
+const problemCount = problems.report();
+
+if (totalScheduled === 0) {
+  console.error('  ❌ Nothing to render.');
+  process.exit(1);
+}
 console.log(`  🔊 Raw peak: ${globalPeak.toFixed(4)} (${(20*Math.log10(globalPeak)).toFixed(1)} dBFS)`);
 
 // ── Normalize and convert to 16-bit PCM ──
@@ -755,6 +786,10 @@ const wav = makeWav(pcm, sampleRate, 2, 16);
 writeFileSync(output, wav);
 const durationSec = pcm.length / 4 / sampleRate;
 console.log(`✅ ${output} (${(wav.length / 1024 / 1024).toFixed(1)}MB, ${durationSec.toFixed(1)}s)`);
+if (strict && problemCount > 0) {
+  console.error(`❌ --strict: ${problemCount} problem${problemCount === 1 ? '' : 's'} listed above`);
+  process.exit(2);
+}
 process.exit(0);
 
 function makeWav(pcm, sr, ch, bits) {

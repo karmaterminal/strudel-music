@@ -176,3 +176,92 @@ export function trackProblems({ unplayable }) {
     },
   };
 }
+
+// ── How long a sample sounds: superdough 1.1.0's rules (sampler.mjs onTriggerSample) ──
+
+// The ADSR superdough gives a sample (helpers.mjs getADSRValues, then getParamADSR's
+// nanFallback): what the event sets, with the rest filled in so that .decay() alone fades to
+// nothing and .attack() alone holds. [attack, decay, sustain, release], seconds and 0–1.
+export function sampleAdsr({ attack, decay, sustain, release }, warn = () => {}) {
+  let adsr = [0.001, 0.001, 1, 0.01];
+  if (attack != null || decay != null || sustain != null || release != null) {
+    const s = sustain ?? ((attack != null && decay == null) || (attack == null && decay == null) ? 1 : 0.001);
+    adsr = [Math.max(attack ?? 0, 0.001), Math.max(decay ?? 0, 0.001), Math.min(s, 1), Math.max(release ?? 0, 0.01)];
+  }
+  return adsr.map((x) => {
+    if (!Number.isNaN(Number(x))) return Number(x);
+    warn(`"${x}" is not a number, falling back to 0`);
+    return 0;
+  });
+}
+
+// The gain envelope superdough's getParamADSR draws, from 0 to 1, for an event that holds for
+// `hold` seconds: [seconds, level] points joined by straight lines, 0 after the last.
+export function envelopePoints([attack, decay, sustain, release], hold) {
+  if (attack > hold) return [[0, 0], [hold, hold / attack], [hold + release, 0]];
+  if (attack + decay > hold) {
+    return [[0, 0], [attack, 1], [hold, 1 + (hold - attack) * (sustain - 1) / decay], [hold + release, 0]];
+  }
+  return [[0, 0], [attack, 1], [attack + decay, sustain], [hold, sustain], [hold + release, 0]];
+}
+
+// The envelope's level `t` seconds after the event starts.
+export function envelopeAt(points, t) {
+  if (t <= points[0][0]) return points[0][1];
+  for (let i = 1; i < points.length; i++) {
+    const [t1, v1] = points[i];
+    if (t < t1) {
+      const [t0, v0] = points[i - 1];
+      return v0 + (v1 - v0) * (t - t0) / (t1 - t0);
+    }
+  }
+  return 0;
+}
+
+/**
+ * How superdough 1.1.0 plays a sample event. `duration` is the buffer's length in seconds,
+ * `pitchRate` the renderer's rate for the event's note (1 without one; how a note maps to a
+ * rate differs between the renderers, #67), and `eventSeconds` the event's length: Strudel's
+ * `hap.duration`, which counts `clip`, over cps.
+ *
+ * A sample plays once, to its end (or to `end`), at its playback rate. With `clip`, `loop` or
+ * `release` set, it holds for the event's length instead, then releases. It loops only with
+ * `loop`. `speed` multiplies the rate, plays the sample backwards when negative and silences it
+ * at 0; unit "c" (set by loopAt and fit) multiplies it by the buffer's length.
+ *
+ * Returns null when the event plays nothing, or, in seconds from the event's start:
+ * `rate`, `reverse`, `offset` (where in the buffer it starts, in buffer seconds), `loop`
+ * ([start, end] in buffer seconds, or null), `hold`, `envelope` (envelopePoints) and `stop`.
+ */
+export function samplePlayback(v, { duration, pitchRate = 1, eventSeconds }, warn) {
+  const speed = v.speed ?? 1;
+  if (speed === 0) return null;
+  const rate = pitchRate * Math.abs(speed) * (v.unit === 'c' ? duration : 1);
+  const begin = v.begin ?? 0;
+  const end = v.end ?? 1;
+  const loop = String(v.s).startsWith('wt_') ? 1 : v.loop;
+  const hold = v.clip == null && loop == null && v.release == null
+    ? (end - begin) * duration / rate
+    : eventSeconds;
+  const adsr = sampleAdsr(v, warn);
+  // Not a positive hold (an end before its begin, say): superdough's envelope never opens.
+  if (!(hold > 0)) return null;
+  // superdough passes begin to start() and counts the loop's ends from it. A loop the Web Audio
+  // spec finds invalid, as with begin after loopBegin, plays the whole buffer.
+  const offset = begin * duration;
+  let region = null;
+  if (loop) {
+    const start = (v.loopBegin ?? 0) * duration - offset;
+    const stop = Math.min((v.loopEnd ?? 1) * duration - offset, duration);
+    region = start >= 0 && start < stop ? [start, stop] : [0, duration];
+  }
+  return {
+    rate,
+    reverse: speed < 0,
+    offset: Math.min(Math.max(offset, 0), duration),
+    loop: region,
+    hold,
+    envelope: envelopePoints(adsr, hold),
+    stop: hold + adsr[3] + 0.01,
+  };
+}

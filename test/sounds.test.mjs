@@ -2,7 +2,10 @@
 // Run with: npm run test:unit
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findBank, pickSample, decodeWav, makeNoise, isStrudelProblem, trackProblems } from '../src/runtime/sounds.mjs';
+import {
+  findBank, pickSample, decodeWav, makeNoise, isStrudelProblem, trackProblems,
+  sampleAdsr, envelopePoints, envelopeAt, samplePlayback,
+} from '../src/runtime/sounds.mjs';
 import { encodeWav, tone } from './wav-helpers.mjs';
 
 test('Strudel drum names find the Dirt-Samples bank, and a bank of their own wins', () => {
@@ -136,4 +139,89 @@ test('the problem report counts each kind once', () => {
     '  ⚠️ Dropped 1 event: no controls',
     '  ⚠️ Strudel: [warn]: x',
   ]);
+});
+
+// superdough 1.1.0, sampler.mjs onTriggerSample and helpers.mjs getADSRValues / getParamADSR.
+test("a sample's envelope fills in what the event leaves out, as superdough does", () => {
+  assert.deepEqual(sampleAdsr({}), [0.001, 0.001, 1, 0.01]);
+  // .decay() alone fades to nothing; .attack() alone holds; .release() alone keeps sustain 1.
+  assert.deepEqual(sampleAdsr({ decay: 0.5 }), [0.001, 0.5, 0.001, 0.01]);
+  assert.deepEqual(sampleAdsr({ attack: 0.5 }), [0.5, 0.001, 1, 0.01]);
+  assert.deepEqual(sampleAdsr({ attack: 0.1, decay: 0.2 }), [0.1, 0.2, 0.001, 0.01]);
+  assert.deepEqual(sampleAdsr({ release: 2 }), [0.001, 0.001, 1, 2]);
+  assert.deepEqual(sampleAdsr({ attack: 0, sustain: 3, release: 0 }), [0.001, 0.001, 1, 0.01]);
+  const warnings = [];
+  assert.deepEqual(sampleAdsr({ attack: 'x' }, (w) => warnings.push(w)), [0, 0.001, 1, 0.01]);
+  assert.deepEqual(warnings, ['"NaN" is not a number, falling back to 0']);
+});
+
+test('the envelope ramps up, decays to sustain, holds, then releases', () => {
+  const points = envelopePoints([0.1, 0.2, 0.5, 0.3], 1);
+  assert.deepEqual(points, [[0, 0], [0.1, 1], [0.30000000000000004, 0.5], [1, 0.5], [1.3, 0]]);
+  assert.equal(envelopeAt(points, 0.05), 0.5);
+  assert.ok(Math.abs(envelopeAt(points, 0.2) - 0.75) < 1e-12);
+  assert.equal(envelopeAt(points, 0.6), 0.5);
+  assert.ok(Math.abs(envelopeAt(points, 1.15) - 0.25) < 1e-12);
+  assert.equal(envelopeAt(points, 2), 0);
+  // A hold that ends during the attack, and one that ends during the decay.
+  assert.deepEqual(envelopePoints([0.5, 0.1, 1, 0.01], 0.25), [[0, 0], [0.25, 0.5], [0.26, 0]]);
+  assert.deepEqual(envelopePoints([0.001, 0.5, 0.001, 0.01], 0.251),
+    [[0, 0], [0.001, 1], [0.251, 1 + 0.25 * -0.999 / 0.5], [0.261, 0]]);
+});
+
+test('a sample plays once, to its end, at its playback rate', () => {
+  const p = samplePlayback({ s: 'x' }, { duration: 3, eventSeconds: 1 });
+  assert.equal(p.hold, 3);
+  assert.equal(p.loop, null);
+  assert.equal(p.offset, 0);
+  assert.equal(p.rate, 1);
+  assert.ok(Math.abs(p.stop - 3.02) < 1e-12);
+  // Half speed, or a note an octave down: twice as long. The event's length doesn't matter.
+  assert.equal(samplePlayback({ s: 'x', speed: 0.5 }, { duration: 3, eventSeconds: 0.25 }).hold, 6);
+  assert.equal(samplePlayback({ s: 'x' }, { duration: 3, pitchRate: 0.5, eventSeconds: 9 }).hold, 6);
+  // begin and end play part of it.
+  const part = samplePlayback({ s: 'x', begin: 0.25, end: 0.75 }, { duration: 2, eventSeconds: 9 });
+  assert.equal(part.offset, 0.5);
+  assert.equal(part.hold, 1);
+});
+
+test('clip, loop or release hold a sample for the event instead', () => {
+  // eventSeconds is Strudel's hap.duration over cps, which already counts clip.
+  assert.equal(samplePlayback({ s: 'x', clip: 0.5 }, { duration: 3, eventSeconds: 0.5 }).hold, 0.5);
+  assert.equal(samplePlayback({ s: 'x', clip: 2 }, { duration: 3, eventSeconds: 2 }).hold, 2);
+  const released = samplePlayback({ s: 'x', release: 0.5 }, { duration: 3, eventSeconds: 1 });
+  assert.equal(released.hold, 1);
+  assert.equal(released.stop, 1.51);
+  assert.deepEqual(released.envelope.at(-1), [1.5, 0]);
+  // loop(0) holds for the event without looping, as in superdough.
+  const held = samplePlayback({ s: 'x', loop: 0 }, { duration: 0.25, eventSeconds: 4 });
+  assert.equal(held.hold, 4);
+  assert.equal(held.loop, null);
+});
+
+test('only loop loops, over loopBegin to loopEnd, or the whole buffer when those are invalid', () => {
+  const drone = samplePlayback({ s: 'x', loop: 1 }, { duration: 0.25, eventSeconds: 4 });
+  assert.equal(drone.hold, 4);
+  assert.deepEqual(drone.loop, [0, 0.25]);
+  assert.deepEqual(samplePlayback({ s: 'x', loop: 1, loopBegin: 0.5, loopEnd: 2 }, { duration: 1, eventSeconds: 4 }).loop, [0.5, 1]);
+  // superdough counts the loop from begin, so a loop after begin moves; one before it is invalid.
+  const late = samplePlayback({ s: 'x', loop: 1, begin: 0.25, loopBegin: 0.5 }, { duration: 1, eventSeconds: 4 });
+  assert.equal(late.offset, 0.25);
+  assert.deepEqual(late.loop, [0.25, 0.75]);
+  assert.deepEqual(samplePlayback({ s: 'x', loop: 1, begin: 0.2 }, { duration: 1, eventSeconds: 4 }).loop, [0, 1]);
+  assert.deepEqual(samplePlayback({ s: 'wt_saw' }, { duration: 1, eventSeconds: 4 }).loop, [0, 1]);
+});
+
+test('speed reverses, silences, and with unit c fits the sample to cycles', () => {
+  const back = samplePlayback({ s: 'x', speed: -2 }, { duration: 3, eventSeconds: 1 });
+  assert.equal(back.reverse, true);
+  assert.equal(back.rate, 2);
+  assert.equal(back.hold, 1.5);
+  assert.equal(samplePlayback({ s: 'x', speed: 0 }, { duration: 3, eventSeconds: 1 }), null);
+  // loopAt(2) at 0.25 cycles a second: speed 0.125, unit c, an event of 8 s. The sample fills it.
+  const fitted = samplePlayback({ s: 'x', speed: 0.125, unit: 'c' }, { duration: 0.25, eventSeconds: 8 });
+  assert.equal(fitted.rate, 0.03125);
+  assert.equal(fitted.hold, 8);
+  // An end before its begin never opens the envelope.
+  assert.equal(samplePlayback({ s: 'x', begin: 0.8, end: 0.1 }, { duration: 1, eventSeconds: 4 }), null);
 });

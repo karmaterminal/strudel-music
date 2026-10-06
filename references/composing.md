@@ -55,8 +55,8 @@ The `.slow()` value determines how long each voice cycle takes:
 
 Different `.slow()` values on different voices create polyrhythmic layering where voices cross and recross at different rates. This is the compositional texture.
 
-### 7. `.clip()` for Continuity
-Use `.clip(4)` (or higher) to ensure samples fill their cycle window. Without this, you get silence gaps between sample events. The loopfix (PR #35) handles PCM-level looping with crossfade at boundaries.
+### 7. `.loop()` for Continuity
+A sample plays once, to its end, as in Strudel, so a sample shorter than its event leaves silence until the next one. Use `.loop(1)` to repeat it until the event ends, or `.loopAt(n)` to stretch it over `n` cycles. `.clip()` doesn't fill anything: `.clip(1)` cuts a sample at the end of its event, and `.clip(4)` holds it for four events' length but still stops it at the sample's end (#75).
 
 ### 8. Render and Validate
 - Render: `node src/runtime/offline-render-v2.mjs <comp.js> <output.wav> <cycles> <bpm>`

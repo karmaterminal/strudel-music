@@ -322,15 +322,15 @@ Strudel's `samples()` function reads this manifest to resolve `s("frisson-drums"
 This stage is **manual or AI-assisted** — the agent (or human) writes a Strudel composition that:
 - References the sample bank via `s("frisson-drums").n(k)`
 - Follows the energy curve (quiet sections use breakdown slices, peaks use peak slices)
-- Uses `clip(1)` to play each slice at full duration
+- Lets each slice play to its end, which is Strudel's default (`clip(1)` would cut it at the end of its event, #75)
 - Orders sections into a musical arc (intro → drive → breakdown → rebuild → peak → outro)
 
 **Example (from Frisson composition):**
 ```javascript
 // Section: BREAKDOWN — drums vanish, pads take over
-s("frisson-other").n(8).clip(1).gain(0.50)  // pure pads
+s("frisson-other").n(8).gain(0.50)  // pure pads
 .stack(
-  s("frisson-bass").n(8).clip(1).gain(0.35)  // bass continues
+  s("frisson-bass").n(8).gain(0.35)  // bass continues
 )
 ```
 

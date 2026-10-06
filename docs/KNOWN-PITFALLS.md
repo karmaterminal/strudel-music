@@ -73,12 +73,27 @@ skip or replace, and the render still succeeds unless you pass `--strict`:
 - **Effects.** `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect are ignored by
   both renderers. `.lpf()` works only in `offline-render-v2.mjs` (#68).
 - **Octave-less note names.** `note("c e g")` renders an octave above Strudel (#67). Write `c3`.
-- **Sample length.** `offline-render-v2.mjs` loops a sample that is shorter than its event, so a
-  slow `s("bd")` becomes a roll. Both renderers cut a longer sample at the event's end unless
-  `clip` is 1 or more. Strudel plays a sample once, to its end, and `clip` cuts it (#75).
 
 **Fix:** use the sounds and controls listed in `SKILL.md` § Write a composition, and render with
 `--strict` before posting.
 
 **Discovered:** 2026-10 audit. 9 of the 15 shipped compositions named missing sounds (fixed in
 #66), and all 15 use `.room()`.
+
+## 6. A sample plays once, whatever its event's length
+
+As in Strudel, a sample sounds once, from `begin` to `end`, and stops. A closed hi-hat in a
+four-cycle event is a tick and then silence, not a drone; a ride cymbal in a short event rings on
+past it. Add `.loop(1)` to repeat a sample until its event ends. `.clip(1)` cuts a sample at the
+end of its event and never makes one longer.
+
+```js
+s("hh").slow(4)                 // one tick every four cycles
+s("hh").loop(1).slow(4)         // the hi-hat repeating for all four cycles
+s("cr*4").clip(1)               // each ride cut where the next one starts
+```
+
+**Discovered:** 2026-10 audit (D21), fixed in #75. Before that, `offline-render-v2.mjs` looped
+any sample shorter than its event, both renderers cut a longer one at the event's end, and
+`clip(1)` let a sample ring. Pieces written then may need `.loop(1)` where they meant a drone, and
+no `.clip(1)` where they meant a sample to ring out.

@@ -24,6 +24,8 @@
 - Added `docs/audit-2026-10.md`, the resurrection audit (#65).
 - CI runs `npm run test:unit`.
 - Stale release and integration docs are marked as such.
+- README and SKILL.md say how to update and remove an installed skill. Once setup has run, `openclaw skills update` needs `--force`, which replaces the folder, so setup has to run again (#70).
+- Corrected: the 1.2.2 entry says its `dispatch.sh` fix resolved ClawHub's "suspicious" rating. ClawHub's latest scan of 1.2.2, on 2026-09-10, rates it suspicious (#70).
 
 ## 1.2.2
 

@@ -29,7 +29,7 @@ resurrection sequence (#65).
 | `src/compositions/` | Deconstructions and studies; half need slices that aren't in the repo |
 | `samples/` | Downloaded banks (ignored) plus the committed `bloom_*` set and `strudel.json` |
 | `test/` | `node:test` suites (`npm run test:unit`) |
-| `references/`, `docs/` | Composition and pipeline guides. TESTING, testing-checklist and PROMOTION are stale (#69) |
+| `references/`, `docs/` | Composition and pipeline guides |
 | `.clawhubignore` | What the ClawHub bundle leaves out (ClawHub also honours `.gitignore`) |
 
 ## Set up and test
@@ -49,8 +49,9 @@ no sample or synth, a dropped event or a warning from Strudel.
 
 ## Rules
 
-- **Never change `version` in `package.json` in a pull request.** A push to `main` that changes
-  it makes CI publish to ClawHub. Publishing is figs's decision, made separately (#69).
+- **Leave `version` in `package.json` alone** unless figs has asked for a release. CI never
+  publishes: figs publishes each release by hand after a dry run (CONTRIBUTING.md § Releasing).
+  Never publish to ClawHub yourself.
 - **No plugin manifest at the repo root.** ClawHub refuses to publish a skill folder holding
   `.claude-plugin/plugin.json`, `openclaw.plugin.json`, `.codex-plugin`, `.cursor-plugin`, or a
   `package.json` with an `openclaw` key. A Claude Code plugin goes under `plugins/` (#71).

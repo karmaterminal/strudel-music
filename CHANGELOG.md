@@ -41,12 +41,20 @@
 - Added AGENTS.md and CLAUDE.md for coding agents.
 - Added `docs/audit-2026-10.md`, the resurrection audit (#65).
 - CI runs `npm run test:unit`.
-- Stale release and integration docs are marked as such.
+- Stale integration docs are marked as such.
 - **`scripts/download-samples.sh` fetches Dirt-Samples at a pinned commit** (c74fc80, 2025-03-18) and only the banks that are missing, so an install that ran the old script picks up the new banks. Its file count includes `.WAV` files and leaves out the committed `bloom_*` set (#66).
 - **Both renderers list what didn't play as written** after each render: sound names with no sample or synth, dropped events, and Strudel's own warnings and errors. `--strict` makes that list fail the render with exit status 2 (#66, and part of #26). `--samples=<dir>` reads banks from another folder.
 - CI renders every shipped composition with both renderers in strict mode: `offline-render-v2.mjs` for 2 cycles, `chunked-render.mjs` for 32. The old step ran only v2 and filtered its output, so missing sounds never failed it.
 - README and SKILL.md say how to update and remove an installed skill. Once setup has run, `openclaw skills update` needs `--force`, which replaces the folder, so setup has to run again (#70).
 - Corrected: the 1.2.2 entry says its `dispatch.sh` fix resolved ClawHub's "suspicious" rating. ClawHub's latest scan of 1.2.2, on 2026-09-10, rates it suspicious (#70).
+- **CI no longer publishes to ClawHub** (#69). Its publish job ran on every push to `main` that changed the version, with no dry run and no one deciding, and its last two runs went red after they had published. CONTRIBUTING.md § Releasing has the manual steps: a dry run from a fresh clone, a check of the file list, then figs publishes and confirms the result on ClawHub.
+
+### Removed
+- The `clawhub` devDependency (#69). Nothing in the repository runs it now; the release steps use `npx -y clawhub@0.23.3`.
+- `docs/TESTING.md`, `docs/testing-checklist.md` and `docs/PROMOTION.md`, which described the retired release path through the private fork `strudel-music-dev` (#69).
+
+### Security
+- `npm audit` reports no vulnerabilities, down from 6 (3 high, 3 moderate) (#69). Removing `clawhub` took out undici 7.22.0 and fflate 0.8.2. `npm audit fix` updated discord.js to 14.27.0 (with @discordjs/rest 2.6.3), undici to 6.29.0, ws to 8.22.0 and lodash to 4.18.1, all within the existing version ranges.
 
 ## 1.2.2
 

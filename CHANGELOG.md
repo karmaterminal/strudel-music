@@ -60,7 +60,7 @@
 - **Both renderers list what didn't play as written** after each render: sound names with no sample or synth, dropped events, and Strudel's own warnings and errors. `--strict` makes that list fail the render with exit status 2 (#66, and part of #26). `--samples=<dir>` reads banks from another folder.
 - CI renders every shipped composition with both renderers in strict mode: `offline-render-v2.mjs` for 2 cycles, `chunked-render.mjs` for 32. The old step ran only v2 and filtered its output, so missing sounds never failed it.
 - README and SKILL.md say how to update and remove an installed skill. Once setup has run, `openclaw skills update` needs `--force`, which replaces the folder, so setup has to run again (#70).
-- Corrected: SKILL.md's length example sat under two 16-cycle fog-and-starlight commands but worked out 32 s for another tempo. It now uses fog-and-starlight's own tempo, at which 16 cycles make 64 s (#71).
+- Corrected: SKILL.md's length example sat under fog-and-starlight's render commands but worked out 32 s for another tempo. It now uses fog-and-starlight's own tempo, at which 32 cycles make 128 s and 16 make 64 s (#71).
 - Corrected: the 1.2.2 entry says its `dispatch.sh` fix resolved ClawHub's "suspicious" rating. ClawHub's latest scan of 1.2.2, on 2026-09-10, rates it suspicious (#70).
 - **CI no longer publishes to ClawHub** (#69). Its publish job ran on every push to `main` that changed the version, with no dry run and no one deciding, and its last two runs went red after they had published. CONTRIBUTING.md § Releasing has the manual steps: a dry run from a fresh clone, a check of the file list, then figs publishes and confirms the result on ClawHub.
 

@@ -61,7 +61,7 @@ on control pattern.` (write `.add(note(12))`, not `.add(12)`) or `[tonal] incomp
 (write `"c:major:pentatonic"`, with colons). Fix those before you post.
 
 Length is cycles divided by cycles per second. fog-and-starlight's `setcpm(60/4)` plays 15 cycles
-a minute, so each cycle is 4 s and 16 cycles make 64 s. A check before posting:
+a minute, so each cycle is 4 s: 32 cycles make 128 s, and 16 make 64 s. A check before posting:
 
 ```bash
 uv run --no-project --with numpy --with soundfile python scripts/qa-gate.py /tmp/fog.wav

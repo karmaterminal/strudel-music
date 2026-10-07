@@ -59,6 +59,7 @@ stack(
   // LAYER 6: LEAD — melodic phrase in D minor
   // Using the "other" stem samples with pitch info
   // Simple motif: D3 → F3 → E3 → D3 → C3 → A2 → As2 → D3
+  // Two bars a note, heard in all 16 bars
   // ========================================================================
   note(
     "d3 d3 f3 f3 "
@@ -68,7 +69,7 @@ stack(
   )
     .s("bloom_lead_D3") // after the notes, so each note starts the sample (#75)
     .slow(16)
-    .gain("<0 0 0 0 0 0 0 0 0.35 0.38 0.4 0.42 0.45 0.45 0.35 0.2>"),
+    .gain("<0.35 0.35 0.35 0.35 0.35 0.35 0.35 0.35 0.35 0.38 0.4 0.42 0.45 0.45 0.35 0.2>"),
 
   // ========================================================================
   // LAYER 7: PAD — bloom_lead used as sustained texture

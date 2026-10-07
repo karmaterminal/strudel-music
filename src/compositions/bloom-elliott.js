@@ -60,13 +60,13 @@ stack(
   // Using the "other" stem samples with pitch info
   // Simple motif: D3 → F3 → E3 → D3 → C3 → A2 → As2 → D3
   // ========================================================================
-  s("bloom_lead_D3")
-    .note(
-      "d3 d3 f3 f3 "
-      + "e3 e3 d3 d3 "
-      + "c3 c3 a2 a2 "
-      + "as2 as2 d3 d3 "
-    )
+  note(
+    "d3 d3 f3 f3 "
+    + "e3 e3 d3 d3 "
+    + "c3 c3 a2 a2 "
+    + "as2 as2 d3 d3 "
+  )
+    .s("bloom_lead_D3") // after the notes, so each note starts the sample (#75)
     .slow(16)
     .gain("<0 0 0 0 0 0 0 0 0.35 0.38 0.4 0.42 0.45 0.45 0.35 0.2>"),
 

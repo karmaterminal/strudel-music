@@ -33,6 +33,7 @@
   - Samples get superdough's ADSR envelope (attack 0.001 s, decay 0.001 s, sustain 1, release 0.01 s unless set) in place of fixed fades. victory-imperium's crash, `.decay(0.5)`, now dies away in half a second, as written.
   - `loopAt` stretches a sample over its cycles. Both renderers ignored `unit` and queried the pattern without the tempo, so `loopAt(n)` played a sample at 0.5 ÷ n of its speed, whatever its length or the tempo.
   - Layers meant to sustain keep sustaining, with `.loop(1)`: dark-ambient-tension's breathing hi-hat, agent-parameterized's environmental texture, the pads in bloom-elliott, bloom-elliott-full and bloom-ronan, and bloom-ronan's lead and counter-melody (in place of `.clip(3)` and `.clip(6)`). bloom-cael-notelevel drops `.clip(1)`, which would now cut its basses and leads short.
+  - bloom-elliott's lead (LAYER 6) gives its notes before `s()`, so each note starts the sample. Written the other way, it was one 16-bar event, which Strudel plays once, at gain 0; only `chunked-render.mjs`'s restarts made it sound.
   - The SKILL.md example's kick and hi-hat are a little quieter, and the fog-and-starlight render in README's quick start and in SKILL.md is 32 cycles, so both pass the QA gate again.
   - Covered by `test/render-sample-length.test.mjs`, 18 cases in each renderer, and `test/sounds.test.mjs`.
 

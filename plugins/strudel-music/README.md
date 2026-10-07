@@ -8,7 +8,7 @@ second copy of those instructions, so the two can't drift apart.
 
 The plugin adds no tools, hooks or MCP servers.
 
-**Needs:** Claude Code (tested with 2.1.289; the skill relies on it filling in
+**Needs:** Claude Code (tested with 2.1.292; the skill relies on it filling in
 `${CLAUDE_PLUGIN_DATA}`), git, Node 22.12 or later, and access to github.com and the npm registry
 for setup. ffmpeg for MP3 and voice, and `uv` for the QA gate. The working copy takes about
 150 MB once set up.

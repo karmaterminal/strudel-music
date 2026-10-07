@@ -51,7 +51,7 @@ LUFS, true peak −3.0 dBFS.
 | Where | How | Verified (2026-10-03, OpenClaw 2026.9.8) |
 |---|---|---|
 | OpenClaw, from Git | `openclaw skills install git:karmaterminal/strudel-music`, then `npm run setup` in the installed folder | Yes, at `main` 264c7fb: install, setup, smoke test, render and QA gate |
-| OpenClaw, from ClawHub | `openclaw skills install @karmafeast/strudel-music`, then `npm run setup` | Yes (rated "suspicious" by ClawHub's scan), for 1.2.2, the live version. It predates the 2026-10 fixes; review it before installing. See [#70](https://github.com/karmaterminal/strudel-music/issues/70); publishing is a manual decision ([#69](https://github.com/karmaterminal/strudel-music/issues/69)) |
+| OpenClaw, from ClawHub | `openclaw skills install @karmafeast/strudel-music`, then `npm run setup` | Yes (rated "suspicious" by ClawHub's scan), for 1.2.2, the live version. It predates the 2026-10 fixes; review it before installing. See [#70](https://github.com/karmaterminal/strudel-music/issues/70). Releases are published by hand ([CONTRIBUTING.md](CONTRIBUTING.md#releasing)) |
 | Claude Code | No plugin yet ([#71](https://github.com/karmaterminal/strudel-music/issues/71)). Work from a clone: Claude Code reads `AGENTS.md` through `CLAUDE.md` | n/a |
 
 **Updating.** Setup writes `node_modules/` and `samples/` into the skill folder, and OpenClaw
@@ -188,9 +188,9 @@ npm run test:unit      # node:test suites in test/
 npm run test:render    # render fog-and-starlight with v2
 ```
 
-[AGENTS.md](AGENTS.md) has the working rules for people and agents, including: never bump the
-version in a pull request (see [#69](https://github.com/karmaterminal/strudel-music/issues/69)).
-[CONTRIBUTING.md](CONTRIBUTING.md) covers compositions and pull requests.
+[AGENTS.md](AGENTS.md) has the working rules for people and agents.
+[CONTRIBUTING.md](CONTRIBUTING.md) covers compositions, pull requests and releases. CI never
+publishes; figs publishes each release to ClawHub by hand, after a dry run.
 
 ## Security
 

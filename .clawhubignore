@@ -1,5 +1,5 @@
 # Files left out of the ClawHub skill bundle. ClawHub also honours .gitignore
-# and skips dot paths. Check the result with a publish --dry-run.
+# and skips dot paths. CONTRIBUTING.md § Releasing shows how to list the result.
 output/
 node_modules/
 .git/

@@ -8,7 +8,7 @@
     "play": "bash scripts/dispatch.sh play",
     "test": "node src/runtime/smoke-test.mjs",
     "test:unit": "node --test test/*.test.mjs",
-    "test:render": "node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js /tmp/strudel-test.wav 2 72 && echo \u2705 Render OK",
+    "test:render": "node src/runtime/offline-render-v2.mjs assets/compositions/fog-and-starlight.js /tmp/strudel-test.wav 2 72 && echo ✅ Render OK",
     "download-samples": "bash scripts/download-samples.sh",
     "samples": "bash scripts/samples-manage.sh",
     "samples:list": "bash scripts/samples-manage.sh list",
@@ -30,8 +30,5 @@
     "opusscript": "^0.0.8",
     "prism-media": "^1.3.5",
     "sodium-native": "^5.0.10"
-  },
-  "devDependencies": {
-    "clawhub": "^0.7.0"
   }
 }

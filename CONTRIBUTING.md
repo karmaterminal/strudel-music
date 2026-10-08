@@ -6,7 +6,7 @@ Agents: read [AGENTS.md](AGENTS.md) first.
 ## What we're looking for
 
 - **Compositions** that render cleanly (below)
-- **Renderer work:** one canonical renderer (#67), how long samples sound (#75), effects (#68)
+- **Renderer work:** one canonical renderer (#67), effects (#68)
 - **Rescued work** from old branches (#61)
 - **Documentation** that matches what the code does
 

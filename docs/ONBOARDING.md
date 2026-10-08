@@ -156,11 +156,14 @@ What the renderers implement today:
 ```js
 .gain(0.4)                                          // volume
 .pan(0.3)                                           // 0 left, 1 right
-.attack(0.01).decay(0.2).sustain(0.5).release(0.3)  // envelope, on synths only
+.attack(0.01).decay(0.2).sustain(0.5).release(0.3)  // envelope
 .speed(2)                                           // sample playback rate
-.clip(1)                                            // let a sample ring out (Strudel cuts it: #75)
+.loop(1)                                            // repeat a sample until its event ends
+.clip(1)                                            // cut a sample at the end of its event
 .lpf(800)                                           // low-pass: offline-render-v2.mjs only
 ```
+
+Without `loop` or `clip`, a sample plays once, to its end, as in Strudel (#75).
 
 What they ignore without a word: `.room()`, `.delay()`, `.hpf()`, `.distort()`, `.bank()`, and
 every other effect (#68). Strudel's own site plays them; these renderers don't.

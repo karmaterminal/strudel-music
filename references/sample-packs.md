@@ -60,7 +60,7 @@ The renderer supports any WAV file at any sample rate (resampled to 44.1kHz on l
 Field recordings work great for ambient textures:
 
 ```javascript
-s("rain").gain(0.15).lpf(2000).slow(4)  // gentle rain loop
+s("rain").loop(1).gain(0.15).lpf(2000).slow(4)  // gentle rain loop
 s("birds").n("<0 1 2>").delay(0.3)       // scattered bird calls
 ```
 

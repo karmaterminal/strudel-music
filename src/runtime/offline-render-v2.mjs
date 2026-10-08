@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync, statSync } from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
-import { findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems } from './sounds.mjs';
+import { findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems, samplePlayback } from './sounds.mjs';
 
 const require = createRequire(import.meta.url);
 const problems = trackProblems({ unplayable: 'played as a triangle tone' });
@@ -306,7 +306,9 @@ const actualSamples = Math.ceil(actualDuration * sampleRate);
 
 console.log(`  Using CPS: ${actualCps.toFixed(3)} (${cpmValue * 4} BPM), Duration: ${actualDuration.toFixed(1)}s`);
 
-const haps = pattern.queryArc(0, cycles);
+// Strudel's scheduler passes the tempo with each query (cyclist.mjs); loopAt, fit and splice
+// read it to fit a sample to its cycles.
+const haps = pattern.queryArc(0, cycles, { _cps: actualCps });
 console.log(`  Found ${haps.length} haps`);
 
 if (haps.length === 0) {
@@ -385,6 +387,17 @@ const waveMap = {
   supersaw: 'sawtooth', supersquare: 'square', organ: 'sine',
 };
 
+// Samples played backwards (a negative speed), made once each.
+const reversedBuffers = new Map();
+function reversed(buf) {
+  if (!reversedBuffers.has(buf)) {
+    const copy = offCtx.createBuffer(buf.numberOfChannels, buf.length, buf.sampleRate);
+    for (let ch = 0; ch < buf.numberOfChannels; ch++) copy.copyToChannel(buf.getChannelData(ch).slice().reverse(), ch);
+    reversedBuffers.set(buf, copy);
+  }
+  return reversedBuffers.get(buf);
+}
+
 // Noise sources, made once per render and looped like superdough's.
 const noiseBuffers = new Map();
 function noiseBuffer(type) {
@@ -398,12 +411,10 @@ function noiseBuffer(type) {
 
 let scheduled = 0;
 for (const hap of haps) {
-  // Skip continuation fragments — only schedule onset haps.
-  // Strudel's queryArc splits long events at integer cycle boundaries,
-  // producing multiple haps with the same whole arc but different part arcs.
-  // hasOnset() is true only for the first fragment (part.begin === whole.begin).
-  // Without this filter, samples get stacked N times at the same start time (#22 v7).
-  if (typeof hap.hasOnset === 'function' && !hap.hasOnset() && !(hap.value?.clip || hap.value?.loopAt || hap.value?.unit === 'c')) continue;
+  // Strudel plays an event once, where it starts (cyclist.mjs). A query can split a long event
+  // into fragments with the same whole arc; hasOnset() is true only for the first. Without this
+  // filter, samples get stacked N times at the same start time (#22 v7, #75).
+  if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
 
   const startCycle = hap.whole?.begin ?? hap.part?.begin ?? 0;
   const endCycle = hap.whole?.end ?? hap.part?.end ?? startCycle + 0.25;
@@ -468,56 +479,37 @@ for (const hap of haps) {
     pnr.pan.setValueAtTime((pan - 0.5) * 2, hapStart);
 
     if (sampleBuf) {
-      // ── Sample playback ──
+      // ── Sample playback: superdough's rules, shared with chunked-render (sounds.mjs) ──
+      // Once, to its end, at its playback rate; held for the event only with clip, loop or
+      // release; looped only with loop; under superdough's ADSR (#75).
+      const semitones = v.note ? noteToSemitones(v.note) : 0;
+      const play = samplePlayback(v, {
+        duration: sampleBuf.duration,
+        pitchRate: Math.pow(2, semitones / 12),
+        eventSeconds: Number(hap.duration) / actualCps,
+      }, problems.strudelWarning);
+      if (!play) continue; // speed(0), or an end before its begin: superdough plays nothing
+
       const src = offCtx.createBufferSource();
-      src.buffer = sampleBuf;
-      
-      // When clip=1, let the sample play its full natural duration
-      // instead of cutting at the cycle/hap boundary (#22, dev#1)
-      const clipVal = v.clip !== undefined ? Number(v.clip) : 0;
-      
-      // loopAt support: if loopAt is set OR the hap window exceeds the sample
-      // length, enable looping so the sample fills the entire hap duration.
-      // This is the offline-renderer counterpart to Ronan's synth.mjs loopfix.
-      const loopAtVal = v.loopAt;
-      const shouldLoop = loopAtVal != null || hapDur > sampleBuf.duration;
-      
-      if (shouldLoop) {
+      src.buffer = play.reverse ? reversed(sampleBuf) : sampleBuf;
+      src.playbackRate.setValueAtTime(play.rate, hapStart);
+      if (play.loop) {
         src.loop = true;
-        src.loopStart = 0;
-        src.loopEnd = sampleBuf.duration;
+        [src.loopStart, src.loopEnd] = play.loop;
       }
-      
-      const effectiveEnd = shouldLoop
-        ? endTime  // fill the entire hap window when looping
-        : clipVal >= 1
-          ? hapStart + sampleBuf.duration
-          : Math.min(endTime, hapStart + sampleBuf.duration);
-      
-      // Crossfade envelope: 30ms fade-in, 50ms fade-out (#22)
-      // Replaces instant-on + 20ms fade-out which caused hard splice clicks
-      const fadeIn = 0.03;   // 30ms
-      const fadeOut = 0.05;  // 50ms
-      const sampleEnd = effectiveEnd;
-      gn.gain.setValueAtTime(0, hapStart);
-      gn.gain.linearRampToValueAtTime(gain, hapStart + fadeIn);
-      gn.gain.setValueAtTime(gain, Math.max(hapStart + fadeIn, sampleEnd - fadeOut));
-      gn.gain.linearRampToValueAtTime(0, sampleEnd);
-      
-      // Apply playback rate if note specified (pitch shifting)
-      if (v.note) {
-        const semitones = noteToSemitones(v.note);
-        if (semitones !== 0) src.playbackRate.setValueAtTime(Math.pow(2, semitones / 12), hapStart);
-      }
-      if (v.speed) src.playbackRate.setValueAtTime(Math.abs(v.speed), hapStart);
-      
+
+      // The envelope, at the event's gain.
+      const [[t0, level0], ...ramps] = play.envelope;
+      gn.gain.setValueAtTime(level0 * gain, hapStart + t0);
+      for (const [t, level] of ramps) gn.gain.linearRampToValueAtTime(level * gain, hapStart + t);
+
       src.connect(flt);
       flt.connect(gn);
       gn.connect(pnr);
       pnr.connect(compressor);
-      
-      src.start(hapStart);
-      src.stop(sampleEnd + 0.05);
+
+      src.start(hapStart, play.offset);
+      src.stop(hapStart + play.stop);
     } else {
       // ── Oscillator synth, or noise ──
       let osc;

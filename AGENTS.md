@@ -19,7 +19,7 @@ resurrection sequence (#65).
 | `src/runtime/offline-render-v2.mjs` | `OfflineAudioContext` renderer. Used by `dispatch.sh`, `npm run render` and CI |
 | `src/runtime/smoke-test.mjs` | `npm test`: Strudel loads, samples are present |
 | `src/runtime/synth.mjs` | Imported by nothing (#72) |
-| `src/runtime/sounds.mjs` | What both renderers share: drum-name aliases, sample picking, WAV decoding, noise, the problem report behind `--strict` |
+| `src/runtime/sounds.mjs` | What both renderers share: drum-name aliases, sample picking, WAV decoding, noise, how long a sample plays and its envelope (Strudel's rule), the problem report behind `--strict` |
 | `src/stream/pipe-to-vc.mjs` | WAV to Opus on stdout |
 | `scripts/dispatch.sh` | render, play, list, samples, concert |
 | `scripts/vc-play.mjs` | Discord voice playback (needs `DISCORD_BOT_TOKEN`) |

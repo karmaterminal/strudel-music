@@ -55,6 +55,7 @@ stack(
 
   // Breathing noise texture
   s("<~ ~ [hh hh] ~>")
+    .loop(1) // loop the hat through each three-cycle breath (#75)
     .gain(sine.range(0.01, 0.03).slow(23))
     .lpf(sine.range(200, 800).slow(19))
     .room(0.95).roomsize(15)

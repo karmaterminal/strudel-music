@@ -14,7 +14,9 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, appendFileSync, unlinkSync } from 'fs';
 import { createRequire } from 'module';
 import path from 'path';
-import { findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems } from './sounds.mjs';
+import {
+  findBank, pickSample, decodeWav, NOISES, makeNoise, trackProblems, samplePlayback, envelopeAt,
+} from './sounds.mjs';
 
 const require = createRequire(import.meta.url);
 const problems = trackProblems({ unplayable: 'dropped' });
@@ -530,165 +532,134 @@ function pitchShiftBuffer(sampleBuf, semitones, percussive) {
   }
 }
 
-// ── Software mixer: render haps directly into Float32 buffers ──
+// ── Software mixer: render events directly into Float32 buffers ──
 // No Web Audio API nodes! Just raw sample mixing.
+//
+// Each event becomes a voice that can render itself at any output frame, counted from the
+// start of the piece. A sound still ringing at the end of a chunk carries on, unbroken, into
+// the next one (#75).
 
-function renderChunk(startCycle, endCycle, pattern, cps) {
-  const chunkStart = startCycle / cps;
-  const chunkEnd = endCycle / cps;
-  const chunkDur = chunkEnd - chunkStart;
-  const numSamples = Math.ceil(chunkDur * sampleRate);
-  
-  const left = new Float32Array(numSamples);
-  const right = new Float32Array(numSamples);
-  
-  const haps = pattern.queryArc(startCycle, endCycle);
-  let scheduled = 0;
-  
-  for (const hap of haps) {
-    const hapStartCycle = hap.part?.begin ?? hap.whole?.begin ?? 0;
-    const hapEndCycle = hap.part?.end ?? hap.whole?.end ?? hapStartCycle + 0.25;
-    const hapStartSec = hapStartCycle / cps;
-    const hapEndSec = hapEndCycle / cps;
-    
-    // Convert to chunk-relative time
-    const relStart = hapStartSec - chunkStart;
-    const relEnd = hapEndSec - chunkStart;
-    
-    if (relStart >= chunkDur || relEnd <= 0) continue;
+// The output frame where a cycle starts. Chunks meet exactly, so their frames add up.
+const frameAt = (cycle, cps) => Math.round(cycle / cps * sampleRate);
 
-    // A long event comes back once per chunk; report it only where it starts.
-    const onset = typeof hap.hasOnset !== 'function' || hap.hasOnset();
-    const v = hap.value;
-    if (typeof v !== 'object' || v === null) {
-      if (onset) problems.dropped(`no controls such as s() or note() (a bare ${v === null ? 'null' : typeof v})`);
-      continue;
-    }
+// Samples played backwards (a negative speed), reversed once each.
+const reversedData = new Map();
+function reversedChannels(buf) {
+  if (!reversedData.has(buf)) reversedData.set(buf, buf.data.map((ch) => ch.slice().reverse()));
+  return reversedData.get(buf);
+}
 
-    const gain = Math.min(v.gain ?? 0.3, 1.0);
-    if (gain <= 0.001) continue;
+// A sample event, played as superdough plays it (sounds.mjs samplePlayback), or null if it
+// plays nothing.
+function sampleVoice(hap, v, sound, sampleBuf, cps, { gain, panL, panR }) {
+  // ── Pitch-shift logic ──
+  // Determine if we need to pitch-shift this sample
+  let activeBuf = sampleBuf;
+  let pitchRate = 1.0;
 
-    const sound = v.s || 'triangle'; // Strudel's default sound
-    const pan = v.pan ?? 0.5;
-    const panL = Math.cos(pan * Math.PI / 2);
-    const panR = Math.sin(pan * Math.PI / 2);
+  if (v.note) {
+    const targetMidi = noteToMidi(v.note);
+    const rootMidi = detectRootNote(sound);
+    const semitoneOffset = targetMidi - rootMidi;
 
-    const bank = findBank(banks, sound);
-    const sampleBuf = bank ? pickSample(bank, v.n, problems.strudelWarning) : undefined;
-    if (sampleBuf?.unreadable) {
-      if (onset) problems.dropped(`couldn't read ${sampleBuf.unreadable}`);
-      continue;
-    }
-
-    if (sampleBuf) {
-      // ── Pitch-shift logic ──
-      // Determine if we need to pitch-shift this sample
-      let activeBuf = sampleBuf;
-      let playbackRate = 1.0;
-      
-      if (v.note) {
-        const targetMidi = noteToMidi(v.note);
-        const rootMidi = detectRootNote(sound);
-        const semitoneOffset = targetMidi - rootMidi;
-        
-        if (Math.abs(semitoneOffset) > 0.01) {
-          const perc = isPercussive(sound);
-          if (perc) {
-            // Percussive mode: playback rate resampling (changes duration)
-            playbackRate = Math.pow(2, semitoneOffset / 12);
-          } else {
-            // Tonal mode: duration-preserving pitch shift via resample + WSOLA
-            const cacheKey = `${sampleBuf.key}:ps:${semitoneOffset.toFixed(2)}`;
-            let cached = pitchShifted.get(cacheKey);
-            if (!cached) {
-              cached = pitchShiftBuffer(sampleBuf, semitoneOffset, false);
-              pitchShifted.set(cacheKey, cached);
-              if (!renderChunk._loggedTonal) { renderChunk._loggedTonal = {}; }
-              const lk = `${sound}:${v.note}`;
-              if (!renderChunk._loggedTonal[lk]) {
-                console.log(`  🎵 Pitch-shift: ${sound} note=${v.note} (${semitoneOffset > 0 ? '+' : ''}${semitoneOffset} st)`);
-                renderChunk._loggedTonal[lk] = true;
-              }
-            }
-            activeBuf = cached;
+    if (Math.abs(semitoneOffset) > 0.01) {
+      const perc = isPercussive(sound);
+      if (perc) {
+        // Percussive mode: playback rate resampling (changes duration)
+        pitchRate = Math.pow(2, semitoneOffset / 12);
+      } else {
+        // Tonal mode: duration-preserving pitch shift via resample + WSOLA
+        const cacheKey = `${sampleBuf.key}:ps:${semitoneOffset.toFixed(2)}`;
+        let cached = pitchShifted.get(cacheKey);
+        if (!cached) {
+          cached = pitchShiftBuffer(sampleBuf, semitoneOffset, false);
+          pitchShifted.set(cacheKey, cached);
+          if (!sampleVoice._loggedTonal) { sampleVoice._loggedTonal = {}; }
+          const lk = `${sound}:${v.note}`;
+          if (!sampleVoice._loggedTonal[lk]) {
+            console.log(`  🎵 Pitch-shift: ${sound} note=${v.note} (${semitoneOffset > 0 ? '+' : ''}${semitoneOffset} st)`);
+            sampleVoice._loggedTonal[lk] = true;
           }
         }
+        activeBuf = cached;
       }
-      
-      if (v.speed) playbackRate *= Math.abs(v.speed);
-      
-      const sampleDur = activeBuf.length / (activeBuf.sampleRate * playbackRate);
-      const clipVal = v.clip !== undefined ? Number(v.clip) : 0;
-      const effectiveEndSec = clipVal >= 1
-        ? relStart + sampleDur
-        : Math.min(relEnd, relStart + sampleDur);
-      
-      const fadeIn = 0.003;  // 3ms
-      const fadeOut = 0.01;  // 10ms
-      
-      const startIdx = Math.max(0, Math.floor(relStart * sampleRate));
-      const endIdx = Math.min(numSamples, Math.ceil(effectiveEndSec * sampleRate));
-      
-      for (let i = startIdx; i < endIdx; i++) {
-        const t = i / sampleRate;
-        const relT = t - relStart;
-        if (relT < 0) continue;
-        
-        // Envelope
-        let env = gain;
-        if (relT < fadeIn) env *= relT / fadeIn;
-        const timeToEnd = effectiveEndSec - relStart - relT;
-        if (timeToEnd < fadeOut) env *= Math.max(0, timeToEnd / fadeOut);
-        
-        // Sample position with playback rate
-        const samplePos = relT * activeBuf.sampleRate * playbackRate;
-        const sIdx = Math.floor(samplePos);
-        if (sIdx >= activeBuf.length) break;
-        
-        // Linear interpolation
-        const frac = samplePos - sIdx;
-        const s0 = activeBuf.data[0][sIdx];
-        const s1 = sIdx + 1 < activeBuf.length ? activeBuf.data[0][sIdx + 1] : s0;
-        const sample = s0 + frac * (s1 - s0);
-        
-        left[i] += sample * env * panL;
-        if (activeBuf.channels > 1) {
-          const sr0 = activeBuf.data[1][sIdx];
-          const sr1 = sIdx + 1 < activeBuf.length ? activeBuf.data[1][sIdx + 1] : sr0;
-          right[i] += (sr0 + frac * (sr1 - sr0)) * env * panR;
-        } else {
-          right[i] += sample * env * panR;
+    }
+  }
+
+  const play = samplePlayback(v, {
+    duration: activeBuf.length / activeBuf.sampleRate,
+    pitchRate,
+    eventSeconds: Number(hap.duration) / cps,
+  }, problems.strudelWarning);
+  if (!play) return null; // speed(0), or an end before its begin: superdough plays nothing
+
+  const data = play.reverse ? reversedChannels(activeBuf) : activeBuf.data;
+  const length = activeBuf.length;
+  const rate = activeBuf.sampleRate; // buffer frames per second of buffer time
+  const [loopStart, loopEnd] = play.loop ? play.loop.map((t) => t * rate) : [0, 0];
+  const start = hap.whole.begin / cps;
+  const read = (ch, pos) => {
+    const i = Math.floor(pos);
+    const s0 = data[ch][i];
+    const s1 = i + 1 < length ? data[ch][i + 1] : s0;
+    return s0 + (pos - i) * (s1 - s0);
+  };
+
+  return {
+    endFrame: Math.ceil((start + play.stop) * sampleRate),
+    render(left, right, first, end) {
+      const from = Math.max(first, Math.ceil(start * sampleRate));
+      const to = Math.min(end, this.endFrame);
+      for (let f = from; f < to; f++) {
+        // Seconds since the event began. Frame times and the event's start round differently, so
+        // the first frame can come out a hair before it; reading the sample there would read
+        // index -1 and turn the whole frame into NaN.
+        const t = Math.max(0, f / sampleRate - start);
+        let pos = (play.offset + t * play.rate) * rate;
+        if (play.loop) {
+          if (pos >= loopEnd) pos = loopStart + (pos - loopStart) % (loopEnd - loopStart);
+        } else if (pos >= length) {
+          break; // the sample has played to its end
         }
+        const env = envelopeAt(play.envelope, t) * gain;
+        const l = read(0, pos);
+        left[f - first] += l * env * panL;
+        right[f - first] += (activeBuf.channels > 1 ? read(1, pos) : l) * env * panR;
       }
-      scheduled++;
-    } else if (waveMap[sound] || NOISES.includes(sound)) {
-      // Synth oscillator, or noise
-      // note 0 is MIDI note 0, so test for presence, not truthiness.
-      let freq = v.freq || (v.note !== undefined ? noteToFreq(v.note) : 440);
-      if (!freq) freq = 440; // a NaN note falls back, as in offline-render-v2
-      const oscType = waveMap[sound];
-      const noise = oscType ? null : noiseSamples(sound);
-      const attack = v.attack ?? 0.005;
-      const decay = v.decay ?? 0.1;
-      const sustain = v.sustain ?? 0.7;
-      const release = v.release ?? 0.3;
-      
-      const startIdx = Math.max(0, Math.floor(relStart * sampleRate));
-      const endIdx = Math.min(numSamples, Math.ceil((relEnd + 0.01) * sampleRate));
-      
-      for (let i = startIdx; i < endIdx; i++) {
-        const t = i / sampleRate;
-        const relT = t - relStart;
-        if (relT < 0) continue;
-        
+    },
+  };
+}
+
+// A synth or noise event. Its envelope and phase run from the event's start, whichever chunk
+// renders them.
+function synthVoice(hap, v, sound, cps, { gain, panL, panR }) {
+  // note 0 is MIDI note 0, so test for presence, not truthiness.
+  let freq = v.freq || (v.note !== undefined ? noteToFreq(v.note) : 440);
+  if (!freq) freq = 440; // a NaN note falls back, as in offline-render-v2
+  const oscType = waveMap[sound];
+  const noise = oscType ? null : noiseSamples(sound);
+  const attack = v.attack ?? 0.005;
+  const decay = v.decay ?? 0.1;
+  const sustain = v.sustain ?? 0.7;
+  const release = v.release ?? 0.3;
+  const start = hap.whole.begin / cps;
+  const hapDur = (hap.whole.end - hap.whole.begin) / cps;
+
+  return {
+    endFrame: Math.ceil((start + hapDur + 0.01) * sampleRate),
+    render(left, right, first, end) {
+      const from = Math.max(first, Math.ceil(start * sampleRate));
+      const to = Math.min(end, this.endFrame);
+      for (let f = from; f < to; f++) {
+        const relT = Math.max(0, f / sampleRate - start); // never before the event, as in sampleVoice
+
         // ADSR
         let env;
-        const hapDur = relEnd - relStart;
         if (relT < attack) env = gain * (relT / attack);
         else if (relT < attack + decay) env = gain * (1 - (1 - sustain) * (relT - attack) / decay);
         else if (relT < hapDur - release) env = gain * sustain;
         else env = gain * sustain * Math.max(0, (hapDur - relT) / release);
-        
+
         // Oscillator, or the looped noise buffer
         let sample;
         if (noise) {
@@ -705,15 +676,68 @@ function renderChunk(startCycle, endCycle, pattern, cps) {
           }
         }
 
-        left[i] += sample * env * panL;
-        right[i] += sample * env * panR;
+        left[f - first] += sample * env * panL;
+        right[f - first] += sample * env * panR;
       }
+    },
+  };
+}
+
+// The voice for one event, or null if it makes no sound.
+function makeVoice(hap, cps) {
+  const v = hap.value;
+  if (typeof v !== 'object' || v === null) {
+    problems.dropped(`no controls such as s() or note() (a bare ${v === null ? 'null' : typeof v})`);
+    return null;
+  }
+
+  const gain = Math.min(v.gain ?? 0.3, 1.0);
+  if (gain <= 0.001) return null;
+
+  const sound = v.s || 'triangle'; // Strudel's default sound
+  const pan = v.pan ?? 0.5;
+  const level = { gain, panL: Math.cos(pan * Math.PI / 2), panR: Math.sin(pan * Math.PI / 2) };
+
+  const bank = findBank(banks, sound);
+  const sampleBuf = bank ? pickSample(bank, v.n, problems.strudelWarning) : undefined;
+  if (sampleBuf?.unreadable) {
+    problems.dropped(`couldn't read ${sampleBuf.unreadable}`);
+    return null;
+  }
+  if (sampleBuf) return sampleVoice(hap, v, sound, sampleBuf, cps, level);
+  if (waveMap[sound] || NOISES.includes(sound)) return synthVoice(hap, v, sound, cps, level);
+  problems.unknownSound(sound);
+  return null;
+}
+
+// Voices still sounding at the end of the last chunk rendered.
+let voices = [];
+
+function renderChunk(startCycle, endCycle, pattern, cps) {
+  const first = frameAt(startCycle, cps);
+  const end = frameAt(endCycle, cps);
+  const left = new Float32Array(end - first);
+  const right = new Float32Array(end - first);
+
+  // Strudel's scheduler passes the tempo with each query (cyclist.mjs); loopAt, fit and splice
+  // read it to fit a sample to its cycles.
+  const haps = pattern.queryArc(startCycle, endCycle, { _cps: cps });
+  let scheduled = 0;
+
+  for (const hap of haps) {
+    // Strudel starts an event once, where it begins (cyclist.mjs). An event longer than what's
+    // left of the chunk comes back in the next one too, without its onset: it is already playing.
+    if (typeof hap.hasOnset === 'function' && !hap.hasOnset()) continue;
+    const voice = makeVoice(hap, cps);
+    if (voice) {
+      voices.push(voice);
       scheduled++;
-    } else if (onset) {
-      problems.unknownSound(sound);
     }
   }
-  
+
+  for (const voice of voices) voice.render(left, right, first, end);
+  voices = voices.filter((voice) => voice.endFrame > end);
+
   return { left, right, scheduled, haps: haps.length };
 }
 

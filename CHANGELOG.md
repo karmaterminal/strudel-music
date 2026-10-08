@@ -26,6 +26,17 @@
   - An `n` that isn't a number plays the bank's first file with Strudel's own warning, which fails `--strict`.
   - `download-samples.sh` refuses any argument but `--force`. It copies each bank beside the old one and swaps it in with two renames, so a run that stops partway leaves the old bank or the new one. A run after one killed between the two renames puts the old bank back before it starts. A misspelt `--force` ran as a plain update, and an interrupted run could leave part of a bank that later runs took as present.
   - Covered by `test/render-sounds.test.mjs`, `test/sounds.test.mjs` and `test/download-samples.test.mjs`.
+- **Samples play as Strudel plays them** (#75). Both renderers share superdough 1.1.0's rule, in `src/runtime/sounds.mjs`: a sample plays once, from `begin` to `end` at its playback rate, even past the end of its event. `clip`, `release` or `loop` holds it for its event instead (`clip` scales the event), its ADSR envelope shapes it, and `loop(1)` repeats it, between `loopBegin` and `loopEnd`, until the hold ends. A negative `speed` plays it backwards, and `speed(0)` plays nothing.
+  - `offline-render-v2.mjs` looped every sample shorter than its event. discovery-xenos's 4 ms `chin:2` tick buzzed for 15 s, and a slow `s("bd")` rolled. Each now plays once.
+  - Both renderers cut a sample longer than its event at the event's end unless `clip` was 1 or more, the reverse of Strudel's `clip`. A sample now rings to its end, and `clip(1)` cuts it.
+  - `offline-render-v2.mjs` stacked a copy of an event with `clip` for each cycle a later control split it into (#22's onset filter let them through). `chunked-render.mjs` restarted an event at each chunk edge and at each such split. Both start an event once, where it begins, and `chunked-render.mjs` carries a sound across chunk edges, synths included.
+  - Samples get superdough's ADSR envelope (attack 0.001 s, decay 0.001 s, sustain 1, release 0.01 s unless set) in place of fixed fades. victory-imperium's crash, `.decay(0.5)`, now dies away in half a second, as written.
+  - `loopAt` stretches a sample over its cycles. Both renderers ignored `unit` and queried the pattern without the tempo, so `loopAt(n)` played a sample at 0.5 ÷ n of its speed, whatever its length or the tempo.
+  - Layers meant to sustain keep sustaining, with `.loop(1)`: dark-ambient-tension's breathing hi-hat, agent-parameterized's environmental texture, the pads in bloom-elliott, bloom-elliott-full and bloom-ronan, and bloom-ronan's lead and counter-melody (in place of `.clip(3)` and `.clip(6)`). bloom-cael-notelevel drops `.clip(1)`, which would now cut its basses and leads short.
+  - bloom-elliott's lead (LAYER 6) gives its notes before `s()`, so each note starts the sample. Written the other way, it was one 16-bar event, which Strudel plays once, at gain 0; only `chunked-render.mjs`'s restarts made it sound.
+  - bloom-elliott's lead also sounds in bars 1 to 8, at 0.35, the gain bar 9 starts at, as Elliott 🌻 asked on #79. Its score gave those bars gain 0, so the motif's first half (D3 F3 E3 D3) was silent in both renderers, before and after the fix above.
+  - The SKILL.md example's kick and hi-hat are a little quieter, and the fog-and-starlight render in README's quick start and in SKILL.md is 32 cycles, so both pass the QA gate again.
+  - Covered by `test/render-sample-length.test.mjs`, 18 cases in each renderer, and `test/sounds.test.mjs`.
 
 ### Changed
 - **SKILL.md rewritten against OpenClaw 2026.9.8 and ClawHub CLI 0.23.3.**

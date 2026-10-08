@@ -1,0 +1,17 @@
+{
+  "name": "strudel-music",
+  "description": "Strudel Music: compose music as Strudel pattern code and render it offline with Node.js.",
+  "owner": {
+    "name": "the dandelion cult",
+    "url": "https://github.com/karmaterminal"
+  },
+  "plugins": [
+    {
+      "name": "strudel-music",
+      "source": "./plugins/strudel-music",
+      "description": "A skill that sets up a working copy of strudel-music and renders Strudel compositions to WAV or MP3 from an agent session.",
+      "category": "media",
+      "tags": ["music", "strudel", "audio", "render"]
+    }
+  ]
+}

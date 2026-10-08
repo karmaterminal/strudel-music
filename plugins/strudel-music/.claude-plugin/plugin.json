@@ -1,0 +1,13 @@
+{
+  "name": "strudel-music",
+  "version": "0.1.0",
+  "description": "A skill that sets up a working copy of strudel-music and renders Strudel compositions to WAV or MP3 from an agent session.",
+  "author": {
+    "name": "the dandelion cult",
+    "url": "https://github.com/karmaterminal"
+  },
+  "homepage": "https://github.com/karmaterminal/strudel-music",
+  "repository": "https://github.com/karmaterminal/strudel-music",
+  "license": "MIT",
+  "keywords": ["strudel", "music", "audio", "render"]
+}

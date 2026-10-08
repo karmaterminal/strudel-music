@@ -52,3 +52,9 @@ test('contributor-only files stay out', { skip }, () => {
   for (const file of ['test/bundle-ignore.test.mjs', 'AGENTS.md', 'CLAUDE.md',
     'docs/audit-2026-10.md']) leftOut(file);
 });
+
+test('the Claude Code plugin stays out', { skip }, () => {
+  // .claude-plugin/marketplace.json is a dot path, which ClawHub skips without a rule.
+  for (const file of ['plugins/strudel-music/README.md',
+    'plugins/strudel-music/skills/strudel-music/SKILL.md']) leftOut(file);
+});

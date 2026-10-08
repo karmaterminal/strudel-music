@@ -85,6 +85,7 @@ stack(
 
   // Environmental texture
   s(env === "underground" ? "metal:1" : "wind")
+    .loop(1) // loop the sample through its eight cycles (#75)
     .gain(0.03)
     .lpf(cutoff * 0.5)
     .room(reverbAmt)

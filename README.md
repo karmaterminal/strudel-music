@@ -22,9 +22,6 @@ tests pass. The 2026-10 audit ([docs/audit-2026-10.md](docs/audit-2026-10.md)) f
 
 - There are two renderers that behave differently
   ([#67](https://github.com/karmaterminal/strudel-music/issues/67)).
-- Samples don't always last as long as they would in Strudel: `offline-render-v2.mjs` loops a
-  sample shorter than its event, and both renderers cut a longer one at the event's end
-  ([#75](https://github.com/karmaterminal/strudel-music/issues/75)).
 - Neither renderer implements reverb, delay, highpass or distortion
   ([#68](https://github.com/karmaterminal/strudel-music/issues/68)).
 - Audio deconstruction is manual, and its stage scripts are on unmerged branches
@@ -41,13 +38,13 @@ npm run setup          # npm install + 21 Dirt-Samples banks (~14 MB, from githu
 npm test               # smoke test: Strudel loads, samples are present (12 checks)
 npm run test:unit      # renderers, WAV decoding, sample setup, dispatch, bundle rules
 
-node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16
+node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 32
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
 uv run --no-project --with numpy --with soundfile python scripts/qa-gate.py /tmp/fog.wav
 ```
 
-That renders 64 s of audio in about a second, and the QA gate passes it: no dropouts, −14.4 LUFS,
-true peak −3.0 dBFS.
+That renders 128 s of audio in a second or two, and the QA gate passes it: no dropouts, −14.2
+LUFS, true peak −3.0 dBFS.
 
 ## Install as a skill
 
@@ -91,17 +88,23 @@ rendering, composition rules, voice streaming and security.
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
 | Unknown sound | dropped, and listed after the render | a triangle tone (440 Hz without a note), listed after the render |
 | Filters | none | `lpf` / `cutoff` |
-| Sample shorter than its event | plays once | loops to fill the event |
-| Sample longer than its event | cut at the event's end, unless `clip` is 1 or more | the same |
+| Sample length | as in Strudel (below) | the same |
 
-Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip` and, on synths, an
-ADSR envelope. They ignore every other control, including `.room()`, `.delay()`, `.hpf()` and
-`.distort()`. A `setcpm()` in the composition sets the tempo. Synths are `sine`, `triangle`,
-`square` and `sawtooth`, and noise is `white`, `pink` or `brown`. Any folder of WAVs in
-`samples/` (PCM at 8 to 32 bits, or float) is a sound named after the folder, and `n` picks a
-file, wrapping around as in Strudel. Strudel itself plays a sample once and to its end unless
-`clip`, `release` or `loop` says otherwise, so the table's last two rows differ from it
-([#75](https://github.com/karmaterminal/strudel-music/issues/75)).
+Both renderers read `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `unit`, `begin`, `end`,
+`clip`, `loop`, `loopBegin`, `loopEnd` and an ADSR envelope (`attack`, `decay`, `sustain`,
+`release`); `loopAt` works through `speed` and `unit`. They ignore every other control, including
+`.room()`, `.delay()`, `.hpf()` and `.distort()`. A `setcpm()` in the composition sets the tempo.
+Synths are `sine`, `triangle`, `square` and `sawtooth`, and noise is `white`, `pink` or `brown`.
+Any folder of WAVs in `samples/` (PCM at 8 to 32 bits, or float) is a sound named after the
+folder, and `n` picks a file, wrapping around as in Strudel.
+
+A sample plays as Strudel 1.1.0 plays it
+([#75](https://github.com/karmaterminal/strudel-music/issues/75)): once, from `begin` to `end`
+at its playback rate, even where that runs past the end of its event. `clip`, `release` or `loop`
+holds it for its event instead (`clip(0.5)` for half the event), and its release then fades it.
+`loop(1)` repeats it until then; without `loop`, a sample shorter than its event stops at its end.
+`loopAt(n)` stretches a sample to `n` cycles. A negative `speed` plays it backwards, and
+`speed(0)` plays nothing.
 
 After each render, both list what they couldn't play as written: sound names with no sample or
 synth, dropped events (an event that picks a WAV they can't read is one), and Strudel's own

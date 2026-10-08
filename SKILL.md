@@ -41,12 +41,11 @@ Two renderers ship, and they differ (#67 picks one):
 | `.lpf()` / `.cutoff()` | ignored | works |
 | `note()` on a sample | shifted from the sample's root note (`samples/strudel.json`, the file name, or else C4) | root notes ignored: a MIDI number shifts from C4, a note name from C5 (`note("c4")` plays an octave down) |
 | Level | peak-normalized | compressor, 2 s fade-out |
-| Sample shorter than its event | plays once, as in Strudel | loops to fill the event (#75) |
-| Sample longer than its event | cut at the event's end unless `clip` is 1 or more. Strudel lets it ring unless `clip`, `release` or `loop` is set (#75) | the same |
+| Sample length | as in Strudel (§ Write a composition) | the same |
 
 ```bash
 # Compose and iterate: argument order is input, output, cycles, chunk size.
-node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 16 --strict
+node src/runtime/chunked-render.mjs assets/compositions/fog-and-starlight.js /tmp/fog.wav 32 --strict
 ffmpeg -i /tmp/fog.wav -codec:a libmp3lame -b:a 192k /tmp/fog.mp3 -y
 
 # Filter-heavy pieces, through offline-render-v2.mjs: input, cycles, BPM. A setcpm() in the
@@ -92,8 +91,8 @@ write the same output file.
 setcpm(90/4)                       // 90 BPM, 4 beats per cycle
 
 stack(
-  s("bd ~ ~ bd ~ ~ bd ~").gain(0.35),
-  s("hh*8").gain("<0.35 0.4>"),
+  s("bd ~ ~ bd ~ ~ bd ~").gain(0.3),
+  s("hh*8").gain("<0.3 0.35>"),
   s("~ sd ~ sd").gain(0.25),
   note("<c2 c2 eb2 g1>").s("sawtooth")
     .attack(0.01).decay(0.2).sustain(0.3).release(0.2).gain(0.1),
@@ -119,11 +118,15 @@ Rules that keep a render honest:
   `git:` install also has the committed `bloom_*` set; a ClawHub install leaves it out. Other
   Strudel names (`rd`, `sh`, `bell` and so on) have no bank. `bash scripts/samples-manage.sh list`
   shows what's there.
-- **Use only controls that render:** `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `clip`,
-  and `attack`, `decay`, `sustain`, `release` on synths (samples get short fixed fades); also
-  `lpf`/`cutoff` and `loopAt` in
-  `offline-render-v2.mjs`. `.room()`, `.delay()`, `.hpf()`, `.distort()` and every other effect
-  are silently ignored (#68). `.bank()` and `samples()` do nothing.
+- **Use only controls that render:** `s`, `n`, `note`, `freq`, `gain`, `pan`, `speed`, `begin`,
+  `end`, `clip`, `loop`, `loopBegin`, `loopEnd`, `loopAt`, and `attack`, `decay`, `sustain`,
+  `release`; also `lpf`/`cutoff` in `offline-render-v2.mjs`. `.room()`, `.delay()`, `.hpf()`,
+  `.distort()` and every other effect are silently ignored (#68). `.bank()` and `samples()` do
+  nothing.
+- **A sample plays once, as in Strudel** (#75): from `begin` to `end` at its playback rate, even
+  past the end of its event, so a short sample in a long event is a short sound. To fill the event,
+  add `.loop(1)`. `.clip(1)` cuts a sample at the end of its event and `.clip(0.5)` halfway;
+  neither makes it longer. `.release(t)` holds it for its event, then fades it over `t` seconds.
 - **Pitch synths with `note()`**, or `n()` followed by `.scale()`. A bare `n()` on a synth plays
   440 Hz in both renderers.
 - **Give note names an octave** (`c3`, not `c`). Without one, both renderers play octave 4, an

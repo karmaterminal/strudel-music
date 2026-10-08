@@ -482,6 +482,16 @@ function wsolaStretch(input, targetLen, sr) {
     readPos += analysisHop;
   }
   
+  // No grain comes before the first, so over its first half, up to its window's peak, it counts
+  // at full weight instead of its window's (it reads the input from 0). Divided by a lone
+  // tapered window's weight, a note's first 4.5 ms came out near silent and the next 15 ms up
+  // to 30 dB too loud (#81). The search above still saw the tapered grain, so it chose the same
+  // grains as before.
+  for (let i = 0; i < Math.min(grainLen >> 1, targetLen); i++) {
+    output[i] += (i < input.length ? input[i] : 0) * (1 - win[i]);
+    normBuf[i] += 1 - win[i] * win[i];
+  }
+
   // Normalize
   for (let i = 0; i < targetLen; i++) {
     if (normBuf[i] > 0.001) {

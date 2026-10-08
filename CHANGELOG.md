@@ -40,6 +40,7 @@
   - bloom-elliott's lead also sounds in bars 1 to 8, at 0.35, the gain bar 9 starts at, as Elliott 🌻 asked on #79. Its score gave those bars gain 0, so the motif's first half (D3 F3 E3 D3) was silent in both renderers, before and after the fix above.
   - The SKILL.md example's kick and hi-hat are a little quieter, and the fog-and-starlight render in README's quick start and in SKILL.md is 32 cycles, so both pass the QA gate again.
   - Covered by `test/render-sample-length.test.mjs`, 18 cases in each renderer, and `test/sounds.test.mjs`.
+- **`chunked-render.mjs`'s pitch shift no longer clicks** (#81). A tonal sample played away from its root note is resampled, then stretched back to its own length. Under the stretch's first grain alone, the note's first 4.5 ms came out near silent and the next 15 ms up to 30 dB too loud. They now play at the sample's own level, and only the first 40 ms of each shifted note change. The click could set a render's peak, so normalization turned the whole piece down: bloom-elliott comes out 3.7 dB louder, at −16.0 LUFS where it was −19.7. No shipped composition shifts a tonal sample. Covered by `test/chunked-pitch-shift.test.mjs`.
 
 ### Changed
 - **SKILL.md rewritten against OpenClaw 2026.9.8 and ClawHub CLI 0.23.3.**

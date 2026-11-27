@@ -75,7 +75,7 @@ security.
 |---|---|---|
 | Arguments | `<in.js> [out.wav] [cycles] [chunk size]` | `<in.js> [out.wav] [cycles] [bpm]` |
 | Flags | `--strict`, `--samples=<dir>` | `--strict`, `--samples=<dir>`, `--prebake=<file>` |
-| Used by | SKILL.md, docs/ONBOARDING.md | `scripts/dispatch.sh`, `npm run render`, CI |
+| Used by | SKILL.md, docs/ONBOARDING.md, CI | `scripts/dispatch.sh`, `npm run render`, CI |
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
 | Unknown sound | dropped, and listed after the render | a triangle tone (440 Hz without a note), listed after the render |
 | Filters | none | `lpf` / `cutoff` |

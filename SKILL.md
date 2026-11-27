@@ -32,9 +32,10 @@ Updating the skill replaces this folder. Once setup has run, `openclaw skills up
 
 ## Render
 
-Two renderers ship, and they differ (#67 picks one):
+Two renderers ship, and they differ (#67 picks one). CI renders every composition through both,
+with `--strict`:
 
-| | `chunked-render.mjs` (use this to compose) | `offline-render-v2.mjs` (`dispatch.sh`, `npm run render`, CI) |
+| | `chunked-render.mjs` (use this to compose) | `offline-render-v2.mjs` (`dispatch.sh`, `npm run render`) |
 |---|---|---|
 | Speed | about 1 s per minute of audio | up to about 1 s per second of audio |
 | Unknown sound name | dropped, and listed after the render | played as a triangle tone (440 Hz unless the event has a note), and listed after the render |
